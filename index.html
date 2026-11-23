@@ -1,0 +1,36 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>せらちゃんの星あつめ ✦</title><style>:root{--a:#73c9ec;--b:#fff;--ink:#52718a}*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#e5f8ff,#fff1fa);font-family:'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;color:var(--ink);min-height:100vh}main{max-width:640px;margin:32px auto;padding:18px}.card{background:#ffffffed;border:3px solid #d0edff;border-radius:26px;box-shadow:0 12px 35px #78b5d229;padding:27px;text-align:center}h1{font-size:clamp(23px,5vw,35px);color:#65b9dd}h2{font-size:22px}.star{font-size:35px}.small{font-size:13px;opacity:.75}button,input{font:inherit;border-radius:14px;padding:13px 16px}button{border:0;background:#86d4f0;color:#24546b;font-weight:bold;cursor:pointer;margin:8px 3px;box-shadow:0 4px #5ab2d2}button:active{transform:translateY(3px);box-shadow:0 1px #5ab2d2}input{width:min(100%,330px);border:2px solid #bde4f6;background:#fff;text-align:center}#content{min-height:210px}.fade{animation:fade .4s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.dots{letter-spacing:8px;color:#9ad7ee}.wrong{color:#c77d9c;min-height:25px}.footer{font-size:11px;margin-top:25px;opacity:.5}.hidden{display:none}.glitch{animation:shake .13s 3}@keyframes shake{50%{transform:translateX(3px)}}.dark{background:#121c29;color:#c4d4dd}.dark .card{background:#192536;border-color:#3a5268;box-shadow:none}.dark h1{color:#d7e9f0}.dark button{background:#405d70;color:white;box-shadow:none}.dark input{background:#111d29;color:white;border-color:#526a7a}.log{text-align:left;font-family:monospace;line-height:1.8;font-size:13px;background:#101b26;padding:16px;border-radius:10px;color:#a7c2d0;white-space:pre-wrap}.blink{animation:bl 1s infinite}@keyframes bl{50%{opacity:0}}a{color:inherit}</style></head><body><main><div class="card"><div class="star" id="icon">🩵 ✦ 🪽</div><h1 id="title">せらちゃんの星あつめ！</h1><div class="dots" id="dots">✦ ✧ ✧ ✧ ✧</div><div id="content" class="fade"></div><div class="footer" id="footer">© 宵空セラのゆるふわ謎解きルーム ♡</div></div></main><script>
+const el=id=>document.getElementById(id);
+let stage=0,visited=0;
+try { const data=JSON.parse(localStorage.getItem('sera_star_v2')||'{}'); stage=data.stage||0;visited=data.visited||0; }catch(e){}
+function save(){try{localStorage.setItem('sera_star_v2',JSON.stringify({stage,visited}));}catch(e){}}
+function set(html){el('content').innerHTML=html;}
+function go(n){stage=n;save();render();}
+function question(title,answers,next,hint=''){
+ set(`<h2>${title}</h2><input id="ans" placeholder="こたえを入力してね"><br><button id="submit">こたえる ✦</button><p id="msg"></p><p class="small">${hint}</p>`);
+ function check(){let a=el('ans').value.trim().replace(/\s/g,'').toLowerCase();if(answers.includes(a))go(next);else el('msg').textContent='おしい！もう一回 ♡';}
+ el('submit').onclick=check;el('ans').onkeydown=e=>{if(e.key==='Enter')check()};
+}
+function render(){
+ document.body.classList.toggle('dark',stage>=7);
+ el('icon').textContent=stage>=7?'✦':'🩵 ✦ 🪽';
+ el('title').textContent=stage>=7?'星あつめ 管理画面':'せらちゃんの星あつめ！';
+ el('dots').textContent=stage>=7?'':['✦ ✧ ✧ ✧ ✧','✦ ✧ ✧ ✧ ✧','✦ ✦ ✧ ✧ ✧','✦ ✦ ✦ ✧ ✧','✦ ✦ ✦ ✦ ✧','✦ ✦ ✦ ✦ ✦'][Math.min(stage,5)];
+ switch(stage){
+ case 0:set('<h2>こんせら〜！ 🪽</h2><p>せらと一緒に、なくしたお星さまを集めよう！</p><p>かんたんな謎を解いて、<b>5つの星</b>を集めてね ♡</p><button id="next">はじめる！ ✨</button>');break;
+ case 1:question('第1問 ✦<br>「ほし」の「し」を「ん」に変えると？',['ほん'],2);return;
+ case 2:question('第2問 ✦<br>朝には4本、昼には2本、夜には3本。これなーんだ？',['にんげん','人間'],3,'ヒント：有名ななぞなぞだよ！');return;
+ case 3:question('第3問 ✦<br>「せ・ら・ほ・り・っ・く」<br>この言葉の最初の2文字は？',['せら'],4);return;
+ case 4:question('第4問 ✦<br>星を英語でいうと？',['star','スター','すたー'],5);return;
+ case 5:set('<h2>最後の星、みーつけた！</h2><p>おめでとう！ぜんぶ集められたね ♡</p><button id="next">プレゼントを開ける 🎁</button>');break;
+ case 6:set('<h2>🎉 CLEAR! 🎉</h2><p>あそんでくれてありがとう！</p><p>これからも、せらのことよろしくね ♡</p><button id="end">トップにもどる</button><p id="extra"></p>');el('end').onclick=()=>{visited++;save();if(visited===1){el('extra').textContent='……あれ？ 星がひとつ足りないみたい。';setTimeout(()=>{el('dots').textContent='✦ ✦ ✦ ✦ ✧';set('<h2>あれれ？</h2><p>5つ集めたはずなのに、<br>ひとつ足りなくなっちゃった。</p><button id="next">さがしてみる</button>');el('next').onclick=()=>go(7)},1500)}else go(7)};return;
+ case 7:set('<h2>確認してください</h2><div class="log">[system] 収集済み：5 / 5<br>[system] 返却済み：4 / 5<br>[warning] 第5問の記録がありません。</div><p>第5問を解いた覚えはありますか？</p><button id="next">ある</button><button id="other">ない</button>');el('other').onclick=()=>go(8);break;
+ case 8:question('第5問<br>あなたが最後に集めた星は、誰のものですか？',['せら','宵空セラ','よいぞらせら','せらちゃん'],9,'ヒント：このサイトのタイトルを思い出して。');return;
+ case 9:set('<h2>受領者の確認</h2><div class="log">[system] 返却先：宵空セラ<br>[system] 本人確認：未完了</div><p>星を返すには、本人に伝言を届けてください。</p><p><b>「5つ目の星を返しにきました」</b></p><p class="small">体験版です。実際のDMは不要です。</p><button id="next">伝言を届けた（デモ）</button>');break;
+ case 10:set('<h2>返信が届きました</h2><p>「こんせら〜！ 謎解き遊んでくれてありがとう！🩵」</p><p>「……え？」</p><p>「5つ目の星って、なに？」</p><button id="next">続きを読む</button>');break;
+ case 11:set('<h2>記録を照合中</h2><div class="log">[system] 第1問：正常<br>[system] 第2問：正常<br>[system] 第3問：正常<br>[system] 第4問：正常<br>[system] 第5問：存在しません<br><br>[system] このサイトは4問構成です。<br>[system] あなたが集めた星の数：5</div><button id="next">確認する</button>');break;
+ case 12:set('<h2>✦</h2><p>ひとつ多い。</p><p>あなたは、どこで拾ったの？</p><p class="small">— ここまで遊んでくれてありがとう —</p><button id="restart">最初から遊ぶ</button>');el('restart').onclick=()=>{visited=0;go(0)};return;
+ }
+ el('next').onclick=()=>go(stage+1);
+}
+render();
+</script></body></html>
