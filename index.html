@@ -15,48 +15,36 @@
 .dialog .advance{align-self:end;min-width:50px;min-height:44px;padding:0 6px;border:1px solid #a695b9;border-radius:6px;background:#302b53;font-size:12px;white-space:nowrap}
 @media(max-width:360px){.dialog{grid-template-columns:45px minmax(0,1fr) auto;gap:8px;padding:10px}.dialog img{width:45px;height:47px}.dialog p{font-size:15px}}
 @keyframes dialog-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-#dialogFace,.sera-clue{position:relative;display:block}
-#dialogFace{width:100%;max-width:58px;aspect-ratio:294/310}
+#dialogFace,.sera-clue{display:block}
+.dialog{grid-template-columns:64px 1fr auto}
+#dialogFace{width:100%;max-width:64px;aspect-ratio:1}
+@media(max-width:370px){.dialog{grid-template-columns:51px 1fr auto}}
 #dialogFace img,.sera-clue img{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
 #dialogFace img{border:0}
 .sera-clue{width:min(260px,86%);aspect-ratio:294/310;margin:auto}
-.eye-star,.return-star,.fly-star{
-  position:absolute;z-index:1;pointer-events:none;aspect-ratio:1;
-  transform:translate(-50%,-50%);
-}
-.eye-star::before,.return-star::before,.fly-star::before{
-  content:"";position:absolute;inset:0;background:white;
-  clip-path:polygon(40% 0,60% 0,60% 20%,70% 20%,70% 30%,80% 30%,80% 40%,100% 40%,100% 60%,80% 60%,80% 70%,70% 70%,70% 80%,60% 80%,60% 100%,40% 100%,40% 80%,30% 80%,30% 70%,20% 70%,20% 60%,0 60%,0 40%,20% 40%,20% 30%,30% 30%,30% 20%,40% 20%);
-}
-.portrait-star{width:max(3px,4.8%);left:76%;top:53%;filter:drop-shadow(0 0 3px #b0a2ff)}
 .npc img{display:block;width:100%;height:100%;object-fit:contain}
 .npc{width:auto;height:21%;aspect-ratio:128/167}
-.sprite-star{width:8%;left:64%;top:43%;filter:drop-shadow(0 0 2px #c9b7ff)}
 .eye-view{--eye-x:52%;--eye-y:61%}
-.eye-view img{display:block;transform:scale(1.035)}
-.eye-view .eye-star,.eye-view .fly-star,.eye-view .return-star{
-  width:18%;left:var(--eye-x);top:var(--eye-y);
-  filter:drop-shadow(0 0 5px #e9deff) drop-shadow(0 0 10px #8b7dff);
-}
-.eye-view.blurry .eye-star{opacity:.30;filter:blur(12px)}
-.eye-view.lessblurry .eye-star{opacity:.60;filter:blur(5px)}
+.eye-view img{position:absolute;inset:0;display:block;transform:scale(1.035)}
 .eye-view .eye-hot{left:var(--eye-x);top:var(--eye-y);z-index:2}
-.eye-view .fly-star{animation:star-leaves .75s ease-in forwards}
-.eye-view .return-star{animation:star-enters 1.05s ease-in-out both}
-@keyframes star-leaves{
-  to{transform:translate(185%,-250%) scale(.25);opacity:0}
+.eye-view .eye-taking{animation:eye-dim .45s ease-out both}
+.eye-view .eye-returning{animation:eye-light .66s ease-out both}
+@keyframes eye-dim{to{opacity:0}}
+@keyframes eye-light{
+  from{clip-path:circle(0% at var(--eye-x) var(--eye-y));opacity:0}
+  60%{clip-path:circle(24% at var(--eye-x) var(--eye-y));opacity:1}
+  to{clip-path:circle(80% at var(--eye-x) var(--eye-y));opacity:1}
 }
-@keyframes star-enters{
-  from{transform:translate(195%,-290%) scale(1.35);opacity:.65}
-  75%{opacity:1}
-  to{transform:translate(-50%,-50%) scale(1);opacity:1}
-}
+.item-found{display:grid;justify-items:center;gap:6px;margin:12px 0;padding:12px;background:#191e40;border:1px solid #aca0c4}
+.item-found img{width:100px;height:100px;object-fit:contain;image-rendering:pixelated}
+.item-found b{color:var(--gold);text-align:center}
+.item-found p{margin:0}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style></head><body>
-<main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""><span class="eye-star portrait-star" id="dialogStar" hidden></span></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img src="sera_sprite.png?v=mobile-art-1" alt="セラ"><span class="eye-star sprite-star" id="npcStar" aria-hidden="true"></span></div><div class="scene-fade" id="flash"></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><div class="primary-actions"><button class="btn primary" id="skyBtn">✧ 星空を見る</button><button class="btn" id="bagBtn">もちもの</button></div><div class="tip" id="tip">星の印をタップして調べよう。</div></section><div class="devline"><button id="devBtn">DEV：流れ星</button><button id="resetBtn">はじめから</button></div></main>
+<main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img src="sera_sprite.png?v=mobile-art-1" alt="セラ"></div><div class="scene-fade" id="flash"></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><div class="primary-actions"><button class="btn primary" id="skyBtn">✧ 星空を見る</button><button class="btn" id="bagBtn">もちもの</button></div><div class="tip" id="tip">星の印をタップして調べよう。</div></section><div class="devline"><button id="devBtn">DEV：流れ星</button><button id="resetBtn">はじめから</button></div></main>
 <div class="veil" id="veil" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><header class="modal-head"><h2 id="modalTitle"></h2><button class="x" id="modalClose" aria-label="閉じる">×</button></header><div id="modalBody"></div></section></div>
 <div class="finish" id="titleScreen"><div><img class="title-img" src="title_art.png" alt="夜空の下の宵空天文台"><h1>宵空天文台</h1><div id="titleStars"></div><p id="titleSubtitle">君と紡ぐ、ひとつの星座。</p><button class="btn primary menubtn" id="startBtn">ゲームをはじめる</button><button class="btn menubtn" id="titleReset">最初から遊ぶ</button></div></div>
-<div class="finish" id="endingScreen" hidden><div><div class="end-sky"><svg viewBox="0 0 100 100" class="const" id="endConst"></svg><img src="sera_sprite.png?v=mobile-art-1" alt="セラ"><img src="visitor-standing.png" alt="あなた"></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 歌を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="ending_song.mp3" preload="none"></audio></div></div>
+<div class="finish" id="endingScreen" hidden><div><div class="end-sky"><svg viewBox="0 0 100 100" class="const" id="endConst"></svg><img src="sera_sprite.png?v=mobile-art-1" alt="セラ"><img src="visitor-mini.png" alt="あなた"></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 歌を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="ending_song.mp3" preload="none"></audio></div></div>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);const key='sera-observatory-v8-20261123';const scenes=['left','center','right'];const names=['図書コーナー','観測室','管理・休憩コーナー'];
@@ -77,7 +65,7 @@ function chime(){[659,880,1174,1568].forEach((f,i)=>tone(f,.7,.042,i*.10))}funct
 function musicSwitch(on){if(on&&!musicOn){musicOn=true;let n=0;musicTimer=setInterval(()=>{let seq=st.eyeTaken&&!st.restored?[392,0,349,0,330,294,0,0]:[523,659,784,659,587,659,523,392];let f=seq[n++%seq.length];if(f)tone(f,.46,.012)},450);$('soundBtn').textContent='♪ ON'}else if(!on&&musicOn){musicOn=false;clearInterval(musicTimer);musicTimer=null;$('soundBtn').textContent='♪ OFF'}}
 $('soundBtn').onclick=()=>musicSwitch(!musicOn);
 function say(lines,done){let arr=Array.isArray(lines)?lines:[lines];msgQueue=arr.map(x=>typeof x==='string'?{name:'セラ',text:x}:x);onMsgsDone=done||null;nextMessage()}
-function nextMessage(){let x=msgQueue.shift();if(!x){$('dialog').hidden=true;let fn=onMsgsDone;onMsgsDone=null;if(fn)fn();return}$('dialog').hidden=false;$('dialogName').textContent=x.name||'セラ';$('dialogText').textContent=x.text||'';$('dialogImg').src=x.name==='セラ'?'sera_portrait.png':'visitor-portrait.png';$('dialogStar').hidden=x.name!=='セラ'||(st.eyeTaken&&!st.restored);$('nextMsg').textContent=msgQueue.length?'次へ':'閉じる'}$('nextMsg').onclick=nextMessage;$('dialog').addEventListener('click',e=>{if(e.target.closest('button'))return;nextMessage()});
+function nextMessage(){let x=msgQueue.shift();if(!x){$('dialog').hidden=true;let fn=onMsgsDone;onMsgsDone=null;if(fn)fn();return}$('dialog').hidden=false;$('dialogName').textContent=x.name||'セラ';$('dialogText').textContent=x.text||'';$('dialogImg').src=x.name==='セラ'?(st.eyeTaken&&!st.restored?'sera_sleep.png':'sera-dialog-lit.png'):'visitor-face.png';$('nextMsg').textContent=msgQueue.length?'次へ':'閉じる'}$('nextMsg').onclick=nextMessage;$('dialog').addEventListener('click',e=>{if(e.target.closest('button'))return;nextMessage()});
 function openModal(title,body){$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('veil').hidden=false;internalModalCloser=null;$('modalClose').focus({preventScroll:true})}
 function closeModal(){if(internalModalCloser)internalModalCloser();$('veil').hidden=true;$('modalBody').innerHTML='';internalModalCloser=null}$('modalClose').onclick=closeModal;$('veil').addEventListener('click',e=>{if(e.target===$('veil'))closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('veil').hidden)closeModal()});
 function triggerFlash(){const el=$('flash');el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
@@ -85,7 +73,7 @@ function hotspot({id,x,y,label,done=false,plain=false}){const b=document.createE
 function draw(){const zone=st.zone;$('areaLabel').textContent=names[zone];$('areaShort').textContent=names[zone];$('sceneImg').src=scenes[zone]+'.png?v=scope-1';$('sceneImg').alt=names[zone];$('goLeft').disabled=zone===0;$('goRight').disabled=zone===2;$('scene').querySelectorAll('.object').forEach(n=>n.remove());const npc=$('npc');npc.hidden=zone!==1;
 
 if(zone===0){hotspot({id:'books',x:44,y:43,label:'本棚',done:st.got.includes('books')});hotspot({id:'lamp',x:82,y:44,label:'ランプ',done:st.got.includes('lamp')})}
-if(zone===1){npc.style.left=st.npcAtScope?'71%':'79%';npc.style.top=st.npcAtScope?'57%':'78%';npc.classList.toggle('frozen',st.eyeTaken&&!st.restored);$('npcStar').hidden=st.eyeTaken&&!st.restored;npc.classList.toggle('move',st.npcMoving);hotspot({id:'desk',x:35,y:66,label:'観測机',done:st.got.includes('desk')});hotspot({id:'window',x:49,y:25,label:'星空の窓',plain:true});hotspot({id:'scope',x:60,y:41,label:'望遠鏡',plain:true});hotspot({id:'sera',x:st.npcAtScope?74:80,y:st.npcAtScope?59:78,label:'セラ',plain:true})}
+if(zone===1){npc.style.left=st.npcAtScope?'71%':'79%';npc.style.top=st.npcAtScope?'57%':'78%';npc.classList.toggle('frozen',st.eyeTaken&&!st.restored);npc.classList.toggle('move',st.npcMoving);hotspot({id:'desk',x:35,y:66,label:'観測机',done:st.got.includes('desk')});hotspot({id:'window',x:49,y:25,label:'星空の窓',plain:true});hotspot({id:'scope',x:60,y:41,label:'望遠鏡',plain:true});hotspot({id:'sera',x:st.npcAtScope?74:80,y:st.npcAtScope?59:78,label:'セラ',plain:true})}
 if(zone===2){hotspot({id:'orb',x:17,y:37,label:'天球儀',done:st.got.includes('orb')});hotspot({id:'shadow',x:75,y:62,label:'壁のランプ',done:st.got.includes('shadow')});hotspot({id:'tv',x:20,y:68,label:'テレビ',plain:true});hotspot({id:'door',x:78,y:38,label:'スタッフ室',plain:true,})}
 $('count').textContent=total()+'/6';$('lights').innerHTML=Array.from({length:6},(_,i)=>'<i class="'+(i<total()?'got':'')+'">✦</i>').join('');$('tip').textContent=st.eyeTaken&&!st.restored?'セラの返事がない。まだ、できることがあるはず。':'星の印をタップして調べよう。';save()}
 $('goLeft').onclick=()=>{st.zone=Math.max(0,st.zone-1);clickTone();draw()};$('goRight').onclick=()=>{st.zone=Math.min(2,st.zone+1);clickTone();draw()};$('skyBtn').onclick=sky;$('bagBtn').onclick=bag;
@@ -101,14 +89,14 @@ function examineSera(){if(!st.eyeTaken){
  if(st.npcAtScope){say({name:'あなた',text:'セラは望遠鏡を覗き込んでいる。'});return}
  if(st.npcMoving)return;
  const invite=st.got.length===5&&st.mirrorSeen;
- openModal('セラ',`<div class="sera-clue"><img src="sera_portrait.png" alt="セラ。瞳の中に白い星が光っている"><span class="eye-star portrait-star" aria-hidden="true"></span></div><p>「どうしたの？　何か見つけた？」</p><div class="buttons"><button class="btn" id="askConstellation">星座の話をする</button>${invite?'<button class="btn" id="inviteSera">望遠鏡を覗いてもらう</button>':''}<button class="btn" id="leaveSera">またあとで</button></div>`);
+ openModal('セラ',`<div class="sera-clue"><img src="sera-dialog-lit.png" alt="セラ。瞳の中に白い星が光っている"></div><p>「どうしたの？　何か見つけた？」</p><div class="buttons"><button class="btn" id="askConstellation">星座の話をする</button>${invite?'<button class="btn" id="inviteSera">望遠鏡を覗いてもらう</button>':''}<button class="btn" id="leaveSera">またあとで</button></div>`);
  $('askConstellation').onclick=()=>{closeModal();say('どんな星座になるんだろうね。窓のところから、拾った星を並べられるよ。')};
  $('leaveSera').onclick=closeModal;
  if(invite)$('inviteSera').onclick=startNpcMove;
  return
-}if(st.restored){say('……星座、きれいだったね。ありがとう！');return}if(st.keyFound){openModal('セラ',`<img src="sera_sleep.png" style="width:155px;display:block;margin:auto;image-rendering:pixelated" alt="動かないセラ"><p>セラは望遠鏡を覗いたまま、動かない。呼びかけても返事がない。</p>`);return}openModal('セラ',`<img src="sera_sleep.png" style="width:155px;display:block;margin:auto;image-rendering:pixelated" alt="光を失ったセラ"><p>セラは望遠鏡を覗いたまま、動かない。</p><p>……服のポケットから、何かが少し覗いている。</p><div class="buttons"><button class="btn" id="lookHat">帽子を調べる</button><button class="btn primary" id="lookPocket">ポケットを調べる</button></div><p id="found"></p>`);$('lookHat').onclick=()=>$('found').textContent='羽の飾りは、いつもと変わらない。';$('lookPocket').onclick=()=>{st.keyFound=true;chime();save();$('found').textContent='小さな真鍮の鍵が見つかった。「スタッフ室」と刻まれている。';$('lookPocket').disabled=true}}
+}if(st.restored){say('……星座、きれいだったね。ありがとう！');return}if(st.keyFound){openModal('セラ',`<img src="sera_sleep.png" style="width:155px;display:block;margin:auto;image-rendering:pixelated" alt="動かないセラ"><p>セラは望遠鏡を覗いたまま、動かない。呼びかけても返事がない。</p>`);return}openModal('セラ',`<img src="sera_sleep.png" style="width:155px;display:block;margin:auto;image-rendering:pixelated" alt="光を失ったセラ"><p>セラは望遠鏡を覗いたまま、動かない。</p><p>……服のポケットから、何かが少し覗いている。</p><div class="buttons"><button class="btn" id="lookHat">帽子を調べる</button><button class="btn primary" id="lookPocket">ポケットを調べる</button></div><div id="found" aria-live="polite"></div>`);$('lookHat').onclick=()=>$('found').textContent='羽の飾りは、いつもと変わらない。';$('lookPocket').onclick=()=>{st.keyFound=true;chime();save();showItemFound($('found'),'staff-key.png','スタッフ室の鍵','鍵に「スタッフ室」と刻まれている。');$('lookPocket').disabled=true}}
 function seraEye({label, lit=false, id='', focus='', interactive=false}){
- return `<div class="scope eye-view ${focus}" ${id?'id="'+id+'"':''}><img src="eye_empty.png" alt="${label}">${lit?'<span class="eye-star" aria-hidden="true"></span>':''}${interactive?'<button class="eye-hot" id="eyeHot" aria-label="白い光に触れる"></button>':''}</div>`;
+ return `<div class="scope eye-view ${focus}" ${id?'id="'+id+'"':''}><img src="eye_empty.png" alt="${lit?'':label}">${lit?`<img class="eye-lit" src="eye_lit.png" alt="${label}">`:''}${interactive?'<button class="eye-hot" id="eyeHot" aria-label="白い光に触れる"></button>':''}</div>`;
 }
 function scope(){
  if(!st.npcAtScope||st.restored){
@@ -147,28 +135,44 @@ function scope(){
   $('scopeArea').classList.add('ripple');placeTone();
  };
 }
-function animateEyeStar(view, className, finish){
- const star=view.querySelector('.eye-star')||document.createElement('span');
- star.className=className;
- star.setAttribute('aria-hidden','true');
- view.appendChild(star);
- star.addEventListener('animationend',()=>{if(star.isConnected)finish()},{once:true});
+function afterEyeAnimation(frame, className, finish){
+ frame.classList.add(className);
+ frame.addEventListener('animationend',()=>{if(frame.isConnected)finish()},{once:true});
 }
 function takeEye(){
  const btn=$('eyeHot');
  if(btn.disabled)return;
  btn.disabled=true;
  placeTone();
- animateEyeStar($('scopeArea'),'fly-star',()=>{
+ afterEyeAnimation($('scopeArea').querySelector('.eye-lit'),'eye-taking',()=>{
   st.eyeTaken=true;save();draw();chime();scope();
  });
+}
+function showItemFound(container, picture, item, clue){
+ container.innerHTML=`<div class="item-found"><img src="${picture}" alt=""><b>${item}を手に入れた</b><p>${clue}</p></div>`;
+ container.scrollIntoView({block:"nearest"});
 }
 function enterStaff(){
  if(st.staff){showStaffRoom();return}
  openModal('スタッフ室の扉',`<div class="lock-intro">♙</div><p>鍵がかかっている。<br>「スタッフ専用」と書かれている。</p>${st.keyFound?'<div class="buttons"><button class="btn primary" id="useKey">鍵を使う</button></div>':''}`);
  if(st.keyFound)$('useKey').onclick=()=>{st.staff=true;save();clickTone();showStaffRoom(true)};
 }
-function showStaffRoom(unlocked=false){openModal('スタッフ室',`<div class="staffmap"><img src="staff.png?v=mobile-art-1" alt="天文台のスタッフ室"><button id="staffDesk" class="object object-plain" style="--x:47%;--y:54%" aria-label="セラの机"></button><button id="staffCabinet" class="object object-plain" style="--x:80%;--y:39%" aria-label="戸棚"></button></div>${unlocked?'<p>カチャリ。鍵が回り、扉が開いた。</p>':''}<p id="staffInfo">机と戸棚を調べられそうだ。</p>`);$('staffDesk').onclick=()=>$('staffInfo').textContent='机には書きかけのメモ。「今日のお客さんと、あの星座を見られたらいいな」。';$('staffCabinet').onclick=()=>{if(!st.remote){st.remote=true;chime();save()}$('staffInfo').textContent='戸棚からテレビのリモコンを手に入れた。これでチャンネルを変えられそうだ。';$('staffCabinet').setAttribute('aria-label','戸棚、リモコン回収済み')}}
+function showStaffRoom(unlocked=false){
+ openModal('スタッフ室',`<div class="staffmap"><img src="staff.png?v=mobile-art-1" alt="天文台のスタッフ室"><button id="staffDesk" class="object object-plain" style="--x:47%;--y:54%" aria-label="セラの机"></button><button id="staffCabinet" class="object object-plain" style="--x:80%;--y:39%" aria-label="戸棚"></button></div>${unlocked?'<p>カチャリ。鍵が回り、扉が開いた。</p>':''}<div id="staffInfo" aria-live="polite">机と戸棚を調べられそうだ。</div>`);
+ const info=$('staffInfo');
+ const cabinet=$('staffCabinet');
+ if(st.remote)cabinet.setAttribute('aria-label','戸棚、リモコン回収済み');
+ $('staffDesk').onclick=()=>{info.textContent='机には書きかけのメモ。「今日のお客さんと、あの星座を見られたらいいな」。'};
+ cabinet.onclick=()=>{
+  if(st.remote){
+   if(!info.querySelector('.item-found'))info.textContent='戸棚のリモコンは、もう持っている。';
+   return;
+  }
+  st.remote=true;chime();save();
+  showItemFound(info,'tv-remote.png','テレビのリモコン','チャンネルを切り替えられそうだ。');
+  cabinet.setAttribute('aria-label','戸棚、リモコン回収済み');
+ };
+}
 function television(usedNow=false){const channels=[['バラエティ','星の形のクッキーを作っています！'],['天気予報','夜空は晴れ。観測日和です。'],['天文ニュース','今夜、流星群が午前0時ごろに見頃を迎えます。'],['通販番組','天体観測用のクッションをご紹介！']];const c=channels[st.remoteUsed?st.channel:0];if(st.remoteUsed&&st.channel===2){st.news=true;save()}openModal('テレビ',`<div class="television"><div class="broadcast">${st.remoteUsed&&st.channel===2?'<div class="tv-meteor">✦</div>':'✧　✦　✧'}</div><div class="crawl">YOIZORA TV ｜ ${c[0]}</div></div><p><strong>${c[0]}</strong>：${c[1]}</p>${usedNow?'<p>ピッ。チャンネルを切り替えられそうだ。</p>':''}${st.remoteUsed?'<div class="buttons"><button class="btn" id="prevTV" aria-label="前のチャンネル">◀</button><button class="btn" id="nextTV" aria-label="次のチャンネル">▶</button></div>':st.remote?'<div class="buttons"><button class="btn primary" id="useRemote">リモコンを使う</button></div>':'<p>リモコンが見つからず、チャンネルを変えられない。</p>'}`);if($('useRemote'))$('useRemote').onclick=()=>{st.remoteUsed=true;save();clickTone();television(true)};if(st.remoteUsed){$('prevTV').onclick=()=>{st.channel=(st.channel+3)%4;clickTone();television()};$('nextTV').onclick=()=>{st.channel=(st.channel+1)%4;clickTone();television()}}}
 function inspect(id){if(id==='books')books();else if(id==='lamp')lamp();else if(id==='desk')desk();else if(id==='orb')orb();else if(id==='shadow')shadow();else if(id==='sera')examineSera();else if(id==='scope')scope();else if(id==='door')enterStaff();else if(id==='tv')television();else if(id==='window')sky()}
 function constellationSvg(cls){let path=links.map(i=>targets[i].join(',')).join(' ');return `<svg class="${cls}" viewBox="0 0 100 100" aria-label="6個の星を結ぶ形"><polyline points="${path}" fill="none" stroke="#f3d59c" stroke-width="1.5"/>${targets.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3" fill="#fff5d5"/>`).join('')}</svg>`}
@@ -181,7 +185,11 @@ function restoreScope(){
  $('returnBtn').onclick=()=>{
   $('returnBtn').disabled=true;
   placeTone();
-  animateEyeStar($('returnScope'),'return-star',()=>{
+  const frame=document.createElement('img');
+  frame.src='eye_lit.png';
+  frame.alt='';
+  $('returnScope').appendChild(frame);
+  afterEyeAnimation(frame,'eye-returning',()=>{
    st.restored=true;save();draw();chime();
    openModal('光が戻った',seraEye({label:'セラの瞳の中で白い星が光っている',lit:true})
     +'<p>白い星が瞳の中に入り、セラがゆっくり瞬きをした。</p><div class="buttons"><button class="btn primary" id="wake">セラに声をかける</button></div>');
