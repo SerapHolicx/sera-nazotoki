@@ -946,7 +946,7 @@ function openPhoneModal(mode,content){
  fitModal();
 }
 const privatePosts=[
- {id:'reply',title:'同じ門から返事をする',text:'もう一つの場所に、あの並びで門を作った人がいれば、門を作った者同士でつながれる。僕の自己紹介のページにも、六つの星を置いておく。もし見つけたら、天文台で作った星座と同じ形に結んで、そちらから返事をしてほしい。'},
+ {id:'reply',title:'同じ門から返事をする',text:'もう一つの場所に、あの並びで門を作った人がいれば、門を作った者同士でつながれる。僕の自己紹介のページにも、六つの星を置いておく。もし見つけたら、天文台で作った星座と同じ並びに動かして、そちらから返事をしてほしい。'},
  {id:'gate',title:'あの星座は、門になる',text:'六つの星をあの形に結べば、門が開く。ふたりで見るって約束した星座は、ここじゃない場所に声を届けるためのもの。誰かに、僕を見つけてほしかった。'},
  {id:'watcher',title:'向こうからこちらも見える',text:'望遠鏡のふたを閉めてから撮った写真にも、星座の真ん中に目が写った。写真を閉じたあとも、画面の裏でまばたきが聞こえた。門を開けば、人じゃないものにもこちらが見えるかもしれない。'},
  {id:'close',title:'観測記録の控え',text:'接続を止める方法を、昔の観測者は知っていたらしい。紙の記録はスタッフ室の机に残っている。'}
@@ -1017,8 +1017,8 @@ function phonePost(index){
  openPhoneModal('phone-private',`<div class="phone-toolbar"><button id="backToPosts">戻る</button><strong>観測記録</strong></div>
   <article class="phone-post"><time>観測記録 0${privatePosts.length-index}</time><h3>${title}</h3><p>${text}</p></article>
   ${id==='watcher'?'<p class="phone-logged">画像は破損しています</p>':''}
-  ${id==='reply'&&canResolveGate()?'<button class="phone-back" id="findObservation">宵空セラの紹介ページを開く</button>':''}`);
- if($('findObservation'))$('findObservation').onclick=openObservation;
+  ${id==='reply'&&canResolveGate()&&!st.observationLinked?'<button class="phone-back" id="findObservation">宵空セラの紹介ページを開く</button>':''}`);
+ if($('findObservation'))$('findObservation').onclick=()=>openObservation();
  $('backToPosts').onclick=()=>{if(canHearSera())phoneVoice();else phoneFeed(true)};
 }
 function phone(){
@@ -1079,21 +1079,28 @@ function phone(){
   $('phoneStatus').textContent='光った順に6つの星をつなぐ';
  };
 }
-function openObservation(){
- if(!canResolveGate())return;
+const profileUrl='https://yoizora-sera.beadedcorgi16.chatgpt.site/';
+function openObservation(resume=false){
+ if(!canResolveGate()||st.observationLinked)return;
  const pending=st.observationPending||Array.from(crypto.getRandomValues(new Uint32Array(4)),n=>n.toString(16).padStart(8,'0')).join('');
  st.observationPending=pending;
  save();
- const page=new URL('observation.html',location.href);
- page.hash=new URLSearchParams({attempt:pending}).toString();
- location.assign(page);
+ const profile=new URL(profileUrl);
+ const parameters=new URLSearchParams({attempt:pending});
+ if(resume===true)parameters.set('resume','1');
+ profile.hash=parameters;
+ if(resume===true)location.replace(profile);
+ else location.assign(profile);
 }
 function acceptObservation(){
  const fragment=new URLSearchParams(location.hash.slice(1));
- if(!fragment.has('observation'))return false;
- const token=fragment.get('observation');
+ const resume=fragment.get('profileGate')==='1';
+ if(!resume&&!fragment.has('observation'))return false;
  history.replaceState(null,'',location.pathname+location.search);
- if(!canResolveGate()||!token||token!==st.observationPending)return false;
+ if(!canResolveGate()||st.observationLinked)return false;
+ if(resume){openObservation(true);return false;}
+ const token=fragment.get('observation');
+ if(fragment.get('source')!=='profile'||!token||token!==st.observationPending)return false;
  st.observationLinked=true;st.observationPending=null;st.zone=1;save();
  return true;
 }
@@ -1118,7 +1125,7 @@ function restart(){
  st={...defaults(),endingDone:st.endingDone,secondRun:st.endingDone};selectedItem=null;
  msgQueue=[];onMsgsDone=null;nextMessage();save();play();
 }
-function play(){stopTitleStars();$('titleScreen').hidden=true;if(!musicOn)musicSwitch(true);draw();if(!st.introSeen){st.introSeen=true;save();say(['こんせら〜！ 宵空天文台へようこそ！','今日はね、君と一緒に星座を見たいんだ。','ここには、いろんな仕掛けがあるの。遊んだり調べたりすると、小さな星が見つかるよ！','出てきた星は、タップして拾ってね。星は保管箱に入るよ。','集めた星は、窓から見える夜空に置けるんだ。どんな星座になるかな？','……私、ずっと誰かと一緒に星座を見たかったんだ。今日は楽しみ！'])}};
+function play(){stopTitleStars();$('titleScreen').hidden=true;if(!musicOn)musicSwitch(true);draw();if(!st.introSeen){st.introSeen=true;save();say(['こんせら〜！ 宵空天文台へようこそ！','今日はね、君と一緒に星座を見たいんだ。','ここには、いろんな仕掛けがあるの。遊んだり調べたりすると、小さな星が見つかるよ！','出てきた星は、タップして拾ってね。星は保管箱に入るよ。','集めた星は、窓から見える夜空に置けるんだ。どんな星座になるかな？','……僕、ずっと誰かと一緒に星座を見たかったんだ。今日は楽しみ！'])}};
 $('startBtn').onclick=()=>{if(canStartSecondRun())restart();else play()};
 $('titleReset').onclick=()=>{if(confirm('この周の進行をリセットして最初から遊ぶ？'))restart()};
 $('homeBtn').onclick=()=>{closeModal();title()};

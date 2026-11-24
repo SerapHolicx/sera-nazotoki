@@ -1,134 +1,20 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>宵空セラ — 観測記録</title>
-<style>
-  * { box-sizing: border-box }
-  html { color-scheme: dark; background: #101219; touch-action: manipulation }
-  body {
-    margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 12px;
-    color: #e4e6ee; font: 14px/1.5 system-ui, sans-serif;
-    background: radial-gradient(ellipse at 50% 30%, #24283b, #101219 70%);
-  }
-  main { width: min(100%, 370px); padding: 15px; border: 1px solid #495367; background: #161a24 }
-  h1 { margin: 2px 0 7px; font-size: 22px; font-weight: 550 }
-  p { margin: 7px 0 }
-  .muted { color: #bec7d7 }
-  .field {
-    position: relative; aspect-ratio: 1; width: min(100%, 46dvh); margin: 8px auto;
-    border: 1px solid #44516b; border-radius: 2px; background: #101725;
-  }
-  .field svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none }
-  .star {
-    position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%);
-    display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
-    border: 0; border-radius: 50%; background: transparent; color: #c7d7ee; font-size: 22px;
-  }
-  .star[aria-pressed="true"] { color: #fff2bd; text-shadow: 0 0 8px #e3bb81 }
-  .actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center }
-  button, a { font: inherit; color: inherit; cursor: pointer }
-  .action {
-    padding: 8px 10px; border: 1px solid #6c798f; border-radius: 3px;
-    background: #222d40; text-decoration: none;
-  }
-  :focus-visible { outline: 2px solid #fff2bd; outline-offset: 2px }
-  #status { min-height: 42px }
-  .connected { color: #f6e3b3 }
-  [hidden] { display: none !important }
-</style>
-<script src="constellation.js?v=shelf-grid-2" defer></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>宵空セラのプロフィール</title>
 </head>
-<body data-game-url="./">
-<main>
-  <h1>宵空セラ</h1>
-  <p class="muted">天文台からの呼びかけを観測する。</p>
-  <div id="field" class="field" aria-label="観測用の六つの星">
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <polyline id="trace" fill="none" stroke="#f0d490" stroke-width="1.2"/>
-    </svg>
-  </div>
-  <p id="status" class="muted" aria-live="polite">星をタップして、天文台で見た星座と同じ形に結ぶ。</p>
-  <div class="actions">
-    <button class="action" type="button" id="reset">結び直す</button>
-    <a class="action" id="back">天文台に戻る</a>
-    <a class="action connected" id="respond" hidden>返事を送って天文台へ戻る</a>
-  </div>
-</main>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const { points, path } = window.seraConstellation;
-  const circuit = path.slice(0, -1);
-  const field = document.getElementById('field');
-  const trace = document.getElementById('trace');
-  const status = document.getElementById('status');
-  const back = document.getElementById('back');
-  const respond = document.getElementById('respond');
-  const reset = document.getElementById('reset');
-  const game = new URL(document.body.dataset.gameUrl, location.href);
-  const attempt = new URLSearchParams(location.hash.slice(1)).get('attempt');
-  const chosen = [];
-  back.href = game;
-
-  function drawTrace(sequence) {
-    trace.setAttribute('points', sequence.map(index => points[index].join(',')).join(' '));
-  }
-
-  function choose(index) {
-    if (chosen.length === points.length || chosen.includes(index)) return;
-    chosen.push(index);
-    stars[index].setAttribute('aria-pressed', 'true');
-    drawTrace(chosen);
-    if (chosen.length < points.length) return;
-    const start = circuit.indexOf(chosen[0]);
-    const matches = [1, -1].some(direction =>
-      chosen.every((star, position) =>
-        star === circuit[(start + position * direction + circuit.length) % circuit.length]
-      )
-    );
-    if (!matches) {
-      status.textContent = '線の形が違う。天文台の星座を思い出して結び直そう。';
-      return;
-    }
-    drawTrace([...chosen, chosen[0]]);
-    if (!attempt || !/^[a-f0-9]{32}$/.test(attempt)) {
-      status.textContent = '星座がつながった。返事を届けるには、天文台からこのページを開いてほしい。';
-      return;
-    }
-    const reply = new URL(game);
-    reply.hash = new URLSearchParams({ observation: attempt }).toString();
-    respond.href = reply;
-    status.className = 'connected';
-    status.textContent = '観測対象・宵空セラ。星座が一致した。あなたの返事を送信できる。';
-    respond.hidden = false;
-    back.hidden = true;
-  }
-
-  const stars = points.map(([x, y], index) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'star';
-    button.textContent = '✦';
-    button.style.setProperty('--x', x + '%');
-    button.style.setProperty('--y', y + '%');
-    button.setAttribute('aria-label', (index + 1) + '列目の星');
-    button.setAttribute('aria-pressed', 'false');
-    button.onclick = () => choose(index);
-    field.append(button);
-    return button;
-  });
-
-  reset.onclick = () => {
-    chosen.length = 0;
-    stars.forEach(button => button.setAttribute('aria-pressed', 'false'));
-    drawTrace(chosen);
-    status.className = 'muted';
-    status.textContent = '星をタップして、天文台で見た星座と同じ形に結ぶ。';
-    respond.hidden = true;
-    back.hidden = false;
-  };
-});
-</script>
+<body>
+  <main><p><a id="profile" href="https://yoizora-sera.beadedcorgi16.chatgpt.site/">宵空セラのプロフィールへ</a></p></main>
+  <script>
+    const link = document.getElementById('profile');
+    const profile = new URL(link.href);
+    const attempt = new URLSearchParams(location.hash.slice(1)).get('attempt');
+    if (/^[a-f0-9]{32}$/.test(attempt ?? '')) profile.hash = new URLSearchParams({ attempt });
+    link.href = profile;
+    location.replace(profile);
+  </script>
 </body>
 </html>
