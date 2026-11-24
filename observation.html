@@ -38,7 +38,7 @@
   .connected { color: #f6e3b3 }
   [hidden] { display: none !important }
 </style>
-<script src="constellation.js" defer></script>
+<script src="constellation.js?v=shelf-grid-2" defer></script>
 </head>
 <body data-game-url="./">
 <main>
@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const game = new URL(document.body.dataset.gameUrl, location.href);
   const attempt = new URLSearchParams(location.hash.slice(1)).get('attempt');
   const chosen = [];
-  const labels = ['左下', '左上', '中央下', '右上', '右下', 'いちばん上'];
   back.href = game;
 
   function drawTrace(sequence) {
@@ -113,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     button.textContent = '✦';
     button.style.setProperty('--x', x + '%');
     button.style.setProperty('--y', y + '%');
-    button.setAttribute('aria-label', labels[index] + 'の星');
+    button.setAttribute('aria-label', (index + 1) + '列目の星');
     button.setAttribute('aria-pressed', 'false');
     button.onclick = () => choose(index);
     field.append(button);
