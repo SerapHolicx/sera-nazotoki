@@ -54,19 +54,17 @@
 .sera-clue{width:min(260px,86%);aspect-ratio:294/310;margin:auto}
 .npc img{display:block;width:100%;height:100%;object-fit:contain}
 .npc{width:auto;height:21%;aspect-ratio:128/167}
-.eye-view{--eye-x:50%;--eye-y:54%;--pupil-x:40.4%;--pupil-y:59.1%}
-.eye-view img{
-  position:absolute;display:block;width:335%;height:auto;max-width:none;
-  left:var(--eye-x);top:var(--eye-y);transform:translate(calc(-1 * var(--pupil-x)),calc(-1 * var(--pupil-y)));
-}
+.scope.lens-art{border:6px solid #37365f;outline:2px solid #77759c;background:#181735}
+.eye-view{--eye-x:50.5%;--eye-y:56%}
+.eye-view img{position:absolute;inset:0;display:block}
 .eye-view .eye-hot{left:var(--eye-x);top:var(--eye-y);z-index:2}
 .eye-view .eye-taking{animation:eye-dim .45s ease-out both}
 .eye-view .eye-returning{animation:eye-light .66s ease-out both}
 @keyframes eye-dim{to{opacity:0}}
 @keyframes eye-light{
-  from{clip-path:circle(0% at var(--pupil-x) var(--pupil-y));opacity:0}
-  60%{clip-path:circle(8% at var(--pupil-x) var(--pupil-y));opacity:1}
-  to{clip-path:circle(26% at var(--pupil-x) var(--pupil-y));opacity:1}
+  from{clip-path:circle(0% at var(--eye-x) var(--eye-y));opacity:0}
+  60%{clip-path:circle(16% at var(--eye-x) var(--eye-y));opacity:1}
+  to{clip-path:circle(100% at var(--eye-x) var(--eye-y));opacity:1}
 }
 .item-found{display:grid;justify-items:center;gap:6px;margin:12px 0;padding:12px;background:#191e40;border:1px solid #aca0c4}
 .item-found img{width:100px;height:100px;object-fit:contain;image-rendering:pixelated}
@@ -432,13 +430,14 @@ function examineUnlitSera(){
   $('seraSearchResult').textContent='上着のポケットに、セラのスマホが見える。……勝手に見るのはやめておこう。';
  };
 }
+const seraLensLit='scope-sera-lit.webp';
 function seraEye({label, lit=false, id='', focus='', interactive=false}){
- return `<div class="scope eye-view ${focus}" ${id?'id="'+id+'"':''}><img src="sera-a-unlit.webp" alt="${lit?'':label}">${lit?`<img class="eye-lit" src="sera-a-face.webp" alt="${label}">`:''}${interactive?'<button class="eye-hot" id="eyeHot" aria-label="白い光に触れる"></button>':''}</div>`;
+ return `<div class="scope lens-art eye-view ${focus}" ${id?'id="'+id+'"':''}><img src="scope-sera-unlit.webp" alt="${lit?'':label}">${lit?`<img class="eye-lit" src="${seraLensLit}" alt="${label}">`:''}${interactive?'<button class="eye-hot" id="eyeHot" aria-label="白い光に触れる"></button>':''}</div>`;
 }
 function scope(){
  if(!st.npcAtScope||st.restored){
   st.mirrorSeen=true;save();
-  openModal('望遠鏡',`<div class="scope"><img src="player-a-reflection.webp" alt="望遠鏡のレンズに映った自分の瞳"></div><p>……レンズを覗くと、自分の瞳が映り込んだ。</p>`);
+  openModal('望遠鏡',`<div class="scope lens-art"><img src="scope-player.webp" alt="望遠鏡のレンズに映った自分の瞳"></div><p>……レンズを覗くと、自分の瞳が映り込んだ。</p>`);
   return;
  }
  if(st.meteorStar&&selectedItem==='meteor'){restoreScope();return}
@@ -591,7 +590,7 @@ function restoreScope(){
   +'<p>白い星を、セラの瞳に近づけた。</p>');
  placeTone();
  const frame=document.createElement('img');
- frame.src='sera-a-face.webp';
+ frame.src=seraLensLit;
  frame.alt='';
  $('returnScope').appendChild(frame);
  afterEyeAnimation(frame,'eye-returning',()=>{
