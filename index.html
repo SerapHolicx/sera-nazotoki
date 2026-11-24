@@ -24,19 +24,19 @@
 .sera-clue{width:min(260px,86%);aspect-ratio:294/310;margin:auto}
 .npc img{display:block;width:100%;height:100%;object-fit:contain}
 .npc{width:auto;height:21%;aspect-ratio:128/167}
-.eye-view{--eye-x:50%;--eye-y:54%}
+.eye-view{--eye-x:50%;--eye-y:54%;--pupil-x:40.4%;--pupil-y:59.1%}
 .eye-view img{
   position:absolute;display:block;width:335%;height:auto;max-width:none;
-  left:var(--eye-x);top:var(--eye-y);transform:translate(-50.8%,-54.2%);
+  left:var(--eye-x);top:var(--eye-y);transform:translate(calc(-1 * var(--pupil-x)),calc(-1 * var(--pupil-y)));
 }
 .eye-view .eye-hot{left:var(--eye-x);top:var(--eye-y);z-index:2}
 .eye-view .eye-taking{animation:eye-dim .45s ease-out both}
 .eye-view .eye-returning{animation:eye-light .66s ease-out both}
 @keyframes eye-dim{to{opacity:0}}
 @keyframes eye-light{
-  from{clip-path:circle(0% at 50.8% 54.2%);opacity:0}
-  60%{clip-path:circle(8% at 50.8% 54.2%);opacity:1}
-  to{clip-path:circle(26% at 50.8% 54.2%);opacity:1}
+  from{clip-path:circle(0% at var(--pupil-x) var(--pupil-y));opacity:0}
+  60%{clip-path:circle(8% at var(--pupil-x) var(--pupil-y));opacity:1}
+  to{clip-path:circle(26% at var(--pupil-x) var(--pupil-y));opacity:1}
 }
 .item-found{display:grid;justify-items:center;gap:6px;margin:12px 0;padding:12px;background:#191e40;border:1px solid #aca0c4}
 .item-found img{width:100px;height:100px;object-fit:contain;image-rendering:pixelated}
@@ -74,31 +74,61 @@
 .phone-board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .phone-star{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;border:0;border-radius:50%;padding:0;background:none;font-size:27px;color:#b8cffa}
 .phone-star[aria-pressed="true"]{color:#fff7cf;text-shadow:0 0 8px #e7ba76}
-.phone .buttons button{font-size:13px;min-width:100px}
 #veil.phone-mode{background:#030407f5}
-.phone-mode .modal{background:#0c0e13;color:#ececf0;border-color:#2c3039;box-shadow:none}
-.phone-mode .modal-head h2{color:#ececf0}
+.phone-mode .modal{background:transparent;color:#ececf0;border-color:transparent;box-shadow:none;width:min(calc(100% - 16px),360px);padding:4px}
+.phone-mode .modal-head{margin:0 4px 5px}
+.phone-mode .modal-head h2{color:#e4e4ec;font-size:13px}
 .phone-mode .modal-head .x{background:#171a22;border-color:#343945}
-.phone-screen{
-  max-width:320px;margin:auto;padding:12px;background:#0b0c10;border:1px solid #353945;
-  border-radius:15px;color:#e8e9ed;font-family:system-ui,sans-serif
+.handset{
+  width:min(310px,100%);margin:auto;padding:4px;border:3px solid #62636c;border-radius:29px;
+  background:#101114;box-shadow:0 0 0 1px #252830
 }
-.phone-statusbar{display:flex;justify-content:space-between;color:#a7abb6;font:11px ui-monospace,monospace;padding:4px 2px 11px}
-.phone-profile{padding:10px 2px;border-top:1px solid #30323a;border-bottom:1px solid #30323a}
-.phone-profile strong{display:block;font-size:16px}
-.phone-profile span{display:block;margin-top:3px;color:#bbc0ce;font-size:12px}
-.phone-private .phone-profile span,.phone-private time{color:#f4a5ad}
-.phone-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:8px 0}
-.phone-tabs button,.phone-back{
-  min-height:42px;background:#151821;border:1px solid #3c404c;border-radius:6px;font-size:12px
+.handset-display{
+  overflow:hidden;border-radius:22px;color:#eeedf2;background:#0d0f14;
+  font-family:system-ui,sans-serif;position:relative
 }
-.phone-tabs [aria-pressed="true"]{background:#333740;border-color:#b4b7c0}
-.phone-post{padding:9px 2px;border-top:1px solid #30323a}
-.phone-post time{color:#afb2be;font:11px ui-monospace,monospace}
+.phone-lock,.phone-home{background:linear-gradient(155deg,#343744 0%,#151923 48%,#0d0f17 83%)}
+.phone-home{background:linear-gradient(#11182770,#121623ec),url("title-night.png") center/cover}
+.phone-statusbar{
+  padding:8px 12px 5px;display:grid;grid-template-columns:1fr 52px 1fr;
+  align-items:center;color:#f0eef3;font:11px ui-monospace,monospace;min-height:28px
+}
+.phone-statusbar .camera{width:43px;height:11px;border-radius:20px;background:#05060a;justify-self:center}
+.phone-statusbar .status-right{display:flex;gap:5px;align-items:center;justify-content:end;white-space:nowrap}
+.phone-battery{width:15px;height:7px;border:1px solid #e1e0e7;border-radius:2px;padding:1px}
+.phone-battery::before{content:"";display:block;width:85%;height:100%;background:#dddce2}
+.handset-content{padding:3px 12px 10px}
+.lock-time{display:block;text-align:center;font:500 39px/1.1 system-ui;color:#f4f0f6}
+.lock-hint{text-align:center;color:#e4e0e9}
+.handset .phone-board{width:min(225px,100%,37dvh);margin:auto}
+.handset .buttons button{min-height:35px;font-size:13px;min-width:100px}
+.phone-toolbar{display:flex;align-items:center;gap:8px;padding:4px 0 8px;border-bottom:1px solid #2c2f39}
+.phone-toolbar button,.phone-back{
+  min-height:39px;background:#171a24;border:1px solid #3c404c;border-radius:7px;font-size:12px;padding:3px 8px
+}
+.phone-toolbar strong{font-size:14px}
+.phone-profile{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #2c2f39}
+.phone-avatar{width:36px;height:36px;border-radius:50%;background:#252236;object-fit:cover;image-rendering:pixelated}
+.phone-profile strong,.phone-profile span{display:block}
+.phone-profile strong{font-size:14px}
+.phone-profile span{color:#b2b3bf;font-size:11px}
+.phone-private .phone-profile span,.phone-private time{color:#f3a8b2}
+.phone-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px 0}
+.phone-tabs button{min-height:37px;background:#141821;border:1px solid #3d414d;border-radius:6px;font-size:12px}
+.phone-tabs [aria-pressed="true"]{background:#30333e;border-color:#b7bac5}
+.phone-post{padding:7px 0;border-top:1px solid #2c2f39}
+.phone-post time{color:#b3b6c3;font:11px ui-monospace,monospace}
 .phone-post p{margin:5px 0}
-.phone-back{width:100%;margin-top:8px}
-.phone-mode .phone{background:#10121a;border-color:#282a35;box-shadow:none}
-.phone-mode .phone-statusbar{color:#e4a5ae}
+.phone-post-list{display:grid;gap:0}
+.phone-post-link{width:100%;min-height:42px;text-align:left;padding:6px 1px;background:transparent;border:0;border-top:1px solid #2c2f39}
+.phone-post-link time{display:block;font-size:10px}
+.phone-post-link strong{display:block;font-size:13px}
+.phone-back{width:100%;margin-top:5px}
+.home-apps{display:grid;grid-template-columns:repeat(3,1fr);justify-items:center;min-height:min(35dvh,225px);padding:12px 0}
+.home-app{border:0;background:none;display:grid;align-content:start;justify-items:center;gap:4px;font-size:12px}
+.home-app-icon{display:grid;place-items:center;background:#5b61a4;width:50px;height:50px;border-radius:13px;font-size:21px}
+.phone-home-bar{height:14px;display:grid;place-items:center}
+.phone-home-bar::before{content:"";background:#d8d9e0;width:38%;height:3px;border-radius:5px}
 .inventory-dock{
   margin-top:8px;padding:8px;background:#171d3a;border:1px solid #847ba9
 }
@@ -116,14 +146,70 @@
 .inventory-note{margin:4px 0 0;font-size:12px;color:#e2dcf2}
 .end-sky{position:relative;width:min(440px,100%);aspect-ratio:5/3;margin:auto;overflow:hidden;border:1px solid #a7a7cb;border-radius:6px;background:#101735}
 .end-sky .end-art{display:block;width:100%;height:100%;object-fit:cover}
-.end-sky .const{position:absolute;inset:3% 0 auto;width:100%;height:69%;pointer-events:none}
-#endOmen{opacity:0}
+.end-sky .const{position:absolute;inset:3% 0 auto;width:100%;height:69%;pointer-events:none;filter:drop-shadow(0 0 2px #d29cff)}
+#endOmen{opacity:.28;filter:brightness(1.13)}
 #endOmen.reveal-omen{animation:omen-blink 2.1s ease-in-out forwards;filter:brightness(1.18)}
-@keyframes omen-blink{0%,100%{opacity:0}28%,60%{opacity:.76}}
-@media(prefers-reduced-motion:reduce){#endOmen.reveal-omen{animation:none;opacity:.68}}
+@keyframes omen-blink{0%,100%{opacity:.28}28%,60%{opacity:.47}}
+@media(prefers-reduced-motion:reduce){#endOmen.reveal-omen{animation:none;opacity:.38}}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:manipulation}
+body{position:fixed;inset:0;min-height:0}
+#game{
+  height:100dvh;padding: max(7px,env(safe-area-inset-top)) 8px max(5px,env(safe-area-inset-bottom));
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto
+}
+.bar{margin-bottom:6px}
+.screen{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto auto auto;min-height:0}
+.scene-fit{container-type:size;display:grid;place-items:center;min-height:0;overflow:hidden;background:#131936}
+.scene{height:min(100cqh,calc(100cqw * 7 / 6));width:auto;aspect-ratio:6/7;max-width:100%}
+.navigation{margin:5px 0}
+.nav{min-height:40px;padding:5px 4px}
+.info{padding:4px 8px}
+.inventory-dock{margin-top:2px;padding:4px 6px}
+.inventory-dock h2{margin-bottom:3px}
+.inventory-note{min-height:18px;margin-top:2px}
+.inventory-slot{min-height:44px}
+.inventory-item{min-height:42px;gap:1px;padding:2px}
+.inventory-item img{width:22px;height:22px}
+.tip{margin-top:3px}
+.devline{margin:3px 0}
+.veil{overflow:hidden}
+.modal{
+  position:absolute;inset:50% auto auto 50%;width:min(calc(100% - 20px),430px);
+  max-height:none;overflow:visible;transform:translate(-50%,-50%) scale(var(--modal-scale,1))
+}
+.finish{overflow:hidden;padding:max(8px,env(safe-area-inset-top)) 12px max(8px,env(safe-area-inset-bottom))}
+.finish>div{width:100%;max-width:620px}
+.finish h1{margin:6px 0}
+.finish p{margin:5px 0}
+.finish .menubtn{margin:6px auto}
+.finish .title-img{width:min(100%,620px,56dvh);display:block;margin:auto}
+.title-constellation{height:min(92px,13dvh);margin-bottom:3px}
+.end-sky{width:min(440px,100%,65dvh)}
+.phase-text{margin:6px auto;min-height:52px}
+@media(max-height:625px){
+ .modal{padding:10px}
+ .modal-head{margin-bottom:5px}
+ .modal p{margin:5px 0}
+ .scope{width:min(100%,46dvh)}
+ .sera-clue{width:min(225px,39dvh)}
+ .item-found{margin:6px 0;padding:6px}
+ .item-found img{width:56px;height:56px}
+ .staffmap{width:min(100%,44dvh);margin:auto}
+ .devline button{font-size:10px}
+}
+@media(max-height:500px){
+ .info,.section-title{padding:2px 4px}
+ .inventory-note{font-size:10px}
+ .inventory-slot{min-height:39px}
+ .inventory-item{min-height:37px}
+ .nav{min-height:35px}
+ .finish h1{font-size:26px}
+ .finish .menubtn{min-height:36px;padding:6px}
+ .end-actions .btn{min-height:36px;padding:5px 8px}
+}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style></head><body>
-<main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera_sprite.png?v=mobile-art-1" alt="セラ"></div><div class="scene-fade" id="flash"></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
+<main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
 <h2 id="inventoryHeading">持ち物ボックス</h2>
 <div class="inventory-slots" id="inventorySlots">
  <div class="inventory-slot"><button class="inventory-item" data-item="key" aria-pressed="false" hidden><img src="staff-key.png" alt="">鍵</button></div>
@@ -186,16 +272,27 @@ $('soundBtn').onclick=()=>musicSwitch(!musicOn);
 function say(lines,done){let arr=Array.isArray(lines)?lines:[lines];msgQueue=arr.map(x=>typeof x==='string'?{name:'セラ',text:x}:x);onMsgsDone=done||null;nextMessage()}
 function nextMessage(){let x=msgQueue.shift();if(!x){$('dialog').hidden=true;let fn=onMsgsDone;onMsgsDone=null;if(fn)fn();return}$('dialog').hidden=false;$('dialogName').textContent=x.name||'セラ';$('dialogText').textContent=x.text||'';const isSera=x.name==='セラ';
  $('dialog').classList.toggle('sera-speaking',isSera);
- $('dialogImg').src=isSera?'sera-dialog-stars.png':'visitor-face.png';
+ $('dialogImg').src=isSera?'sera-a-face.webp':'player-a-face.png';
  $('dialogImg').alt=isSera?'両目の瞳に白い星が光るセラ':'';$('nextMsg').textContent=msgQueue.length?'次へ':'閉じる'}$('nextMsg').onclick=nextMessage;$('dialog').addEventListener('click',e=>{if(e.target.closest('button'))return;nextMessage()});
-function openModal(title,body){$('veil').classList.remove('phone-mode');$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('veil').hidden=false;internalModalCloser=null;$('modalClose').focus({preventScroll:true})}
+const modal=$('modalBody').closest('.modal');
+const veil=$('veil');
+function fitModal(){
+ if(veil.hidden)return;
+ const availableHeight=veil.clientHeight-24;
+ const scale=Math.min(1,availableHeight/Math.max(1,modal.offsetHeight));
+ modal.style.setProperty('--modal-scale',String(scale));
+}
+const modalObserver=new ResizeObserver(fitModal);
+modalObserver.observe(modal);
+modalObserver.observe(veil);
+function openModal(title,body){$('veil').classList.remove('phone-mode');$('modalTitle').textContent=title;$('modalBody').innerHTML=body;$('veil').hidden=false;fitModal();internalModalCloser=null;$('modalClose').focus({preventScroll:true})}
 function closeModal(){if(internalModalCloser)internalModalCloser();$('veil').hidden=true;$('modalBody').innerHTML='';internalModalCloser=null}$('modalClose').onclick=closeModal;$('veil').addEventListener('click',e=>{if(e.target===$('veil'))closeModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('veil').hidden)closeModal()});
 function triggerFlash(){const el=$('flash');el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
 function hotspot({id,x,y,label,done=false,plain=false}){const b=document.createElement('button');b.type='button';b.dataset.object=id;b.className='object'+(done?' done':'')+(plain?' object-plain':'');b.style.setProperty('--x',x+'%');b.style.setProperty('--y',y+'%');b.setAttribute('aria-label',label+(done?'、星を回収済み':''));b.onclick=()=>inspect(id);$('scene').appendChild(b)}
 function draw(){const zone=st.zone;$('areaLabel').textContent=names[zone];$('areaShort').textContent=names[zone];$('sceneImg').src=scenes[zone]+'.png?v=scope-1';$('sceneImg').alt=names[zone];$('goLeft').disabled=zone===0;$('goRight').disabled=zone===2;$('scene').querySelectorAll('.object').forEach(n=>n.remove());const npc=$('npc');npc.hidden=zone!==1;
 
 if(zone===0){hotspot({id:'books',x:44,y:43,label:'本棚',done:st.got.includes('books')});hotspot({id:'lamp',x:82,y:44,label:'ランプ',done:st.got.includes('lamp')})}
-if(zone===1){npc.style.left=st.npcAtScope?'71%':'79%';npc.style.top=st.npcAtScope?'57%':'78%';npc.classList.toggle('frozen',seraSilent());$('npcImage').src=seraSilent()?'sera-still.png':'sera_sprite.png?v=mobile-art-1';npc.classList.toggle('move',st.npcMoving);hotspot({id:'desk',x:35,y:66,label:'観測机',done:st.got.includes('desk')});hotspot({id:'window',x:49,y:25,label:'星空の窓',plain:true});hotspot({id:'scope',x:60,y:41,label:'望遠鏡',plain:true});hotspot({id:'sera',x:st.npcAtScope?71:79,y:st.npcAtScope?57:78,label:seraSilent()?'動かないセラを調べる':'セラ',plain:true})}
+if(zone===1){npc.style.left=st.npcAtScope?'71%':'79%';npc.style.top=st.npcAtScope?'57%':'78%';npc.classList.toggle('frozen',seraSilent());$('npcImage').src=seraSilent()?'sera-still.png':'sera-a-mini.png';npc.classList.toggle('move',st.npcMoving);hotspot({id:'desk',x:35,y:66,label:'観測机',done:st.got.includes('desk')});hotspot({id:'window',x:49,y:25,label:'星空の窓',plain:true});hotspot({id:'scope',x:60,y:41,label:'望遠鏡',plain:true});hotspot({id:'sera',x:st.npcAtScope?71:79,y:st.npcAtScope?57:78,label:seraSilent()?'動かないセラを調べる':'セラ',plain:true})}
 if(zone===2){hotspot({id:'orb',x:17,y:37,label:'天球儀',done:st.got.includes('orb')});hotspot({id:'shadow',x:75,y:62,label:'壁のランプ',done:st.got.includes('shadow')});hotspot({id:'tv',x:20,y:68,label:'テレビ',plain:true});hotspot({id:'door',x:78,y:38,label:'スタッフ室',plain:true,})}
 $('count').textContent=total()+'/6';$('lights').innerHTML=Array.from({length:6},(_,i)=>'<i class="'+(i<total()?'got':'')+'">✦</i>').join('');$('tip').textContent=seraSilent()?'いつもの声が聞こえない。':'星の印をタップして調べよう。';syncInventory();save()}
 $('goLeft').onclick=()=>{st.zone=Math.max(0,st.zone-1);clickTone();draw()};$('goRight').onclick=()=>{st.zone=Math.min(2,st.zone+1);clickTone();draw()};
@@ -211,7 +308,7 @@ function examineSera(){if(!st.eyeTaken){
  if(st.npcAtScope){say({name:'あなた',text:'セラは望遠鏡を覗き込んでいる。'});return}
  if(st.npcMoving)return;
  const invite=st.got.length===5&&st.mirrorSeen;
- openModal('セラ',`<div class="sera-clue"><img src="sera-dialog-stars.png" alt="セラ。両目の瞳に白い星が光っている"></div><p>「どうしたの？　何か見つけた？」</p><div class="buttons"><button class="btn" id="askConstellation">星座の話をする</button>${invite?'<button class="btn" id="inviteSera">望遠鏡を覗いてもらう</button>':''}<button class="btn" id="leaveSera">またあとで</button></div>`);
+ openModal('セラ',`<div class="sera-clue"><img src="sera-a-face.webp" alt="セラ。両目の瞳に白い星が光っている"></div><p>「どうしたの？　何か見つけた？」</p><div class="buttons"><button class="btn" id="askConstellation">星座の話をする</button>${invite?'<button class="btn" id="inviteSera">望遠鏡を覗いてもらう</button>':''}<button class="btn" id="leaveSera">またあとで</button></div>`);
  $('askConstellation').onclick=()=>{closeModal();say('どんな星座になるんだろうね。窓のところから、拾った星を並べられるよ。')};
  $('leaveSera').onclick=closeModal;
  if(invite)$('inviteSera').onclick=startNpcMove;
@@ -245,12 +342,12 @@ function examineUnlitSera(){
  };
 }
 function seraEye({label, lit=false, id='', focus='', interactive=false}){
- return `<div class="scope eye-view ${focus}" ${id?'id="'+id+'"':''}><img src="sera-dialog-unlit.png" alt="${lit?'':label}">${lit?`<img class="eye-lit" src="sera-dialog-stars.png" alt="${label}">`:''}${interactive?'<button class="eye-hot" id="eyeHot" aria-label="白い光に触れる"></button>':''}</div>`;
+ return `<div class="scope eye-view ${focus}" ${id?'id="'+id+'"':''}><img src="sera-a-unlit.webp" alt="${lit?'':label}">${lit?`<img class="eye-lit" src="sera-a-face.webp" alt="${label}">`:''}${interactive?'<button class="eye-hot" id="eyeHot" aria-label="白い光に触れる"></button>':''}</div>`;
 }
 function scope(){
  if(!st.npcAtScope||st.restored){
   st.mirrorSeen=true;save();
-  openModal('望遠鏡',`<div class="scope"><img src="player_eye.png" alt="望遠鏡のレンズに映った自分の瞳"></div><p>……レンズを覗くと、自分の瞳が映り込んだ。</p>`);
+  openModal('望遠鏡',`<div class="scope"><img src="player-a-reflection.webp" alt="望遠鏡のレンズに映った自分の瞳"></div><p>……レンズを覗くと、自分の瞳が映り込んだ。</p>`);
   return;
  }
  if(st.meteorStar&&selectedItem==='meteor'){restoreScope();return}
@@ -302,7 +399,7 @@ function itemFound(picture,item,clue){
 }
 function showItemFound(container, picture, item, clue){
  container.innerHTML=itemFound(picture,item,clue);
- container.scrollIntoView({block:"nearest"});
+ fitModal();
 }
 function enterStaff(){
  if(st.staff){showStaffRoom();return}
@@ -360,7 +457,7 @@ function restoreScope(){
   +'<p>白い星を、セラの瞳に近づけた。</p>');
  placeTone();
  const frame=document.createElement('img');
- frame.src='sera-dialog-stars.png';
+ frame.src='sera-a-face.webp';
  frame.alt='';
  $('returnScope').appendChild(frame);
  afterEyeAnimation(frame,'eye-returning',()=>{
@@ -374,41 +471,65 @@ function restoreScope(){
   };
  });
 }
-function openPhoneModal(title,body){
- openModal(title,body);
- $('veil').classList.add('phone-mode');
+function openPhoneModal(mode,content){
+ openModal('セラのスマートフォン',`<div class="handset"><div class="handset-display ${mode}">
+  <div class="phone-statusbar"><span>00:00</span><span class="camera" aria-hidden="true"></span><span class="status-right">圏外 <span class="phone-battery" aria-label="バッテリー残量あり"></span></span></div>
+  <div class="handset-content">${content}</div>
+  <div class="phone-home-bar" aria-hidden="true"></div>
+ </div></div>`);
+ $('veil').classList.add('phone-mode');fitModal();
+}
+const privatePosts=[
+ {title:'同じ門から返事をする',text:'もう一つの場所に、あの並びで門を作った人がいれば、門を作った者同士でつながれる。私の自己紹介のページにも、六つの星を置いておく。もし見つけたら、天文台で作った星座と同じ形に結んで、そちらから返事をしてほしい。'},
+ {title:'あの星座は、門になる',text:'六つの星をあの形に結べば、門が開く。ふたりで見るって約束した星座は、ここじゃない場所に声を届けるためのもの。誰かに、私を見つけてほしかった。'},
+ {title:'向こうからこちらも見える',text:'古い観測記録に、星のないはずの場所から視線を返されたとあった。門を開けば、人じゃないものにもこちらが見えるかもしれない。最初に私を見つけるのが誰かは、選べない。'}
+];
+function phoneHome(){
+ if(!seraSilent()||!st.secondRun||!st.phoneUnlocked)return;
+ openPhoneModal('phone-home',`<strong class="lock-time">00:00</strong><p class="lock-hint">ホーム</p>
+  <div class="home-apps"><button class="home-app" id="openSocial"><span class="home-app-icon" aria-hidden="true">…</span>SNS</button></div>
+  <button class="phone-back" id="phoneExit">セラのそばに戻る</button>`);
+ $('openSocial').onclick=()=>phoneFeed();
+ $('phoneExit').onclick=examineUnlitSera;
 }
 function phoneFeed(privateAccount=false){
  if(!seraSilent()||!st.secondRun||!st.phoneUnlocked)return;
- const publicPosts='<article class="phone-post"><time>先ほど</time><p>今夜は晴れそう。天文台で待ってるね。</p></article>';
- const privatePosts=`<article class="phone-post"><time>観測記録 03</time><p>六つの星をあの形に結べば、門が開く。ふたりで見るって約束した星座は、ここじゃない場所とつながるためのもの。</p></article>
-  <article class="phone-post"><time>観測記録 02</time><p>誰かに、私を見つけてほしい。ここから声をかけ続けても、どこにも届かない気がした。だから、星座を作ることにした。</p></article>
-  <article class="phone-post"><time>観測記録 01</time><p>向こうに届いたとして、最初に私を見つけるのが誰かは、選べない。</p></article>`;
- openPhoneModal('セラのスマートフォン',`<div class="phone-screen${privateAccount?' phone-private':''}">
-  <div class="phone-statusbar"><span>圏外</span><span>ロック解除済み</span></div>
-  <div class="phone-profile"><strong>${privateAccount?'観測記録':'宵空セラ'}</strong><span>${privateAccount?'非公開アカウント':'宵空天文台'}</span></div>
+ const feed=privateAccount
+  ?`<div class="phone-post-list">${privatePosts.map(({title},i)=>`<button class="phone-post-link" data-private-post="${i}"><time>観測記録 0${3-i}</time><strong>${title}</strong></button>`).join('')}</div>`
+  :'<article class="phone-post"><time>先ほど</time><p>今夜は晴れそう。天文台で待ってるね。</p></article>';
+ openPhoneModal(privateAccount?'phone-private':'',`<div class="phone-toolbar"><button id="phoneHome">ホーム</button><strong>SNS</strong></div>
+  <div class="phone-profile">
+   ${privateAccount?'':'<img class="phone-avatar" src="sera-a-face.webp" alt="">'}
+   <div><strong>${privateAccount?'観測記録':'宵空セラ'}</strong><span>${privateAccount?'非公開アカウント':'宵空天文台'}</span></div>
+  </div>
   <div class="phone-tabs" aria-label="アカウント切替">
    <button id="publicAccount" aria-pressed="${!privateAccount}">通常アカウント</button>
    <button id="privateAccount" aria-pressed="${privateAccount}">裏アカウント</button>
-  </div>
-  ${privateAccount?privatePosts:publicPosts}
-  <button class="phone-back" id="phoneExit">セラのそばに戻る</button>
- </div>`);
+  </div>${feed}`);
+ $('phoneHome').onclick=phoneHome;
  $('publicAccount').onclick=()=>phoneFeed();
  $('privateAccount').onclick=()=>phoneFeed(true);
- $('phoneExit').onclick=examineUnlitSera;
+ for(const button of modal.querySelectorAll('[data-private-post]')){
+  button.onclick=()=>phonePost(Number(button.dataset.privatePost));
+ }
+}
+function phonePost(index){
+ if(!seraSilent()||!st.secondRun||!st.phoneUnlocked)return;
+ const {title,text}=privatePosts[index];
+ openPhoneModal('phone-private',`<div class="phone-toolbar"><button id="backToPosts">戻る</button><strong>観測記録</strong></div>
+  <article class="phone-post"><time>観測記録 0${3-index}</time><h3>${title}</h3><p>${text}</p></article>`);
+ $('backToPosts').onclick=()=>phoneFeed(true);
 }
 function phone(){
  if(!seraSilent()||!st.secondRun)return;
- if(st.phoneUnlocked){phoneFeed();return}
- openPhoneModal('セラのスマートフォン',`<div class="phone"><div class="phone-statusbar"><span>圏外</span><span>ロック中</span></div><strong>星座ロック</strong>
-  <p>星を光った順にタップするか、指でなぞってつなごう。</p>
+ if(st.phoneUnlocked){phoneHome();return}
+ openPhoneModal('phone-lock',`<strong class="lock-time">00:00</strong><p class="lock-hint">星座ロック</p>
   <div class="phone-board" id="phoneBoard">
-   <svg viewBox="0 0 100 100" aria-hidden="true"><polyline id="phoneLine" fill="none" stroke="#ffdf93" stroke-width="1.2"/></svg>
+   <svg viewBox="0 0 100 100" aria-hidden="true"><polyline id="phoneLine" fill="none" stroke="#dfcee7" stroke-width="1.2"/></svg>
    ${targets.map(([x,y],i)=>`<button type="button" class="phone-star" data-phone-star="${i}" style="left:${x}%;top:${y}%" aria-pressed="false" aria-label="${['左下','左上','中央下','右上','右下','いちばん上'][i]}の星">✦</button>`).join('')}
   </div>
-  <p id="phoneStatus" aria-live="polite">6つの星をつないでください。</p>
-  <div class="buttons"><button class="btn" id="clearPhone">やり直す</button><button class="btn" id="lockExit">戻る</button></div></div>`);
+  <p class="lock-hint" id="phoneStatus" aria-live="polite">光った順に6つの星をつなぐ</p>
+  <div class="buttons"><button class="btn" id="clearPhone">やり直す</button><button class="btn" id="lockExit">戻る</button></div>`);
  $('lockExit').onclick=examineUnlitSera;
  const board=$('phoneBoard');
  const stars=[...board.querySelectorAll('[data-phone-star]')];
@@ -427,7 +548,7 @@ function phone(){
    $('phoneStatus').textContent='順番が違うようだ。';
    return;
   }
-  st.phoneUnlocked=true;save();if(musicOn)tone(96,.42,.035);phoneFeed();
+  st.phoneUnlocked=true;save();if(musicOn)tone(96,.42,.035);phoneHome();
  }
  stars.forEach(btn=>{btn.onclick=()=>add(btn)});
  board.onpointerdown=e=>{
@@ -454,7 +575,7 @@ function phone(){
  $('clearPhone').onclick=()=>{
   selected=[];release();$('phoneLine').removeAttribute('points');
   stars.forEach(btn=>btn.setAttribute('aria-pressed','false'));
-  $('phoneStatus').textContent='6つの星をつないでください。';
+  $('phoneStatus').textContent='光った順に6つの星をつなぐ';
  };
 }
 let titleTimer;
