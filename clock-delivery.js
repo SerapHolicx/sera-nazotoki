@@ -5,18 +5,20 @@
  const nightHour = 22;
  const meteorHour = 1;
  const kana = ['か','き','く','け','こ'];
- const panels = {
+ const items = {
   cross:{name:'十字架',image:'clock-parts/cross.png',hour:10,kana:'か',time:nightHour},
   apple:{name:'りんご',image:'clock-parts/apple.png'},
   banana:{name:'バナナ',image:'clock-parts/banana.png'},
   fig:{name:'いちじく',image:'clock-fig.png',hour:1,kana:'く',time:meteorHour}
  };
- const fruits = ['apple','banana','fig'];
+ const panelIds = ['cross','fig'];
+ const fruitIds = ['apple','banana'];
+ const products = [...fruitIds,'fig'];
  const arrival = 'ご注文の商品をお届けしました！';
  const formatTime = hour => String(hour).padStart(2,'0')+':00';
 
  function sanitize(state){
-  if(state.clockVersion!==1){
+  if(state.clockVersion!==1&&state.clockVersion!==2){
    const oldMeteor = state.meteor && !state.meteorStar && state.eyeTaken && !state.restored && state.news;
    state.clockHour = oldMeteor ? meteorHour
     : state.night || state.eyeTaken || state.got.includes('clock') || state.puzzleSolved.includes('clock') ? nightHour : eveningHour;
@@ -24,30 +26,48 @@
    state.panels = oldMeteor ? ['cross'] : [];
    state.delivery = null;
   }
-  state.clockVersion = 1;
+  const formerPanels=Array.isArray(state.panels)?state.panels:[];
+  const formerMounted=state.clockPanel;
+  state.fruits=[...new Set([...(Array.isArray(state.fruits)?state.fruits:[]),...formerPanels,formerMounted].filter(id=>fruitIds.includes(id)))];
+  state.itemOrder=Array.isArray(state.itemOrder)?[...new Set(state.itemOrder)]:[];
+  if(state.clockVersion!==2){
+   if(state.keyFound)rememberItem(state,'key');
+   if(state.remote)rememberItem(state,'remote');
+   if(state.meteorStar)rememberItem(state,'meteor');
+   for(const id of [...formerPanels,formerMounted])if(Object.hasOwn(items,id)&&id!=='cross')rememberItem(state,id);
+  }
+  state.clockVersion = 2;
   delete state.night;
   delete state.meteor;
   if(![eveningHour,nightHour,meteorHour].includes(state.clockHour))state.clockHour=eveningHour;
   if(!kana.includes(state.clockKana))state.clockKana=kana[0];
-  if(state.clockPanel!==null&&!Object.hasOwn(panels,state.clockPanel))state.clockPanel='cross';
+  if(fruitIds.includes(state.clockPanel))state.clockPanel=null;
+  if(state.clockPanel!==null&&!panelIds.includes(state.clockPanel))state.clockPanel='cross';
   state.panels=Array.isArray(state.panels)
-   ? [...new Set(state.panels.filter(id=>Object.hasOwn(panels,id)&&id!==state.clockPanel))] : [];
+   ? [...new Set(state.panels.filter(id=>panelIds.includes(id)&&id!==state.clockPanel))] : [];
   if(state.clockPanel!=='cross'&&!state.panels.includes('cross'))state.panels.push('cross');
-  if(!fruits.includes(state.delivery)||hasPanel(state,state.delivery))state.delivery=null;
+  if(!products.includes(state.delivery)||hasItem(state,state.delivery))state.delivery=null;
  }
 
- function hasPanel(state,id){
-  return state.clockPanel===id||state.panels.includes(id);
+ function hasItem(state,id){
+  return state.clockPanel===id||state.panels.includes(id)||state.fruits.includes(id);
  }
- function panelImage(id,decorative=false){
-  const panel=panels[id];
-  return `<img src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
+ function rememberItem(state,id){
+  if(!state.itemOrder.includes(id))state.itemOrder.push(id);
+ }
+ function itemLabel(id){
+  return panelIds.includes(id)?items[id].name+'パネル':items[id].name;
+ }
+ function panelImage(id,decorative=false,advert=false){
+  const panel=items[id];
+  return `<img ${panelIds.includes(id)&&!advert?'class="clock-part-picture" ':''}src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
  }
 
  function create({getState,open,save,draw,tap,chime,element,applyTime,onDelivered}){
   function clock(selectedHour=null,notice=''){
    const state=getState();
-   const mounted=panels[state.clockPanel];
+   const mounted=items[state.clockPanel];
+   const loosePanels=[...new Set([...state.itemOrder,...state.panels])].filter(id=>state.panels.includes(id));
    const dial=Array.from({length:12},(_,hour)=>{
     const angle=hour*Math.PI/6;
     const x=50+27*Math.sin(angle),y=50-27*Math.cos(angle);
@@ -55,20 +75,23 @@
    }).join('');
    open('時計',`<div class="clock-examples" aria-label="時計の例題">
     <div class="clock-example-row"><span>2時 ＋ く ＝</span><img src="clock-parts/axes.png" width="28" height="28" alt="二軸（にじく）"></div>
-    <div class="clock-example-row"><span>4時 ＋ る ＝</span><img src="clock-parts/rope.png" width="28" height="28" alt="ひもをよじる"></div>
+    <div class="clock-example-row"><span>9時 ＋ ら ＝</span><img src="clock-whale.png" width="28" height="28" alt="鯨（くじら）"></div>
    </div>
    <div class="clock-dial" aria-label="合わせたい時刻を指定">
-    <span class="clock-hand" aria-hidden="true" style="transform:rotate(${(state.clockHour%12)*30}deg)"></span>${dial}
+    <span class="clock-hand clock-minute" aria-hidden="true"></span><span class="clock-hand" aria-hidden="true" style="transform:rotate(${(state.clockHour%12)*30}deg)"></span>${dial}
    </div>
    <div class="clock-equation">
-    <span id="clockHourChoice">${selectedHour===null?'？':selectedHour||12}時</span><span>＋</span><b id="clockKanaChoice">${state.clockKana}</b><span>＝</span>
+    <span id="clockHourChoice">${selectedHour===null?'？':selectedHour||12}時</span><span>＋</span><div class="clock-kana-wheel" aria-label="ひらがなを切り替える">
+     <button id="clockKanaUp" type="button" aria-label="前のひらがな">△</button>
+     <output id="clockKanaChoice" aria-live="polite">${state.clockKana}</output>
+     <button id="clockKanaDown" type="button" aria-label="次のひらがな">▽</button>
+    </div><span>＝</span>
     <span class="clock-panel-socket">${mounted?panelImage(state.clockPanel):'<span aria-label="パネルなし">―</span>'}</span>
    </div>
-   <div class="clock-kana" aria-label="ひらがな">${kana.map(letter=>`<button type="button" class="btn" data-clock-kana="${letter}" aria-pressed="${letter===state.clockKana}">${letter}</button>`).join('')}</div>
    <div class="buttons clock-actions"><button class="btn primary" id="setHour" type="button"${selectedHour===null||!mounted?' disabled':''}>確かめる</button>
     ${mounted?'<button class="btn" id="removeClockPanel" type="button">パネルを外す</button>':''}
    </div>
-   ${state.panels.length?`<div class="clock-panel-tray" aria-label="持ち物の絵のパネル">${state.panels.map(id=>`<button class="btn" type="button" data-mount-panel="${id}" aria-label="${panels[id].name}のパネルをセット">${panelImage(id,true)}<span>${panels[id].name}</span></button>`).join('')}</div>`:''}
+   ${loosePanels.length?`<div class="clock-panel-tray" aria-label="持ち物の絵のパネル">${loosePanels.map(id=>`<button class="btn" type="button" data-mount-panel="${id}" aria-label="${items[id].name}のパネルをセット">${panelImage(id,true)}<span>${items[id].name}</span></button>`).join('')}</div>`:''}
    <p id="clockStatus" role="status">${notice}</p>`);
    const body=element('modalBody');
    const hourButtons=[...body.querySelectorAll('[data-hour]')];
@@ -79,16 +102,19 @@
     element('setHour').disabled=!mounted;
     element('clockStatus').textContent='';
    });
-   const kanaButtons=[...body.querySelectorAll('[data-clock-kana]')];
-   kanaButtons.forEach(button=>button.onclick=()=>{
-    state.clockKana=button.dataset.clockKana;
+   function cycleKana(direction){
+    const index=kana.indexOf(state.clockKana);
+    state.clockKana=kana[(index+direction+kana.length)%kana.length];
     save();
     element('clockKanaChoice').textContent=state.clockKana;
-    kanaButtons.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
     element('clockStatus').textContent='';
-   });
+    tap();
+   }
+   element('clockKanaUp').onclick=()=>cycleKana(-1);
+   element('clockKanaDown').onclick=()=>cycleKana(1);
    const remove=element('removeClockPanel');
    if(remove)remove.onclick=()=>{
+    rememberItem(state,state.clockPanel);
     state.panels.push(state.clockPanel);
     state.clockPanel=null;
     save();draw();tap();clock(selectedHour);
@@ -97,7 +123,7 @@
     const id=button.dataset.mountPanel;
     if(!state.panels.includes(id))return;
     state.panels=state.panels.filter(panel=>panel!==id);
-    if(state.clockPanel)state.panels.push(state.clockPanel);
+    if(state.clockPanel){rememberItem(state,state.clockPanel);state.panels.push(state.clockPanel)}
     state.clockPanel=id;
     save();draw();tap();clock(selectedHour);
    });
@@ -114,10 +140,10 @@
   }
 
   function shopMarkup(){
-   return `<section id="tvFruitShop" class="tv-fruit-shop" aria-label="くだもの通販">
-    <header><strong>くだもの便</strong><span>ご注文受付中</span></header>
+   return `<section id="tvFruitShop" class="tv-fruit-shop" aria-label="くだもの通販" hidden>
+    <header><strong>ご注文しますか？</strong><button id="closeFruitPrompt" type="button" class="btn" aria-label="注文画面を閉じる">×</button></header>
     <div class="tv-fruit-products">
-     ${fruits.map(id=>`<button type="button" class="btn" data-fruit="${id}" aria-pressed="false">${panelImage(id,true)}<b>${panels[id].name}</b></button>`).join('')}
+     ${products.map(id=>`<button type="button" class="btn" data-fruit="${id}" aria-pressed="false">${panelImage(id,true,true)}<b>${items[id].name}</b></button>`).join('')}
     </div>
     <button class="btn primary" id="orderFruit" type="button" disabled>注文する</button>
     <p id="fruitOrderStatus" role="status"></p>
@@ -130,13 +156,25 @@
    const order=element('orderFruit');
    const notice=element('fruitOrderStatus');
    let selected=null;
+   const show=element('openFruitPrompt');
+   show.onclick=()=>{
+    shop.hidden=false;
+    show.hidden=true;
+    refresh();
+    shop.querySelector('[data-fruit]:not(:disabled)')?.focus({preventScroll:true});
+   };
+   element('closeFruitPrompt').onclick=()=>{
+    shop.hidden=true;
+    show.hidden=false;
+    show.focus({preventScroll:true});
+   };
    function refresh(){
     for(const button of shop.querySelectorAll('[data-fruit]')){
      const id=button.dataset.fruit;
-     button.disabled=hasPanel(state,id);
+     button.disabled=hasItem(state,id);
      button.setAttribute('aria-pressed',String(id===selected));
     }
-    order.disabled=!selected||Boolean(state.delivery)||hasPanel(state,selected);
+    order.disabled=!selected||Boolean(state.delivery)||hasItem(state,selected);
    }
    shop.querySelectorAll('[data-fruit]').forEach(button=>button.onclick=()=>{
     selected=button.dataset.fruit;
@@ -144,14 +182,14 @@
     refresh();
    });
    order.onclick=()=>{
-    if(!selected||state.delivery||hasPanel(state,selected))return;
+    if(!selected||state.delivery||hasItem(state,selected))return;
     state.delivery=selected;
     save();chime();draw();refresh();
     notice.textContent=arrival;
     shop.classList.add('delivery-announced');
     speakArrival();
    };
-   if(state.delivery)notice.textContent=panels[state.delivery].name+'をお届け済みです。';
+   if(state.delivery)notice.textContent=items[state.delivery].name+'をお届け済みです。';
    refresh();
   }
 
@@ -163,10 +201,13 @@
    element('openParcel').onclick=()=>{
     if(state.delivery!==id)return;
     state.delivery=null;
-    if(!hasPanel(state,id))state.panels.push(id);
+    if(!hasItem(state,id)){
+     (id==='fig'?state.panels:state.fruits).push(id);
+     rememberItem(state,id);
+    }
     save();chime();draw();
     open('お届けもの',`<div class="item-found parcel-arrived"><img src="clock-parts/parcel-open.png" width="54" height="44" alt="開いた段ボール">${panelImage(id)}
-     <b>${panels[id].name}の絵のパネルを手に入れた</b></div>`);
+     <b>${itemLabel(id)}を手に入れた</b></div>`);
     onDelivered();
    };
   }
@@ -183,5 +224,5 @@
    synth.speak(message);
   }catch{}
  }
- window.observatoryClock={eveningHour,nightHour,meteorHour,formatTime,sanitize,create,panelImage};
+ window.observatoryClock={eveningHour,nightHour,meteorHour,formatTime,sanitize,create,panelImage,rememberItem,itemLabel};
 })();
