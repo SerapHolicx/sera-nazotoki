@@ -1,6 +1,6 @@
 'use strict';
 
-window.createSeraPhone = ({open,home,time,element}) => {
+window.createSeraPhone = ({open,home,time,element,thought}) => {
   const data = window.seraPhoneContent;
   const apps = [
     ['diary','日記','▤'],['photos','写真','✿'],['x','X','𝕏'],
@@ -40,50 +40,73 @@ window.createSeraPhone = ({open,home,time,element}) => {
   }
 
   function diary() {
-    screen('diary',`<div class="diary-index">${data.diary.map(({date,title},i)=>
-      button(`<time>${date}</time><strong>${escape(title)}</strong><span aria-hidden="true">›</span>`,`data-entry="${i}"`)).join('')}</div>`);
+    const entries=data.diary.map((entry,index)=>({...entry,index}));
+    const rows=pinned=>entries.filter(entry=>Boolean(entry.pinned)===pinned)
+      .sort((a,b)=>pinned?a.pinned-b.pinned:b.date.localeCompare(a.date))
+      .map(({date,title,index})=>button(`<time>${date}</time><strong>${escape(title)}</strong><span aria-hidden="true">›</span>`,
+        `data-entry="${index}"`)).join('');
+    screen('diary',`<div class="diary-index"><h4>ピン留め</h4>${rows(true)}<h4>日記</h4>${rows(false)}</div>`);
     on('[data-entry]',node=>{
-      const {date,title,text}=data.diary[Number(node.dataset.entry)];
-      screen('diary',`<article class="diary-entry"><time>${date}</time><h4>${escape(title)}</h4><p>${escape(text)}</p></article>`,diary,'一覧');
+      const entry=data.diary[Number(node.dataset.entry)];
+      const note=entry.thought?thought(entry.thought):'';
+      screen('diary',`<article class="diary-entry"><time>${entry.date}</time><h4>${escape(entry.title)}</h4>
+       <p>${escape(entry.text)}</p>${note}</article>`,diary,'一覧');
     });
   }
-
   function social(account='public') {
     const isPublic=account==='public',profile=data.profile;
     screen('x',`${tabs([['public','通常アカウント'],['private','裏アカウント']],account)}
       <div class="phone-account">
       ${isPublic?'<img src="sera-dusk-face.webp" alt="">':'<span class="private-avatar" aria-hidden="true">☾</span>'}
       <div><strong>${isPublic?profile.name:'夜ふかし'}</strong><small>${isPublic?profile.handle:'非公開アカウント'}</small></div>
-      </div><div class="phone-feed">${data.posts[account].map(({date,text,link})=>
+      </div>${isPublic?'<div class="public-profile-link">'+button('自己紹介サイト　›','class="phone-page-link" data-site')+'</div>':''}
+      <div class="phone-feed">${data.posts[account].map(({date,text,link})=>
       `<article><time>${date}</time><p>${escape(text)}</p>${link?button('宵空セラの部屋','class="phone-page-link" data-site'):''}</article>`).join('')}</div>`);
     on('[data-tab]',node=>social(node.dataset.tab));
     on('[data-site]',()=>browserPage(data.pages[0],()=>social(account)));
   }
 
-  function photos() {
-    screen('photos',`<div class="phone-photo-grid">${data.photos.map(({src,date,alt},i)=>
-      button(`<img src="${escape(src)}" alt="">`,`data-photo="${i}" aria-label="${escape(date+' '+alt)}"`)).join('')}</div>`);
-    on('[data-photo]',node=>viewPhoto(Number(node.dataset.photo)));
+  const allPhotos=data.photos.map((_,index)=>index);
+  const observationPhotos=allPhotos.filter(index=>data.photos[index].observation);
+
+  function photos(album='all') {
+    const indices=album==='observation'?observationPhotos:allPhotos;
+    screen('photos',`${tabs([['all','すべての写真'],['observation','星座の観測']],album)}
+      <div class="phone-photo-grid">${indices.map(index=>{
+        const {src,date,alt}=data.photos[index];
+        return button(`<img src="${escape(src)}" alt="">`,`data-photo="${index}" aria-label="${escape(date+' '+alt)}"`);
+      }).join('')}</div>`);
+    on('[data-tab]',node=>photos(node.dataset.tab));
+    on('[data-photo]',node=>viewPhoto(Number(node.dataset.photo),indices,()=>photos(album),'一覧'));
   }
 
-  function viewPhoto(index) {
+  function showLastPhoto(){
+    const index=data.photos.findIndex(photo=>photo.resume);
+    if(index<0){home();return}
+    viewPhoto(index,observationPhotos,home,'ホーム');
+  }
+
+  function viewPhoto(index,indices,back,backLabel,previousThought='') {
     const photo=data.photos[index];
+    const position=indices.indexOf(index);
     screen('photos',`<div class="photo-view">
       <figure id="phonePhotoTouch" class="photo-viewport" aria-label="スワイプで写真切り替え。ピンチで拡大・縮小">
         <img src="${escape(photo.src)}" alt="${escape(photo.alt)}" draggable="false">
       </figure><time>${photo.date}</time>
+      <div id="photoThought" aria-live="polite">${previousThought}</div>
       <div class="photo-nav">
-      ${button('‹','id="prevPhonePhoto" aria-label="前の写真" '+(index===0?'disabled':''))}
+      ${button('‹','id="prevPhonePhoto" aria-label="前の写真" '+(position===0?'disabled':''))}
       ${button('＋','id="zoomPhonePhoto" aria-label="写真を拡大・縮小" aria-pressed="false"')}
-      ${button('›','id="nextPhonePhoto" aria-label="次の写真" '+(index===data.photos.length-1?'disabled':''))}
-      </div></div>`,photos,'一覧');
+      ${button('›','id="nextPhonePhoto" aria-label="次の写真" '+(position===indices.length-1?'disabled':''))}
+      </div></div>`,back,backLabel);
     const viewport=element('phonePhotoTouch');
     const image=viewport.firstElementChild;
     const zoomButton=element('zoomPhonePhoto');
     const pointers=new Map();
     let scale=1, x=0, y=0, origin=null, pinch=null;
     const go=step=>{
-      if(index+step>=0&&index+step<data.photos.length)viewPhoto(index+step);
+      const next=indices[position+step];
+      if(next!==undefined)viewPhoto(next,indices,back,backLabel,photo.anomaly?thought('photo'):'');
     };
     function paint() {
       const limitX=viewport.clientWidth*(scale-1)/2;
@@ -93,6 +116,10 @@ window.createSeraPhone = ({open,home,time,element}) => {
       image.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
       zoomButton.setAttribute('aria-pressed',String(scale>1));
       zoomButton.textContent=scale>1?'−':'＋';
+      if(photo.anomaly&&scale>=1.6){
+        const note=thought('photo');
+        if(note)element('photoThought').innerHTML=note;
+      }
     }
     on('#prevPhonePhoto',()=>go(-1));
     on('#nextPhonePhoto',()=>go(1));
@@ -159,7 +186,7 @@ window.createSeraPhone = ({open,home,time,element}) => {
          <a class="phone-page-link" href="${escape(data.profile.x)}" target="_blank" rel="noopener">X　${data.profile.handle}</a>`
       :`<p>${escape(page.text)}</p>`;
     screen('browser',`<div class="browser-address">${escape(page.host)}</div><article class="cached-page">
-      <h4>${escape(page.title)}</h4>${content}</article>`,back,'戻る');
+      <h4>${escape(page.title)}</h4>${content}${page.external?thought('site'):''}</article>`,back,'戻る');
   }
 
   function voice() {
@@ -240,5 +267,5 @@ window.createSeraPhone = ({open,home,time,element}) => {
   }
 
   const views={diary,photos,x:social,browser,voice,messages,calendar,music,settings:settingsView};
-  return {showHome};
+  return {showHome,showLastPhoto};
 };
