@@ -1,0 +1,123 @@
+/* The case and lock remain part of the game modal; only the screen changes. */
+.phone-home{background:#546697}
+.wall-mist{background:#5c70aa url("phone-media/wallpaper.webp") center/cover}
+.wall-violet{background:#736294 url("phone-media/wallpaper-violet.webp") center/cover}
+.phone-home .handset-content,.phone-app .handset-content{padding:0;overscroll-behavior:contain}
+.phone-desktop{min-height:0;flex:1;display:flex;flex-direction:column;justify-content:space-around;gap:4px;padding:5px 12px 8px;background:linear-gradient(#18224420,#17234566)}
+.phone-desktop .lock-time{margin:3px 0;font-size:clamp(24px,7dvh,39px);text-shadow:0 2px 5px #2e3b6a}
+.phone-app-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));row-gap:clamp(4px,1.7dvh,13px);padding:3px 0}
+.phone-desktop .home-app{width:100%;min-height:48px;padding:2px 0;gap:2px;color:#fff;font-weight:650;text-shadow:0 1px 4px #172443}
+.app-icon{width:clamp(28px,7.8dvh,44px);aspect-ratio:1;display:grid;place-items:center;
+ border-radius:24%;font:700 clamp(17px,5dvh,24px)/1 system-ui;text-shadow:none;
+ box-shadow:inset 0 0 0 1px #ffffff55,0 2px 4px #1b244a40;color:#fff}
+.app-diary{background:#e8b081;color:#553b43}
+.app-photos{background:conic-gradient(#e99cb3,#bba7e2,#9ab8e3,#aacec8,#f4d692,#e99cb3);color:#fff}
+.app-x{background:#1d2233}
+.app-browser{background:#5b86e3}
+.app-voice{background:#81558f}
+.app-messages{background:#307766}
+.app-calendar{background:linear-gradient(#a43c5f 28%,#fff5f9 28%);color:#542a4e;font-size:15px;padding-top:5px}
+.app-music{background:#aa4775}
+.app-settings{background:#485879}
+.phone-exit{min-height:40px;border-radius:18px;color:#fff;border:1px solid #b9c6ea8c;background:#172447b8;font-size:12px}
+.phone-app{background:#171d31}
+.phone-app-bar{display:grid;grid-template-columns:minmax(68px,1fr) auto minmax(68px,1fr);
+ align-items:center;min-height:45px;gap:2px;padding:0 5px;border-bottom:1px solid #ffffff22}
+.phone-app-bar h3{font-size:14px;margin:0;white-space:nowrap}
+.phone-app-bar button{min-height:42px;padding:0 2px;border:0;background:none;color:#c4d4ff;font-size:12px;text-align:left;white-space:nowrap}
+.phone-app-body{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;touch-action:pan-y;min-height:0;flex:1}
+.phone-app-body button:focus-visible,.phone-app-bar button:focus-visible{outline-offset:-3px}
+.app-tabs{display:flex;gap:3px;padding:8px 7px}
+.app-tabs button{flex:1;min-height:40px;font-size:11px;padding:2px;background:#ffffff0e;border:1px solid #ffffff2e;border-radius:6px}
+.app-tabs button[aria-pressed=true]{background:#cbd5ff;color:#202642;border-color:#cbd5ff;font-weight:700}
+.phone-page-link{display:block;min-height:40px;border:1px solid #a6b9e67d;background:#ffffff0c;color:#d4e3ff;
+ text-align:center;padding:9px;border-radius:6px;font-size:12px;overflow-wrap:anywhere}
+
+.appview-diary .phone-app-body{background:#ede3d8;color:#392d39}
+.diary-index button{width:100%;display:grid;grid-template-columns:45px 1fr 12px;gap:7px;align-items:center;text-align:left;
+ min-height:52px;padding:4px 12px;border:0;border-bottom:1px solid #a2838a6b;background:none}
+.diary-index time,.diary-entry time{font:12px ui-monospace,monospace;color:#674856}
+.diary-index strong{font-size:13px}
+.diary-entry{padding:16px 13px 24px;background:repeating-linear-gradient(transparent 0 29px,#a5818044 29px 30px);min-height:100%}
+.diary-entry h4,.recording-player h4,.cached-page h4,.phone-now-playing h4{margin:5px 0;font-size:17px}
+.diary-entry p{white-space:pre-line;font-size:14px;line-height:1.95}
+
+.appview-x{background:#12151e}
+.phone-account{display:flex;align-items:center;gap:9px;padding:7px 10px}
+.phone-account img,.private-avatar{width:35px;height:35px;border-radius:50%;object-fit:cover;image-rendering:pixelated}
+.private-avatar{display:grid;place-items:center;background:#5f476d}
+.phone-account small,.browser-list small,.voice-list small,.phone-tracks small{display:block;color:#c6c7de;font-size:11px}
+.phone-feed article{padding:9px 11px;border-top:1px solid #ffffff20}
+.phone-feed time,.recording-player time,.photo-view time{color:#c3c4dc;font:11px ui-monospace,monospace}
+.phone-feed p{font-size:13px;margin:2px 0 6px}
+
+.appview-photos{background:#131524}
+.phone-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:3px}
+.phone-photo-grid button{aspect-ratio:1;min-width:0;padding:0;background:#24283e;border:0}
+.phone-photo-grid img,.photo-viewport img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.photo-view{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto auto;align-items:center;text-align:center;padding-bottom:5px}
+.photo-viewport{height:100%;min-height:0;margin:0;overflow:hidden;touch-action:none;user-select:none;background:#0b0b16}
+.photo-viewport img{object-fit:contain;pointer-events:none}
+.photo-view time{padding:5px 0}
+.photo-nav{display:flex;justify-content:center;gap:9px}
+.photo-nav button{min-width:45px;min-height:41px;font-size:20px;border:1px solid #717b9a;background:#282d44;border-radius:7px}
+
+.browser-address{margin:8px 8px 0;padding:9px;border-radius:8px;background:#2a3551;font-size:12px;overflow-wrap:anywhere;color:#e6ebfa}
+.browser-list button,.voice-list button{display:block;text-align:left;width:100%;min-height:45px;
+ border:0;border-bottom:1px solid #ffffff20;background:none;padding:6px 10px;font-size:12px}
+.cached-page,.recording-player,.phone-now-playing{padding:13px}
+.phone-offline{color:#d4d9ec}
+.cached-page a + a{margin-top:6px}
+
+.appview-voice{background:#272136}
+.voice-list button{min-height:52px}
+.phone-wave{height:70px;display:flex;align-items:center;justify-content:space-between;gap:2px;margin:8px 0}
+.phone-wave i{background:#e9a1b9;width:3px;height:var(--bar);border-radius:2px}
+.recording-player audio,.phone-now-playing audio{width:100%}
+.recording-player small{display:block;text-align:right}
+
+.appview-messages{background:#18283c}
+.message-recipient{display:grid;text-align:center;justify-items:center;padding:8px}
+.message-recipient span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#47627d;color:#bed3e7}
+.message-recipient strong{font-size:12px}
+.message-history{padding:0 10px}
+.message-history article{display:grid;justify-items:end}
+.message-history time,.message-history small{font-size:10px;color:#f6b3bc}
+.message-history p{margin:0;padding:7px 10px;border-radius:14px 14px 2px 14px;background:#33547b}
+.message-history button{min-width:39px;min-height:36px;padding:0;border:0;background:none;color:#ffb6c0}
+.message-status,.settings-notice{text-align:center;padding:0 8px;color:#dec8ef}
+.message-status:empty,.settings-notice:empty{display:none}
+
+.appview-calendar .phone-app-body{background:#ecedf6;color:#272c4a}
+.phone-calendar{padding:5px 8px}
+.phone-calendar h4{margin:4px 0;font-size:17px;color:#8e355d}
+.calendar-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.calendar-days span,.calendar-days button{text-align:center;position:relative;border:0;background:none;min-height:33px;font-size:11px}
+.calendar-days span{min-height:22px;color:#555573}
+.calendar-days button i{position:absolute;bottom:4px;left:calc(50% - 2px);width:4px;height:4px;border-radius:50%;background:#ac4969}
+.calendar-days button[aria-pressed=true]{border-radius:50%;background:#d8c5e3}
+.calendar-events{padding:1px 8px}
+.calendar-events button,.calendar-events article{display:grid;text-align:left;width:100%;min-height:43px;border:0;border-top:1px solid #c3c6dc;background:none;padding:5px}
+.calendar-events small,.calendar-events strong{font-size:11px}
+.appview-calendar .phone-page-link{margin:0 auto;color:#38477c;border-color:#a4aacc}
+
+.appview-music{background:#292139}
+.phone-tracks button{width:100%;display:flex;align-items:center;gap:9px;min-height:52px;text-align:left;background:none;border:0;border-bottom:1px solid #ffffff22}
+.phone-tracks button span,.phone-now-playing div{display:grid;place-items:center;background:#572f58;color:#ffd2e9;border-radius:6px;width:33px;height:34px}
+.phone-now-playing{text-align:center}
+.phone-now-playing div{width:min(140px,80%);height:auto;aspect-ratio:1;margin:5px auto;font-size:52px}
+
+.phone-settings{padding:9px}
+.phone-settings button{display:flex;align-items:center;justify-content:space-between;text-align:left;width:100%;min-height:45px;
+ border:0;border-bottom:1px solid #ffffff29;background:#262d45;padding:0 9px;font-size:13px}
+.phone-settings button small{color:#bfcce9}
+.phone-settings [aria-checked=true] small{color:#a8ead4}
+.phone-wallpapers{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:7px}
+.phone-wallpapers button{min-height:105px;color:#fff;text-shadow:0 2px 3px #1d2339;border:1px solid #a5aad1}
+.phone-about{padding:8px;display:grid;grid-template-columns:auto 1fr;gap:9px;font-size:12px}
+.phone-about dd{margin:0;text-align:right}
+@media(max-height:480px){
+ .phone-desktop .lock-time{display:none}
+ .phone-desktop{padding:2px 8px 4px}
+ .phone-app-bar{min-height:37px}
+}

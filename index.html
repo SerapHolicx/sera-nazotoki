@@ -103,12 +103,12 @@
 .phone-star[data-press-order]::after{content:attr(data-press-order);position:absolute;right:4px;bottom:3px;font:11px ui-monospace,monospace;color:#fff7cf}
 #veil.phone-mode{background:#030407f5;--handset-height:min(496px,calc(100dvh - 88px))}
 .phone-mode .modal{background:transparent;color:#ececf0;border-color:transparent;box-shadow:none;width:min(calc(100% - 16px),360px);height:calc(var(--handset-height) + 50px);padding:4px;transform:translate(-50%,-50%)}
-.phone-mode #modalBody{position:absolute;top:43px;left:0;width:100%;height:var(--handset-height);display:grid;place-items:center}
+.phone-mode #modalBody{position:absolute;top:43px;left:0;width:100%;height:var(--handset-height);display:grid;grid-template: minmax(0,1fr) / minmax(0,1fr);place-items:center}
 .phone-mode .modal-head{margin:0 4px 5px}
 .phone-mode .modal-head h2{color:#e4e4ec;font-size:13px}
 .phone-mode .modal-head .x{background:#171a22;border-color:#343945}
 .handset{
-  width:min(310px,calc(100dvw - 28px));height:100%;padding:4px;border:3px solid #62636c;border-radius:29px;
+  width:min(310px,calc(100dvw - 28px));height:100%;min-height:0;padding:4px;border:3px solid #62636c;border-radius:29px;
   background:#101114;box-shadow:0 0 0 1px #252830
 }
 .handset-display{
@@ -116,7 +116,6 @@
   font-family:system-ui,sans-serif;position:relative
 }
 .phone-lock,.phone-home{background:linear-gradient(155deg,#343744 0%,#151923 48%,#0d0f17 83%)}
-.phone-home{background:linear-gradient(#11182770,#121623ec),url("title-dusk.webp") center/cover}
 .phone-statusbar{
   padding:8px 12px 5px;display:grid;grid-template-columns:1fr 52px 1fr;
   align-items:center;color:#f0eef3;font:11px ui-monospace,monospace;min-height:28px
@@ -130,44 +129,9 @@
 .lock-hint{text-align:center;color:#e4e0e9}
 .handset .phone-board{width:min(225px,100%,31dvh);margin:5px auto}
 .handset .buttons button{min-height:35px;font-size:13px;min-width:100px}
-.phone-toolbar{display:flex;align-items:center;gap:8px;padding:4px 0 8px;border-bottom:1px solid #2c2f39}
-.phone-toolbar button,.phone-back{
-  min-height:39px;background:#171a24;border:1px solid #3c404c;border-radius:7px;font-size:12px;padding:3px 8px
-}
-.phone-toolbar strong{font-size:14px}
-.phone-profile{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #2c2f39}
-.phone-avatar{width:36px;height:36px;border-radius:50%;background:#252236;object-fit:cover;image-rendering:pixelated}
-.phone-profile strong,.phone-profile span{display:block}
-.phone-profile strong{font-size:14px}
-.phone-profile span{color:#b2b3bf;font-size:11px}
-.phone-private .phone-profile span,.phone-private time{color:#f3a8b2}
-.phone-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px 0}
-.phone-tabs button{min-height:37px;background:#141821;border:1px solid #3d414d;border-radius:6px;font-size:12px}
-.phone-tabs [aria-pressed="true"]{background:#30333e;border-color:#b7bac5}
-.phone-post{padding:7px 0;border-top:1px solid #2c2f39}
-.phone-post time{color:#b3b6c3;font:11px ui-monospace,monospace}
-.phone-post p{margin:5px 0}
-.phone-post-list{display:grid;gap:0}
-.phone-post-link{width:100%;min-height:42px;text-align:left;padding:6px 1px;background:transparent;border:0;border-top:1px solid #2c2f39}
-.phone-post-link time{display:block;font-size:10px}
-.phone-post-link strong{display:block;font-size:13px}
-.phone-back{width:100%;margin-top:5px}
-.home-apps{display:grid;grid-template-columns:repeat(3,1fr);justify-items:center;flex:1;min-height:0;padding:12px 0}
-.home-app{border:0;background:none;display:grid;align-content:start;justify-items:center;gap:4px;font-size:12px}
-.home-app-icon{display:grid;place-items:center;background:#5b61a4;width:50px;height:50px;border-radius:13px;font-size:21px}
 .phone-home-bar{height:14px;display:grid;place-items:center}
 .phone-home-bar::before{content:"";background:#d8d9e0;width:38%;height:3px;border-radius:5px}
-.phone-private{background:radial-gradient(ellipse at 50% 20%,#1c1722,#0b0d12 78%)}
-.phone-unread{margin-left:6px;color:#f3a8b2}
-.phone-logged{font-size:11px;color:#aaa9b7;padding-top:8px;border-top:1px solid #30303a}
-
-@media(max-height:585px){
- .handset-content{padding-bottom:5px}
- .handset .phone-toolbar{padding:1px 0 4px}
- .handset .phone-profile{padding:5px 0}
- .handset .phone-tabs{padding:3px 0}
- .handset .phone-post-link{min-height:36px;padding:3px 0}
-}
+.home-app{border:0;background:none;display:grid;justify-items:center;align-content:start;font-size:12px}
 .inventory-dock{
   margin-top:8px;padding:8px;background:#171d3a;border:1px solid #847ba9
 }
@@ -306,7 +270,6 @@ body{position:fixed;inset:0;min-height:0}
 #shelfReading{min-height:1.6em;color:var(--muted);text-align:center}
 .book-spine i{position:absolute;top:var(--star-y);left:28%;transform:translate(-50%,-50%);font-size:clamp(12px,4vw,18px);font-style:normal;pointer-events:none}
 .book-spine[aria-pressed="true"],.book-spine.book-moving{outline:2px solid #fff0b8;outline-offset:-2px;filter:brightness(1.24)}
-.phone-contact{padding:6px 8px;background:#2b2c39;border:1px solid #52566d;font-size:12px}
 .sky.board-sky{width:100%;max-width:none;aspect-ratio:5/3;margin-top:9px}
 .board-sky .slot{width:min(44px,19%);height:44px;padding:0}
 #boardFeedback:empty{display:none}
@@ -314,17 +277,19 @@ body{position:fixed;inset:0;min-height:0}
 .eye-storage.drop-target{outline:2px solid #fff2c9;background:#61547d}
 .eye-storage span{padding-left:8px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-</style><link rel="stylesheet" href="star-puzzles.css?v=10">
+</style><link rel="stylesheet" href="star-puzzles.css?v=11">
 <link rel="stylesheet" href="television.css?v=6">
 <link rel="stylesheet" href="star-shooter.css?v=2">
 <link rel="stylesheet" href="clock-delivery.css?v=6">
 <link rel="stylesheet" href="endings.css?v=6">
+<link rel="stylesheet" href="phone-apps.css?v=1">
 </head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
 <h2 id="inventoryHeading">持ち物ボックス</h2>
 <div class="inventory-slots" id="inventorySlots"></div>
 <p class="inventory-note" id="inventoryNote" aria-live="polite">持ち物はまだない。</p>
 </section><div class="tip" id="tip">星の印をタップして調べよう。</div></section><div class="devline"><button id="resetBtn">はじめから</button></div></main>
+<aside id="nightSurprise" class="night-surprise" role="status" hidden><img src="sera-dusk-face.webp" alt=""><div><strong>セラ</strong><p></p></div></aside>
 <div class="veil" id="veil" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><header class="modal-head"><h2 id="modalTitle"></h2><button class="x" id="modalClose" aria-label="閉じる">×</button></header><div id="modalBody"></div></section></div>
 <div class="finish" id="titleScreen" aria-labelledby="gameTitle">
  <div class="title-stage">
@@ -337,9 +302,11 @@ body{position:fixed;inset:0;min-height:0}
 <script src="constellation.js?v=matching-gates-5"></script>
 <script src="pixel-stars.js?v=1"></script>
 <script src="orrery.js?v=1"></script>
-<script src="star-puzzles.js?v=8"></script>
+<script src="star-puzzles.js?v=9"></script>
 <script src="clock-delivery.js?v=8"></script>
 <script src="star-shooter.js?v=4"></script>
+<script src="phone-content.js?v=1"></script>
+<script src="phone-apps.js?v=1"></script>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);const key='sera-observatory-v8-20261123';const scenes=['left','center','right'];const names=['図書コーナー','観測室','管理・休憩コーナー'];
@@ -358,7 +325,7 @@ const targets=numberSlots.map(slot=>holes[slot]);
 const phoneOrder=[4,1,3,0,5,2];
 const newObservationId=()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');
 const {eveningHour,nightHour,meteorHour,formatTime}=window.observatoryClock;
-const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:5,eyeTaken:false,scopeFocus:0,clockVersion:3,clockHour:eveningHour,clockKana:'く',clockPanel:'cross',panels:[],itemOrder:[],delivery:null,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteorStar:false,restored:false,endingDone:false,endingHistory:[],lastEnding:null,runEnding:null,endingTransition:null,phoneViewed:false,phoneUnlocked:false,phoneRead:[],phoneConfessionSeen:false,observationVersion:4,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1});
+const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:5,eyeTaken:false,scopeFocus:0,clockVersion:3,clockHour:eveningHour,clockKana:'く',clockPanel:'cross',panels:[],itemOrder:[],delivery:null,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteorStar:false,restored:false,endingDone:false,endingHistory:[],lastEnding:null,runEnding:null,endingTransition:null,phoneViewed:false,phoneUnlocked:false,phoneConfessionSeen:false,observationVersion:4,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1});
 let st;
 try{
  const saved=JSON.parse(localStorage.getItem(key)||'{}');
@@ -401,7 +368,6 @@ st.tvPuzzleVersion=1;
 delete st.mirrorAngle;
 st.placed=Array.isArray(st.placed)?[...new Set(st.placed.filter(x=>Number.isInteger(x)&&x>=0&&x<holes.length))].slice(0,starCount):[];
 if(!Array.isArray(st.bookOrder)||st.bookOrder.length!==numberOrder.length||!numberOrder.every(n=>st.bookOrder.includes(n)))st.bookOrder=shuffledBooks.slice();
-st.phoneRead=Array.isArray(st.phoneRead)?st.phoneRead.filter(id=>typeof id==='string'):[];
 if(!Number.isInteger(st.channel)||st.channel<0||st.channel>4)st.channel=0;
 window.observatoryClock.sanitize(st);
 const isNight=()=>st.clockHour===nightHour||st.clockHour===meteorHour;
@@ -633,12 +599,26 @@ function books(){
 const clockDelivery=window.observatoryClock.create({
  getState:()=>st,open:openModal,save,draw,tap:clickTone,deliveryBell,element:$,
  applyTime(before){
-  if(before===eveningHour&&st.clockHour===nightHour)triggerFlash();
+  if(before===eveningHour&&st.clockHour===nightHour){triggerFlash();nightSurprise()}
   if(st.clockHour!==nightHour||st.got.includes('clock')||!st.got.includes('books'))return false;
   collect('clock');
   return true;
  }
 });
+let surpriseTimeout;
+function nightSurprise(){
+ const run=st;
+ const message=$('nightSurprise');
+ clearTimeout(surpriseTimeout);
+ surpriseTimeout=setTimeout(()=>{
+  if(st!==run||st.clockHour!==nightHour||seraSilent()||!$('titleScreen').hidden)return;
+  message.hidden=false;
+  message.querySelector('p').textContent='えっ！？　急に夜になった……！';
+  surpriseTimeout=setTimeout(()=>{
+   message.hidden=true;message.querySelector('p').textContent='';
+  },3600);
+ },520);
+}
 function clock(){
  if(!st.got.includes('clock')&&st.puzzleSolved.includes('clock')){collect('clock');return}
  clockDelivery.clock();
@@ -883,15 +863,15 @@ function television(mode='broadcast'){
  };
 }
 const investigation={
- books:{name:'本棚',examine:books,together:'古い紙の匂い、好きなんだ。'},
+ books:{name:'本棚',examine:books,together:'これ、昔からここにあるんだよね。僕も全部は読んでないけど！'},
  clock:{name:'時計',examine:()=>clock(),together:'秒針の音、ここだとよく聞こえるね。'},
  journal:{name:'星の観測日誌',examine:journal,together:'ページをめくる音って、なんだか落ち着くね。'},
  orrery:{name:'天体模型',examine:orrery,together:'よく見ると、地球に小さな模様があるね。'},
  tv:{name:'テレビ',examine:television,together:'今日はどんな番組をやってるかな。'},
  door:{name:'スタッフ室',examine:enterStaff},
- window:{name:'窓',examine:windowSky},
+ window:{name:'窓',examine:windowSky,together:'ここから見る景色、結構好きなんだ〜。'},
  board:{name:'星座盤',examine:constellationBoard},
- scope:{name:'望遠鏡',examine:scope,together:()=>{
+ scope:{name:'望遠鏡',examine:scope,together:'なになに？　僕にも見せて！',sharedExamine:()=>{
   st.npcAtScope=true;save();draw();scope(true);
  }}
 };
@@ -900,14 +880,20 @@ function inspect(id){
  const object=investigation[id];
  const canShare=st.zone===seraArea()&&!seraSilent()&&Boolean(object.together)&&!(id==='scope'&&st.eyeTaken);
  if(!canShare){object.examine();return}
- openModal(object.name,`<div class="buttons">
-  <button class="btn" id="inspectObject">調べる</button>
-  <button class="btn" id="shareObject">いっしょに見る</button>
+ openModal(object.name,`<div class="explore-together">
+  <button class="btn" type="button" id="inspectObject">ひとりで調べる</button>
+  <button class="btn share-object" type="button" id="shareObject"><img src="sera-dusk-face.webp" alt="">
+   <span><small>セラ</small>いっしょに見る</span><span aria-hidden="true">›</span></button>
  </div>`);
  $('inspectObject').onclick=()=>object.examine();
  $('shareObject').onclick=()=>{
-  if(typeof object.together==='function'){object.together();return}
-  closeModal();say(object.together);
+  (object.sharedExamine||object.examine)();
+  const line=document.createElement('div');
+  line.className='companion-line';
+  line.innerHTML='<img src="sera-dusk-face.webp" alt=""><p><strong>セラ</strong> <span></span></p>';
+  line.querySelector('span').textContent=object.together;
+  $('modalBody').prepend(line);
+  fitModal();
  };
 }
 function constellationSvg(cls,points){
@@ -1099,11 +1085,12 @@ function restoreScope(){
 function openPhoneModal(mode,content){
  const display=!veil.hidden&&veil.classList.contains('phone-mode')&&$('handsetDisplay');
  if(display){
+  $('phoneClock').textContent=gameTime();
   display.className='handset-display '+mode;
   $('handsetContent').innerHTML=content;
  }else{
   openModal('セラのスマートフォン',`<div class="handset"><div class="handset-display ${mode}" id="handsetDisplay">
-   <div class="phone-statusbar"><span>${gameTime()}</span><span class="camera" aria-hidden="true"></span><span class="status-right">圏外 <span class="phone-battery" aria-label="バッテリー残量あり"></span></span></div>
+   <div class="phone-statusbar"><span id="phoneClock">${gameTime()}</span><span class="camera" aria-hidden="true"></span><span class="status-right">圏外 <span class="phone-battery" aria-label="バッテリー残量あり"></span></span></div>
    <div class="handset-content" id="handsetContent" tabindex="-1">${content}</div>
    <div class="phone-home-bar" aria-hidden="true"></div>
   </div></div>`);
@@ -1117,12 +1104,6 @@ function openPhoneModal(mode,content){
  $('handsetContent').focus({preventScroll:true});
  fitModal();
 }
-const privatePosts=[
- {id:'reply',title:'別々の空に、同じ星座',text:'窓の外の景色は違うのに、二枚の写真には同じ形の星座が写っている。観測記録では、その形がふたつの世界でそろった夜にだけ、向こうから返事が来た。すでに返事が届いている門は、別の世界から呼んでも応えなかった。'},
- {id:'gate',title:'あの星座は、門になる',text:'六つの星で形を作ると、その形の門が開く。同じ形が向こうにもあれば、世界がつながる。ふたりで見るって約束した星座も、ここじゃない場所まで僕の存在が届くかもしれない。'},
- {id:'watcher',title:'星座の真ん中の目',text:'最初の写真では、小さな光だった。次の写真ではまぶたが見えた。門の向こうにいる何かが僕に気づいたみたいだ。あの目は写真を撮るたびに近づいている。門がつながれば、ここまで来られるのかもしれない。'},
- {id:'close',title:'蔵書票の書き込み',text:'「星を数えて結ぶ者あり。星の名をつないで結ぶ者あり。」同じ五冊のことらしい。題名の終わりの音が、次の本の題名の始まりにも聞こえた、と余白に書いてある。'}
-];
 function canHearSera(){return st.eyeTaken&&st.phoneViewed&&!st.phoneConfessionSeen}
 function leavePhone(){
  if(canHearSera())seraConfession();else if(canResolveGate())talkFinalSera();else examineUnlitSera();
@@ -1152,44 +1133,13 @@ function seraConfession(){
  };
  internalModalCloser=()=>{next.click();return true};
 }
+const phoneApps=window.createSeraPhone({
+ open:openPhoneModal,home:phoneHome,exit:leavePhone,time:gameTime,element:$
+});
 function phoneHome(){
  if(!st.eyeTaken||!st.phoneUnlocked)return;
  if(!st.phoneViewed){st.phoneViewed=true;save();draw()}
- openPhoneModal('phone-home',`<strong class="lock-time">${gameTime()}</strong><p class="lock-hint">ホーム</p>
-  <div class="home-apps"><button class="home-app" id="openSocial"><span class="home-app-icon" aria-hidden="true">…</span>SNS</button></div>
-  <button class="phone-back" id="phoneExit">セラのそばに戻る</button>`);
- $('openSocial').onclick=()=>phoneFeed();
- $('phoneExit').onclick=leavePhone;
-}
-function phoneFeed(privateAccount=false){
- if(!st.eyeTaken||!st.phoneUnlocked)return;
- const feed=privateAccount
-  ?`<div class="phone-post-list">${privatePosts.map(({id,title},i)=>`<button class="phone-post-link" data-private-post="${i}"><time>観測記録 0${privatePosts.length-i}${st.phoneRead.includes(id)?'':'<span class="phone-unread">未読</span>'}</time><strong>${title}</strong></button>`).join('')}</div>`
-  :'<article class="phone-post"><time>先ほど</time><p>今夜は晴れそう。天文台で待ってるね。</p><div class="phone-contact"><b>宵空セラ</b>　@SerapHolicx<br><a href="https://x.com/SerapHolicx" target="_blank" rel="noopener">X</a>　<a href="https://yoizora-sera.beadedcorgi16.chatgpt.site/" target="_blank" rel="noopener">自己紹介ページ</a></div></article>';
- openPhoneModal(privateAccount?'phone-private':'',`<div class="phone-toolbar"><button id="phoneHome">ホーム</button><strong>SNS</strong></div>
-  <div class="phone-profile">
-   ${privateAccount?'':'<img class="phone-avatar" src="sera-dusk-face.webp" alt="">'}
-   <div><strong>${privateAccount?'観測記録':'宵空セラ'}</strong><span>${privateAccount?'非公開アカウント':'宵空天文台'}</span></div>
-  </div>
-  <div class="phone-tabs" aria-label="アカウント切替">
-   <button id="publicAccount" aria-pressed="${!privateAccount}">通常アカウント</button>
-   <button id="privateAccount" aria-pressed="${privateAccount}">裏アカウント</button>
-  </div>${feed}`);
- $('phoneHome').onclick=phoneHome;
- $('publicAccount').onclick=()=>phoneFeed();
- $('privateAccount').onclick=()=>phoneFeed(true);
- for(const button of modal.querySelectorAll('[data-private-post]')){
-  button.onclick=()=>phonePost(Number(button.dataset.privatePost));
- }
-}
-function phonePost(index){
- if(!st.eyeTaken||!st.phoneUnlocked)return;
- const {id,title,text}=privatePosts[index];
- if(!st.phoneRead.includes(id)){st.phoneRead.push(id);save()}
- openPhoneModal('phone-private',`<div class="phone-toolbar"><button id="backToPosts">戻る</button><strong>観測記録</strong></div>
-  <article class="phone-post"><time>観測記録 0${privatePosts.length-index}</time><h3>${title}</h3><p>${text}</p></article>
-  ${id==='watcher'?'<figure class="phone-observation-photo"><img src="end-omen.png" alt="観測写真に写った淡い目のような光"><figcaption>観測写真の断片</figcaption></figure>':''}`);
- $('backToPosts').onclick=()=>phoneFeed(true);
+ phoneApps.showHome();
 }
 function phone(){
  if(!st.eyeTaken)return;
@@ -1300,6 +1250,7 @@ let endPhase=0;
 let endTimer;
 function stopTitleStars(){clearInterval(titleTimer)}
 function title(){
+ clearTimeout(surpriseTimeout);$('nightSurprise').hidden=true;
  stopTitleStars();
  const mood=st.lastEnding||'unplayed';
  $('titleScreen').dataset.mood=mood;
@@ -1337,7 +1288,7 @@ function play(){
  draw();
  if(!st.introSeen){
   st.introSeen=true;save();
-  say(['こんせら〜！ 宵空天文台へようこそ！','今日はね、君と一緒に星座を見たいんだ。','ここには、いろんな仕掛けがあるの。遊んだり調べたりすると、小さな星が見つかるよ！','出てきた星は、タップして拾ってね。星は保管箱に入るよ。','集めた星は、休憩コーナーの星座盤に置けるんだ。どんな星座になるかな？','……私、ずっと誰かと一緒に星座を見たかったんだ。今日は楽しみ！']);
+  say(['こんせら〜！ 宵空天文台へようこそ！','今日はね、君と一緒に星座を見たいんだ。','ここには、いろんな仕掛けがあるの。遊んだり調べたりすると、小さな星が見つかるよ！','出てきた星は、タップして拾ってね。星は保管箱に入るよ。','休憩コーナーには、星を飾れる盤があるよ。','どんな星座になるか、楽しみだね！']);
  }
 }
 $('startBtn').onclick=play;
