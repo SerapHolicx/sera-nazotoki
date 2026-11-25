@@ -124,8 +124,3 @@
 .diary-index h4{margin:0;padding:7px 11px 3px;background:#ded1d2;color:#54384b;font-size:12px}
 .public-profile-link{padding:0 10px 7px}
 .public-profile-link button{width:100%;background:#29416a}
-.photo-view{grid-template-rows:minmax(0,1fr) auto auto auto}
-#photoThought{padding:0 7px;text-align:left}
-#photoThought:empty{display:none}
-#photoThought .player-thought{margin:0 0 5px}
-.diary-entry .player-thought p{white-space:normal}
