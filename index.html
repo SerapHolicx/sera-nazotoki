@@ -100,6 +100,7 @@
 .phone-board svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .phone-star{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;border:0;border-radius:50%;padding:0;background:none;font-size:27px;color:#b8cffa}
 .phone-star[aria-pressed="true"]{color:#fff7cf;text-shadow:0 0 8px #e7ba76}
+.phone-star[data-press-order]::after{content:attr(data-press-order);position:absolute;right:4px;bottom:3px;font:11px ui-monospace,monospace;color:#fff7cf}
 #veil.phone-mode{background:#030407f5;--handset-height:min(496px,calc(100dvh - 88px))}
 .phone-mode .modal{background:transparent;color:#ececf0;border-color:transparent;box-shadow:none;width:min(calc(100% - 16px),360px);height:calc(var(--handset-height) + 50px);padding:4px;transform:translate(-50%,-50%)}
 .phone-mode #modalBody{position:absolute;top:43px;left:0;width:100%;height:var(--handset-height);display:grid;place-items:center}
@@ -303,16 +304,21 @@ body{position:fixed;inset:0;min-height:0}
 @media(prefers-reduced-motion:reduce){#endOmen.first-omen.reveal-omen{animation:none;opacity:.65}}
 .spine-shelf{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;padding:6px 3px;background:#3b2d44;border-bottom:4px solid #ab826b}
 .book-spine{
- position:relative;height:clamp(120px,27dvh,184px);min-width:0;color:#ffefc3;
+ position:relative;height:clamp(147px,31dvh,194px);min-width:0;color:#ffefc3;
  background:linear-gradient(90deg,#302b4f,#625286 27%,#463c65 80%,#292647);
  border:1px solid #ab8674;border-radius:3px 3px 1px 1px;touch-action:none
 }
-.book-spine span{position:absolute;inset:3px 0 auto;font-size:clamp(10px,3vw,14px);white-space:nowrap}
-.book-titles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 10px;padding:0;list-style:none;margin:6px 0 10px;font-size:clamp(10px,3vw,14px)}
-.book-titles small{display:block;color:var(--muted,#c2bcda);font-size:.83em}
-.book-spine i{position:absolute;top:var(--star-y);left:50%;transform:translate(-50%,-50%);font-size:19px;font-style:normal}
+.tv-observation-time{position:absolute;z-index:1;right:10px;top:7px;font:700 15px ui-monospace,monospace;color:#fff2ba}
+.book-spine .spine-title{position:absolute;inset:7px 2px auto auto;writing-mode:vertical-rl;font-size:clamp(10px,3vw,14px);font-weight:700;line-height:1.2;letter-spacing:.06em;white-space:nowrap;pointer-events:none}
+#shelfReading{min-height:1.6em;color:var(--muted);text-align:center}
+.book-spine i{position:absolute;top:var(--star-y);left:28%;transform:translate(-50%,-50%);font-size:clamp(12px,4vw,18px);font-style:normal;pointer-events:none}
 .book-spine[aria-pressed="true"],.book-spine.book-moving{outline:2px solid #fff0b8;outline-offset:-2px;filter:brightness(1.24)}
-.shelf-chart{display:block;width:min(100%,254px);height:min(39dvh,215px);margin:auto}
+.shelf-confirmed i{text-shadow:0 0 8px #ffe0a9;color:#fff8dd}
+.phone-clue-card{display:grid;gap:8px;margin:7px 0;padding:8px;color:#e2d7c8;background:#30303a;border:1px solid #a0917e;border-radius:2px;font-size:12px}
+.phone-clue-row{display:grid;grid-template-columns:20px 1fr;gap:7px;align-items:center}
+.phone-clue-row b{color:#ffd6a3}
+.phone-clue-row mark{background:none;color:#ffd6a3;font-weight:bold}
+.phone-contact{padding:6px 8px;background:#2b2c39;border:1px solid #52566d;font-size:12px}
 .sky.board-sky{width:100%;max-width:none;aspect-ratio:6/3.3;margin-top:9px}
 .board-sky .slot{width:min(44px,16%);height:44px;padding:0}
 #boardFeedback:empty{display:none}
@@ -320,7 +326,7 @@ body{position:fixed;inset:0;min-height:0}
 .eye-storage.drop-target{outline:2px solid #fff2c9;background:#61547d}
 .eye-storage span{padding-left:8px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-</style><link rel="stylesheet" href="star-puzzles.css?v=1">
+</style><link rel="stylesheet" href="star-puzzles.css?v=2">
 </head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
 <h2 id="inventoryHeading">持ち物ボックス</h2>
@@ -335,11 +341,11 @@ body{position:fixed;inset:0;min-height:0}
 <div class="finish" id="titleScreen"><div><img class="title-img" src="title-dusk.webp" alt="夜空の下の宵空天文台"><h1>宵空天文台</h1><div id="titleStars"></div><p id="titleSubtitle">君と紡ぐ、ひとつの星座。</p><button class="btn primary menubtn" id="startBtn">ゲームをはじめる</button><button class="btn menubtn" id="titleReset">最初から遊ぶ</button></div></div>
 <div class="finish" id="endingScreen" hidden><div><div class="end-sky"><img class="end-art" src="ending-night.png" alt="展望台で夜空を見上げるセラとあなた"><svg viewBox="0 0 100 100" class="const" id="endConst" aria-hidden="true"></svg></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 歌を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="ending_song.mp3" preload="none"></audio></div></div>
 <script src="constellation.js?v=matching-gates-2"></script>
-<script src="star-puzzles.js?v=1"></script>
+<script src="star-puzzles.js?v=2"></script>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);const key='sera-observatory-v8-20261123';const scenes=['left','center','right'];const names=['図書コーナー','観測室','管理・休憩コーナー'];
-const {columns,points:targets,path:links,holes,patterns,matchGate,numberOrder,wordOrder,legacySlots,slotsInBookOrder}=window.seraConstellation;
+const {columns,points:targets,holes,patterns,matchGate,numberOrder,wordOrder,legacySlots,slotsInBookOrder}=window.seraConstellation;
 const numberSlots=patterns.number;
 const wordSlots=patterns.word;
 const booksByNumber=[
@@ -501,7 +507,7 @@ function draw(){
  }
  $('count').textContent=total()+'/6';
  $('lights').innerHTML=Array.from({length:6},(_,i)=>'<i class="'+(i<total()?'got':'')+'">✦</i>').join('');
- $('tip').textContent=st.observationReply&&!st.observationLinked?'窓の向こうから返事が届いた。':seraSilent()?(canResolveGate()?'セラが、こちらを見ている。':'いつもの声が聞こえない。'):'灯りのついた場所を調べよう。';
+ $('tip').textContent=st.observationReply&&!st.observationLinked?'窓の向こうから返事が届いた。':seraSilent()?(canResolveGate()?'セラが、こちらを見ている。':'いつもの声が聞こえない。'):'館内は静まり返っている。';
  syncInventory();save();
 }
 $('goLeft').onclick=()=>{st.zone=Math.max(0,st.zone-1);clickTone();draw()};$('goRight').onclick=()=>{st.zone=Math.min(2,st.zone+1);clickTone();draw()};
@@ -525,16 +531,15 @@ function books(){
  let dragged=false;
  function orderView(){
   const slots=slotsInBookOrder(st.bookOrder);
-  openModal('本棚',`<p>六冊の本を正しい順に並べよ。</p>
-   <div class="spine-shelf">${st.bookOrder.map((volume,i)=>
-    `<button class="book-spine" data-book="${i}" type="button" aria-pressed="${selected===i}" aria-label="左から${i+1}番目、${booksByNumber[volume-1][0]}">
-     <span aria-hidden="true">${i+1}</span><i aria-hidden="true" style="--star-y:${holes[slots[i]][1]}%">✦</i>
-    </button>`).join('')}</div>
-   <ol class="book-titles">${st.bookOrder.map((volume,i)=>{
+  openModal('本棚',`
+   <div class="spine-shelf">${st.bookOrder.map((volume,i)=>{
     const [title,reading]=booksByNumber[volume-1];
-    return `<li>${i+1}. ${title}<small>${reading}</small></li>`;
-   }).join('')}</ol>
-   <p class="muted" id="shelfStatus" aria-live="polite">ドラッグするか、入れ替える2冊を順にタップ。</p>
+    return `<button class="book-spine" data-book="${i}" type="button" aria-pressed="${selected===i}" aria-label="${title}、${reading}">
+     <span class="spine-title" aria-hidden="true">${title}</span><i aria-hidden="true" style="--star-y:${holes[slots[i]][1]}%">✦</i>
+    </button>`;
+   }).join('')}</div>
+   <p id="shelfReading" aria-live="polite">${selected===null?'　':booksByNumber[st.bookOrder[selected]-1][1]}</p>
+   <p class="muted" id="shelfStatus" aria-live="polite"></p>
    <div class="buttons"><button class="btn primary" id="checkSpines">並びを確かめる</button></div>`);
   const shelf=$('modalBody').querySelector('.spine-shelf');
   internalModalCloser=()=>{pointerStart=null;dragged=false};
@@ -573,9 +578,10 @@ function books(){
     $('shelfStatus').textContent='まだ本の順番が違うようだ。';
     return;
    }
-   const chart='<p>背表紙の星がつながった。窓でも、各列のこの高さに星を置こう。</p>'+constellationSvg('shelf-chart',slots,true);
-   if(numberMatch&&!st.got.includes('books')){collect('books','',chart);return}
-   openModal('背表紙の星座',chart);
+   if(numberMatch&&!st.got.includes('books')){collect('books');return}
+   shelf.classList.add('shelf-confirmed');
+   $('shelfStatus').textContent='カチリ。';
+   placeTone();
   };
  }
  function swap(first,second){
@@ -605,7 +611,7 @@ function clock(selectedHour=st.clockHour){
   st.clockHour=selectedHour;save();clickTone();
   if(st.clockHour===9&&!st.got.includes('clock')){
    if(!st.got.includes('books')){
-    $('clockStatus').textContent='時計の奥で小さな音がした。そばの本棚に、まだ何か残っているようだ。';
+    $('clockStatus').textContent='時計の奥で小さな音がした。';
     return;
    }
    const wasNight=st.night;
@@ -621,14 +627,11 @@ const {mirror,journal,orrery}=window.createObservatoryStarPuzzles({
  getState:()=>st,open:openModal,save,reward:collect,tap:clickTone,element:$
 });
 function examineSera(){if(!st.eyeTaken){
- const hint=!st.got.includes('books')?'まずは本棚を調べてみようよ！':
-  !st.got.includes('clock')?'時計のそば、ちょっと気になるね。':
-  !st.got.includes('mirror')?'暗くなってから、休憩コーナーの鏡が気になるんだ。':
-  !st.got.includes('journal')?'青い光、観測室の机のほうに伸びてるね。':
-  !st.got.includes('orrery')?'日誌の観測記録、部屋の中で試せそうだね。':'あとひとつ、どこにあるんだろう……？';
+ const remark=st.got.length===5?'あとひとつ、どこにあるんだろう……？':
+  st.night?'夜の天文台って、音まで遠くなる気がするね。':'ここ、夕方は床まであったかい色になるんだよ。';
  openModal('セラ',`<div class="sera-clue"><img src="sera-dusk-face.webp" alt="両目の瞳に星が光るセラ"></div>
   <p>「どうしたの？　何か見つけた？」</p><div class="buttons"><button class="btn" id="askConstellation">話す</button></div>`);
- $('askConstellation').onclick=()=>{closeModal();say(hint)};
+ $('askConstellation').onclick=()=>{closeModal();say(remark)};
  return;
 }
  if(st.restored){say('……星座、きれいだったね。ありがとう！');return}
@@ -641,8 +644,8 @@ function talkUnlitSera(){
   <p>「……うん。聞こえてるよ。」</p>
   <div class="buttons"><button class="btn" id="askGate">門のことを聞く</button><button class="btn" id="askFound">見つけてほしかったことを聞く</button><button class="btn" id="checkSera">セラのそばを調べる</button></div>`);
  const speak=text=>{closeModal();say({name:'セラ',unlit:true,text})};
- $('askGate').onclick=()=>speak('まだ星座がなければ、門は開かないよ。古い観測記録の控えが、スタッフ室の机にある。');
- $('askFound').onclick=()=>speak(st.observationLinked?'……なんだろう。遠くからなのに、君の声に聞こえた。':'僕の紹介ページにも星を残したの。同じ形をつくって返事をくれたら、向こうからでも君だって分かると思う。');
+ $('askGate').onclick=()=>speak('あの形は僕が知ってる門。ほかに何があるかは、僕にも分からない。');
+ $('askFound').onclick=()=>speak('誰かに気づいてほしかった。でも、向こうに誰がいるかなんて、考えるのが怖かった。');
  $('checkSera').onclick=examineUnlitSera;
 }
 function examineUnlitSera(){
@@ -681,7 +684,7 @@ function scope(){
  }
  if(st.meteorStar&&selectedItem==='meteor'){restoreScope();return}
  if(st.eyeTaken){
-  openModal('望遠鏡',seraEye({label:'星を失った瞳'})+(st.meteorStar?'<p>流れ星から拾った白い星を選べば、ここで使えそうだ。</p>':'<p>セラの瞳から、白い光が消えている。</p>'));
+  openModal('望遠鏡',seraEye({label:'星を失った瞳'})+'<p>セラの瞳から、白い光が消えている。</p>');
   return;
  }
  openModal('望遠鏡',seraEye({label:'白い星が宿るセラの瞳',lit:true,id:'scopeArea',interactive:true})
@@ -765,10 +768,6 @@ function showStaffRoom(unlocked=false){
  const cabinet=$('staffCabinet');
  if(st.remote)cabinet.setAttribute('aria-label','戸棚、リモコン回収済み');
  $('staffDesk').onclick=()=>{
-  if(st.secondRun&&st.phoneUnlocked){
-   openModal('古い観測記録','<div class="paper"><p>星を数えて結ぶ者あり。</p><p>星の名をつないで結ぶ者あり。</p><p>六つの星は、結び方によって異なる門となる。</p></div>');
-   return;
-  }
   info.textContent='机には書きかけのメモ。「今日のお客さんと、あの星座を見られたらいいな」。';
  };
  cabinet.onclick=()=>{
@@ -777,18 +776,18 @@ function showStaffRoom(unlocked=false){
    return;
   }
   st.remote=true;chime();save();syncInventory();
-  showItemFound(info,'tv-remote.png','テレビのリモコン','チャンネルを切り替えられそうだ。');
+  showItemFound(info,'tv-remote.png','テレビのリモコン','ボタンが並んでいる。');
   cabinet.setAttribute('aria-label','戸棚、リモコン回収済み');
  };
 }
 function television(){
- const channels=[['バラエティ','星の形のクッキーを作っています！'],['天気予報','夜空は晴れ。観測日和です。'],['天文ニュース','今夜、流星群が午前0時ごろに見頃を迎えます。'],['通販番組','天体観測用のクッションをご紹介！']];
+ const channels=[['バラエティ','星の形のクッキーを作っています！'],['天気予報','夜空は晴れ。観測日和です。'],['天文ニュース','今夜は流星群の観測日です。'],['通販番組','天体観測用のクッションをご紹介！']];
  const canChange=st.remote&&selectedItem==='remote';
  const usedNow=canChange&&!st.remoteUsed;
  if(usedNow){st.remoteUsed=true;clickTone();save()}
  const c=channels[st.channel];
  if(st.channel===2){st.news=true;save()}
- openModal('テレビ',`<div class="television"><div class="broadcast">${st.channel===2?'<div class="tv-meteor">✦</div>':'✧　✦　✧'}</div><div class="crawl">YOIZORA TV ｜ ${c[0]}</div></div>
+ openModal('テレビ',`<div class="television"><div class="broadcast">${st.channel===2?'<div class="tv-meteor">✦</div><time class="tv-observation-time" datetime="00:00">00:00</time>':'✧　✦　✧'}</div><div class="crawl">YOIZORA TV ｜ ${c[0]}</div></div>
   <p><strong>${c[0]}</strong>：${c[1]}</p>${usedNow?'<p>ピッ。リモコンが反応した。</p>':''}
   ${canChange?'<div class="buttons"><button class="btn" id="prevTV" aria-label="前のチャンネル">◀</button><button class="btn" id="nextTV" aria-label="次のチャンネル">▶</button></div>':'<p>テレビ本体にはチャンネルを変えるボタンが見当たらない。</p>'}`);
  if(canChange){
@@ -797,11 +796,11 @@ function television(){
  }
 }
 const investigation={
- books:{name:'本棚',examine:books,together:'背表紙に、小さな印が並んでるね。'},
- clock:{name:'時計',examine:()=>clock(),together:'いつもの時計だと思ったけど、横の絵が気になるね。'},
+ books:{name:'本棚',examine:books,together:'古い紙の匂い、好きなんだ。'},
+ clock:{name:'時計',examine:()=>clock(),together:'秒針の音、ここだとよく聞こえるね。'},
  mirror:{name:'月を映す鏡',examine:mirror,together:'窓から月が見えないのに、鏡の中は明るいね。'},
- journal:{name:'星の観測日誌',examine:journal,together:'青い光が当たると、紙の色も変わるね。'},
- orrery:{name:'天体模型',examine:orrery,together:'この模型、月の位置を動かせるんだね。'},
+ journal:{name:'星の観測日誌',examine:journal,together:'ページをめくる音って、なんだか落ち着くね。'},
+ orrery:{name:'天体模型',examine:orrery,together:'よく見ると、地球に小さな模様があるね。'},
  tv:{name:'テレビ',examine:television,together:'今日はどんな番組をやってるかな。'},
  door:{name:'スタッフ室',examine:enterStaff},
  window:{name:'窓',examine:sky,together:'ここから見る空、好きなんだ。'},
@@ -824,12 +823,9 @@ function inspect(id){
   closeModal();say(object.together);
  };
 }
-function constellationSvg(cls,slots=numberSlots,guide=false){
+function constellationSvg(cls,slots=numberSlots){
  const points=slots.map(slot=>holes[slot]);
- const path=links.map(i=>points[i].join(',')).join(' ');
- return `<svg class="${cls}" viewBox="0 0 100 100" aria-label="6個の星を結ぶ形">
-  ${guide?holes.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.6" fill="#746f9a"/>`).join(''):''}
-  <polyline points="${path}" fill="none" stroke="#f3d59c" stroke-width="1.5"/>
+ return `<svg class="${cls}" viewBox="0 0 100 100" aria-label="夜空に並ぶ6つの星">
   ${points.map(([x,y],i)=>`<circle data-star="${i}" cx="${x}" cy="${y}" r="3" fill="#fff5d5"/>`).join('')}
  </svg>`;
 }
@@ -841,21 +837,12 @@ function sky(){
  const gate=matchGate(st.placed);
  const numberGate=gate==='number';
  const waitingGate=resolving&&gate==='word';
- const drawing=waitingGate?wordSlots:numberSlots;
- const segments=links.slice(1).map((to,index)=>{
-  const from=drawing[links[index]];
-  const toSlot=drawing[to];
-  return st.placed.includes(from)&&st.placed.includes(toSlot)?`${holes[from].join(',')} ${holes[toSlot].join(',')}`:'';
- }).filter(Boolean);
  const note=waitingGate
-  ?(st.observationLinked?'同じ形の星座が、窓の向こうとつながっている。':'六つの星が線でつながった。窓の向こうから、まだ返事はない。')
-  :numberGate?'見覚えのある星座だ。窓の向こうに、何かの気配がする。'
-  :st.placed.length===6?'背表紙と星の高さを見比べてみよう。':'窓の星を動かせそうだ。';
- openModal('窓の向こうの夜空',`<p>${resolving?'窓の星座を見つめる。':'集めた星を、夜空に並べよう。'+(st.got.includes('books')?'本棚で見た背表紙の形を思い出して。':'')}</p>
-  <div class="sky board-sky"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-   ${segments.map(points=>`<polyline points="${points}" fill="none" stroke="#fff1ca" opacity=".9" stroke-width=".6"/>`).join('')}
-  </svg>${holes.map(([x,y],i)=>`<button class="slot ${st.placed.includes(i)?'filled':''}" data-position="${i}" style="left:${x}%;top:${y}%" aria-label="${i%columns+1}列、${Math.floor(i/columns)+1}段の穴">${st.placed.includes(i)?'✦':'·'}</button>`).join('')}</div>
-  <p id="boardFeedback" aria-live="polite">${st.observationReply&&!st.observationLinked?'向こうからの返事を受け取った。同じ形の星座をここにも作ろう。':''}</p><button class="btn star-tray" data-star-tray>✦ 保管箱 ${available} 個 ／ 夜空 ${st.placed.length} / 6</button>
+  ?(st.observationLinked?'窓の向こうに、光が返った。':'窓の奥で、小さな光が瞬いた。')
+  :numberGate?'窓の向こうに、何かの気配がする。':'';
+ openModal('窓の向こうの夜空',`
+  <div class="sky board-sky">${holes.map(([x,y],i)=>`<button class="slot ${st.placed.includes(i)?'filled':''}" data-position="${i}" style="left:${x}%;top:${y}%" aria-label="${i%columns+1}列、${Math.floor(i/columns)+1}段の穴">${st.placed.includes(i)?'✦':'·'}</button>`).join('')}</div>
+  <p id="boardFeedback" aria-live="polite">${st.observationReply&&!st.observationLinked?'窓の向こうから、返事が届いている。':''}</p><button class="btn star-tray" data-star-tray>✦ 保管箱 ${available} 個 ／ 夜空 ${st.placed.length} / 6</button>
   ${resolving?`<div class="gate-resolution"><p>${note}</p><div class="buttons">
    ${numberGate?'<button class="btn primary" id="observeGate">星座を観測する</button>':waitingGate&&st.observationLinked?'<button class="btn primary" id="replayObservation">真エンドをもう一度見る</button>':''}
   </div></div>`:'<p class="muted">保管箱の星を穴へ。タップでも、置いたり戻したりできる。</p>'}
@@ -879,7 +866,6 @@ function sky(){
   placeTone();save();
   if(st.secondRun||!hasPattern(numberSlots)){
    sky();
-   if(!resolving&&next.length===6)$('boardFeedback').textContent='背表紙と星の高さを見比べてみよう。';
    return;
   }
   closeModal();triggerFlash();chime();
@@ -941,7 +927,7 @@ function sky(){
 function meteorTake(){
  openModal('流れ星',`<button type="button" class="meteor-pickup" id="catchMeteor">
   <img src="meteor-pixel.png" alt=""><span>白い星を拾う</span>
- </button><p>流れ星の光の中に、セラの瞳で見たのと同じ形の星がある。</p>`);
+ </button><p>流れ星の光の中に、白い星がある。</p>`);
  $('catchMeteor').onclick=()=>{
   st.meteorStar=true;st.meteor=false;save();syncInventory();chime();
   openModal('流れ星の白い星','<div class="item-found"><span class="kept-star" aria-hidden="true"></span><b>白い星を手に入れた</b><p>「もちもの」に保管した。</p></div>');
@@ -988,10 +974,10 @@ function openPhoneModal(mode,content){
  fitModal();
 }
 const privatePosts=[
- {id:'reply',title:'同じ門から返事をする',text:'同じ形の門を作った、別の世界同士がつながる。相手がまだいない門は、返事を待っている。すでにつながっている門には、もう別の世界からは入れない。僕のXのアカウントは「@SerapHolicx」。自己紹介のページに、星を散りばめたよ。'},
+ {id:'reply',title:'二重露光',text:'拾った写真が二枚。写っている窓は別々なのに、重ねると光だけがぴたりと重なった。'},
  {id:'gate',title:'あの星座は、門になる',text:'六つの星をあの形に結べば、門が開く。ふたりで見るって約束した星座は、ここじゃない場所に声を届けるためのもの。誰かに、僕を見つけてほしかった。'},
  {id:'watcher',title:'向こうからこちらも見える',text:'望遠鏡のふたを閉めてから撮った写真にも、星座の真ん中に目が写った。写真を閉じたあとも、画面の裏でまばたきが聞こえた。門を開けば、人じゃないものにもこちらが見えるかもしれない。'},
- {id:'close',title:'観測記録の控え',text:'昔の観測者は、同じ六つの星で形の違う門を作れたらしい。紙の記録はスタッフ室の机に残っている。'}
+ {id:'close',title:'蔵書票の写真',text:'日付のない紙片。筆跡が二つある。'}
 ];
 function allPostsRead(){return privatePosts.every(({id})=>st.phoneRead.includes(id))}
 function canHearSera(){return seraSilent()&&st.secondRun&&st.phoneUnlocked&&allPostsRead()&&!st.phoneConfessionSeen}
@@ -1036,7 +1022,7 @@ function phoneFeed(privateAccount=false){
  if(!seraSilent()||!st.secondRun||!st.phoneUnlocked)return;
  const feed=privateAccount
   ?`<div class="phone-post-list">${privatePosts.map(({id,title},i)=>`<button class="phone-post-link" data-private-post="${i}"><time>観測記録 0${privatePosts.length-i}${st.phoneRead.includes(id)?'':'<span class="phone-unread">未読</span>'}</time><strong>${title}</strong></button>`).join('')}</div>`
-  :'<article class="phone-post"><time>先ほど</time><p>今夜は晴れそう。天文台で待ってるね。</p></article>';
+  :'<article class="phone-post"><time>先ほど</time><p>今夜は晴れそう。天文台で待ってるね。</p><div class="phone-contact"><b>宵空セラ</b>　@SerapHolicx<br>自己紹介ページ更新しました。</div></article>';
  openPhoneModal(privateAccount?'phone-private':'',`<div class="phone-toolbar"><button id="phoneHome">ホーム</button><strong>SNS</strong></div>
   <div class="phone-profile">
    ${privateAccount?'':'<img class="phone-avatar" src="sera-dusk-face.webp" alt="">'}
@@ -1059,7 +1045,8 @@ function phonePost(index){
  if(!st.phoneRead.includes(id)){st.phoneRead.push(id);save()}
  openPhoneModal('phone-private',`<div class="phone-toolbar"><button id="backToPosts">戻る</button><strong>観測記録</strong></div>
   <article class="phone-post"><time>観測記録 0${privatePosts.length-index}</time><h3>${title}</h3><p>${text}</p></article>
-  ${id==='watcher'?'<p class="phone-logged">画像は破損しています</p>':''}`);
+  ${id==='watcher'?'<p class="phone-logged">画像は破損しています</p>':''}
+  ${id==='close'?'<div class="phone-clue-card" aria-label="蔵書票"><div class="phone-clue-row"><b>▤</b><span>Ⅰ　Ⅱ　Ⅲ　⋯</span></div><div class="phone-clue-row"><b>▤</b><span>［…<mark>ね</mark>］［<mark>ね</mark>…］　⋯</span></div></div>':''}`);
  $('backToPosts').onclick=()=>{if(canHearSera())phoneVoice();else phoneFeed(true)};
 }
 function phone(){
@@ -1067,10 +1054,9 @@ function phone(){
  if(st.phoneUnlocked){phoneHome();return}
  openPhoneModal('phone-lock',`<strong class="lock-time">00:00</strong><p class="lock-hint">星座ロック</p>
   <div class="phone-board" id="phoneBoard">
-   <svg viewBox="0 0 100 100" aria-hidden="true"><polyline id="phoneLine" fill="none" stroke="#dfcee7" stroke-width="1.2"/></svg>
    ${targets.map(([x,y],i)=>`<button type="button" class="phone-star" data-phone-star="${i}" style="left:${x}%;top:${y}%" aria-pressed="false" aria-label="${i+1}列目の星">✦</button>`).join('')}
   </div>
-  <p class="lock-hint" id="phoneStatus" aria-live="polite">光った順に6つの星をつなぐ</p>
+  <p class="lock-hint" id="phoneStatus" aria-live="polite">0 / 6</p>
   <div class="buttons"><button class="btn" id="clearPhone">やり直す</button><button class="btn" id="lockExit">戻る</button></div>`);
  $('lockExit').onclick=examineUnlitSera;
  const board=$('phoneBoard');
@@ -1083,7 +1069,8 @@ function phone(){
   if(selected.includes(index)||selected.length===targets.length)return;
   selected.push(index);
   button.setAttribute('aria-pressed','true');
-  $('phoneLine').setAttribute('points',selected.map(i=>targets[i].join(',')).join(' '));
+  button.dataset.pressOrder=selected.length;
+  $('phoneStatus').textContent=selected.length+' / '+targets.length;
   placeTone();
   if(selected.length!==targets.length)return;
   if(!selected.every((star,i)=>star===phoneOrder[i])){
@@ -1115,9 +1102,9 @@ function phone(){
  board.onpointercancel=release;
  board.onpointerleave=()=>{if(!dragging)release()};
  $('clearPhone').onclick=()=>{
-  selected=[];release();$('phoneLine').removeAttribute('points');
-  stars.forEach(btn=>btn.setAttribute('aria-pressed','false'));
-  $('phoneStatus').textContent='光った順に6つの星をつなぐ';
+  selected=[];release();
+  stars.forEach(btn=>{btn.setAttribute('aria-pressed','false');delete btn.dataset.pressOrder});
+  $('phoneStatus').textContent='0 / 6';
  };
 }
 const profileUrl='https://yoizora-sera.beadedcorgi16.chatgpt.site/';
@@ -1187,7 +1174,7 @@ function handleObservation(){
  }
  play();
  const text=result==='received'
-  ?'向こうからの返事を受け取った。同じ形の星座と観測の条件がそろうまで、この天文台に返事が残る。'
+  ?'向こうからの返事を受け取った。'
   :result==='used'?'この返事は前の観測で使われたようだ。向こうの窓で、星座を作り直そう。'
   :'返事を読み取れなかった。自己紹介サイトの窓で「受信を見る」を開き、もう一度「返事を届ける」を押そう。';
  say({name:'あなた',text});
@@ -1226,7 +1213,7 @@ let endPhase=0;
 const endingLines={
  first:['……セラの瞳が、ふたたび光りだす。','セラは望遠鏡から顔を上げ、あなたを見つめた。','……わあ。きれい。','君と一緒に星座を見たかったんだ。','✧ ふたりの星座 ✧'],
  open:['六つの星がつながった。窓の外で、何かがまばたきをした。','「……見つけてくれたの？」','誰も答えていない。けれどセラは、窓の前でそっと耳を澄ませた。','接続エンド ― 向こうからの視線'],
- true:['六つの星がつながる。同じ形を結んだあなたの返事が、窓の向こうから届いた。','「……君が、見つけてくれたんだね。」','真エンド ― 君が見つけた星座']
+ true:['六つの星が静かに瞬く。窓の向こうから、あたたかな光が返った。','「……君が、見つけてくれたんだね。」','真エンド ― 君が見つけた星座']
 };
 function showEnding(route='first'){
  $('endingScreen').dataset.route=route;
