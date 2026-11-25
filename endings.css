@@ -97,7 +97,7 @@
 .confession-scene{position:absolute;inset:0;overflow:hidden;background:#0c0b1c}
 .confession-face{
  position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
- object-position:center 40%;image-rendering:pixelated;filter:brightness(.73) saturate(.78);
+ object-position:center;image-rendering:pixelated;
  animation:confession-reveal .65s ease-out both
 }
 .confession-scene::after{
