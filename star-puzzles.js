@@ -1,16 +1,10 @@
 'use strict';
 
 window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,element}) => {
-  const orbit = [[86,25],[95,56],[70,82],[44,53],[58,25]];
-  const journalLines = ['あめあがりの','ひとつぶが','ひかりをよぶ'];
+  const journalLines = ['あめあがりの','ひとしずく','がかがやいた'];
   const journalLetters = [...journalLines.join('')];
   const clueSlots = [6,12,4];
-  const answerKeys = ['あ','か','し','と','ひ','ぶ','よ','り'];
-  const clueSprites = [
-    ['....+....','....#....','....#....','...###...','.+##+##+.','...###...','....#....','....+....'],
-    ['..+...+..','..#...#..','...#.#...','...###...','.+##+##+.','...###...','....#....','....+....'],
-    ['..+.+.+..','..#.#.#..','...###...','...###...','.+##+##+.','...###...','....#....','....+....']
-  ];
+  const answerKeys = ['あ','か','し','と','ひ','や','い','り'];
   const journalRows = renderRow => {
     let offset = 0;
     return journalLines.map(line => {
@@ -23,11 +17,10 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
   function windowClue() {
     const rows = journalRows((offset,_,column) => {
       const order = clueSlots.indexOf(offset+column);
-      return order < 0 ? '<span class="sky-clue-cell"></span>'
-        : `<span class="sky-clue-cell"><canvas data-sky-glyph="${order}" width="9" height="8" aria-hidden="true"></canvas></span>`;
+      return `<span class="sky-clue-cell ${order<0?'sky-clue-anchor':'sky-clue-marker'}">${window.observatoryStars.markup(order+1)}</span>`;
     });
-    const descriptions = ['上から二段目の左端に頂点が一つの星','上から三段目の左から二番目に頂点が二つの星','上から一段目の左から五番目に頂点が三つの星'];
-    return `<div class="sky-clue-grid" role="img" aria-label="${descriptions.join('。')}">${rows}</div>`;
+    const descriptions = ['上から二段目の左端に小さな光が一つ添う星','上から三段目の左から二番目に小さな光が二つ添う星','上から一段目の左から五番目に小さな光が三つ添う星'];
+    return `<div class="sky-clue-grid" role="img" aria-label="${descriptions.join('。')}。${journalLines.map(line=>line.length).join('、')}個の三段。">${rows}</div>`;
   }
 
   function drawWindowSky(canvas, night, showClues=true) {
@@ -53,7 +46,7 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
         ctx.fillRect(81-w,68+y,w*2+1,1);
       }
     }
-    const clouds = [[4,51,26],[33,65,20],[109,47,28],[133,59,22]];
+    const clouds = night?[[0,72,23],[31,75,21],[107,73,28],[136,72,24]]:[[4,51,26],[33,65,20],[109,47,28],[133,59,22]];
     for(const [x,y,w] of clouds){
       ctx.fillStyle=night?'#383e66':'#cf8da5';
       ctx.fillRect(x+7,y-2,w-16,2);
@@ -71,7 +64,7 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       heights.forEach((height,x)=>ctx.fillRect(x*10,height,10,96-height));
     }
     if (!night) return;
-    ctx.fillStyle='#7782a9';
+    ctx.fillStyle=showClues?'#4d587a':'#7782a9';
     [[5,12],[12,32],[22,8],[30,43],[43,17],[51,30],[66,11],[73,43],[86,21],[97,9],[105,36],[121,15],[133,30],[145,12],[153,43]].forEach(([x,y])=>ctx.fillRect(x,y,1,1));
     for(const [x,y,w] of [[19,87,7],[33,86,10],[47,89,7],[111,86,9],[123,85,8],[141,89,7]]){
       ctx.fillStyle='#202039';
@@ -82,21 +75,13 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       if(w>7)ctx.fillRect(x+5,y+3,1,1);
     }
     if(!showClues)return;
-    element('modalBody').querySelectorAll('[data-sky-glyph]').forEach(sprite => {
-      const pixels = clueSprites[Number(sprite.dataset.skyGlyph)];
-      const ink = sprite.getContext('2d');
-      pixels.forEach((line,y)=>[...line].forEach((pixel,x)=>{
-        if(pixel==='.')return;
-        ink.fillStyle=pixel==='+'?(x===4&&y===4?'#fffaf0':'#adbce8'):y>=5?'#a0b9ff':'#f6dfbe';
-        ink.fillRect(x,y,1,1);
-      }));
-    });
+    window.observatoryStars.paint(element('modalBody'));
   }
 
   const owned = id => getState().got.includes(id);
 
   function eclipseNote() {
-    return '<div class="paper eclipse-note"><b>日食の観測記録</b><div class="eclipse-diagram" role="img" aria-label="左から大きな太陽、小さな月、青い地球が一列に描かれている"><i></i><i></i><i></i></div></div>';
+    return '<div class="paper eclipse-note"><b>日食の観測記録</b><div class="eclipse-diagram" role="img" aria-label="左から大きな太陽、小さな月、青い地球が一列に描かれている"><i></i><i></i><i></i></div><p>月が真ん中に来ると、影が地球に落ちる。</p></div>';
   }
 
   function journal() {
@@ -160,38 +145,16 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       return;
     }
     if (state.puzzleSolved.includes('orrery')) return reward('orrery');
-    open('天体模型',`
-      <div class="orrery-puzzle" id="orreryPuzzle" role="img">
-        <span class="orbit-ring" aria-hidden="true"></span><span class="planet sun" aria-hidden="true"></span>
-        <span class="planet earth" aria-hidden="true"></span><span class="planet moon" aria-hidden="true"></span>
-        <span class="planet-label sun-label" aria-hidden="true">太陽</span><span class="planet-label earth-label" aria-hidden="true">地球</span>
-      </div>
-      <div class="buttons"><button class="btn" id="orbitBack" type="button">↶ 逆に回す</button><button class="btn" id="orbitNext" type="button">回す ↷</button></div>
-      <div class="buttons"><button class="btn primary" id="orbitCheck" type="button">観測する</button></div>
-      <p class="puzzle-feedback" id="orbitStatus" aria-live="polite"></p>`);
-    const board = element('orreryPuzzle');
-    function display() {
-      const [x,y] = orbit[state.moonAngle];
-      board.style.setProperty('--moon-x',x+'%');
-      board.style.setProperty('--moon-y',y+'%');
-      const directions = ['右上','右','下','左','左上'];
-      board.setAttribute('aria-label',`左に太陽、右に地球。月は地球の${directions[state.moonAngle]}。`);
-    }
-    function rotate(direction) {
-      state.moonAngle = (state.moonAngle+direction+orbit.length)%orbit.length;
-      element('orbitStatus').textContent = '';
-      tap();save();display();
-    }
-    element('orbitBack').onclick = () => rotate(-1);
-    element('orbitNext').onclick = () => rotate(1);
-    element('orbitCheck').onclick = () => {
-      if (state.moonAngle !== 3) {
-        element('orbitStatus').textContent = '光は地球まで届いている。まだ月の影は重ならない。';
-        return;
-      }
-      reward('orrery','月の影が地球に重なった。一瞬、観測室の灯りが落ちた。');
-    };
-    display();
+    open('天体模型',window.observatoryOrrery.markup());
+    window.observatoryOrrery.start(element('modalBody'),state,{
+      save,tap,
+      win(){
+        const room=element('scene');
+        if(!matchMedia('(prefers-reduced-motion: reduce)').matches)room.animate([{filter:'brightness(1)'},{filter:'brightness(.22)',offset:.52},{filter:'brightness(1)'}],700);
+        if (!state.puzzleSolved.includes('orrery')) {state.puzzleSolved.push('orrery');save()}
+      },
+      reward:()=>reward('orrery','暗くなった観測室に、小さな星が浮かび上がった。')
+    });
   }
   return {journal,orrery,windowClue,drawWindowSky};
 };

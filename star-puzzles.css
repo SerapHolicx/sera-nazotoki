@@ -1,4 +1,3 @@
-.orrery-puzzle { position:relative;height:clamp(112px,25dvh,172px);isolation:isolate;overflow:hidden;border:1px solid #8d83a8;background:#121b3a }
 .puzzle-feedback { min-height:1.4em }
 .blue-journal { background:#c5ddf3;color:#202e55;border-color:#607ca9;box-shadow:0 0 16px #3765a8 }
 .eclipse-diagram { display:flex;align-items:center;justify-content:center;gap:12%;padding:7px }
@@ -7,21 +6,6 @@
 .eclipse-diagram i:nth-child(2) { width:13px;background:#635a6f }
 .eclipse-diagram i:nth-child(3) { width:24px;background:#587698;box-shadow:inset 3px 0 #93867e }
 #journalAnswer { display:block;text-align:center;margin:8px;color:#d3e7ff;font-size:21px;letter-spacing:.14em }
-.orrery-puzzle { background:radial-gradient(ellipse at 19% 53%,#805444,#23264d 41%,#101938 74%) }
-.orbit-ring { position:absolute;left:44%;right:5%;top:24%;bottom:18%;border:1px dashed #aaa7ce;border-radius:50%;opacity:.7 }
-.planet,.planet-label { position:absolute;transform:translate(-50%,-50%);top:53% }
-.planet { border-radius:50%;aspect-ratio:1 }
-.planet.sun { left:17%;width:clamp(28px,12vw,54px);background:radial-gradient(circle at 37% 38%,#ffefd0 0 27%,#ffbd80 29% 58%,#c87552 60%);box-shadow:0 0 13px #ffa857 }
-.planet.earth { left:70%;width:clamp(23px,9vw,42px);background:radial-gradient(ellipse at 34% 26%,#92c6a4 0 19%,transparent 21%),radial-gradient(ellipse at 68% 68%,#63977d 0 19%,transparent 21%),radial-gradient(circle at 30% 35%,#a7cff3,#4d69a3 53%,#2a3d76 64%) }
-.planet.moon { left:var(--moon-x);top:var(--moon-y);width:clamp(13px,6vw,24px);background:radial-gradient(circle at 34% 32%,#dcd5e4,#9b91ae 56%,#5e566d 65%);box-shadow:0 0 0 1px #f0ddde45 }
-.planet-label { top:90%;color:#fbe8cf;font-size:11px }
-.sun-label { left:17% }
-.earth-label { left:70% }
-@media(prefers-reduced-motion:no-preference) {
- .planet.moon { transition:left .17s ease,top .17s ease }
- .item-found[data-puzzle="orrery"] { animation:orrery-eclipse .65s ease }
-}
-@keyframes orrery-eclipse { 36% { filter:brightness(.2) } }
 .clock-clues img { image-rendering:pixelated;vertical-align:middle }
 .window-sky {
  position:relative;
@@ -43,8 +27,6 @@
  justify-self:center;
 }
 .sky-clue-cell { display:grid;place-items:center; }
-.sky-clue-cell canvas { display:block;width:23px;height:20px;image-rendering:pixelated; }
-.sky-clue-cell:empty::before { content:"";width:2px;height:2px;background:#909ac4; }
 .journal-letter-grid { margin-top:8px;row-gap:3px; }
 .journal-letter-grid .observation-row { column-gap:3px; }
 .journal-letter-grid span{
@@ -151,9 +133,35 @@
  display:grid;place-items:center;
  background:radial-gradient(circle,#eadbaf3d,#aaa5ee1c 29%,transparent 59%);
 }
-.board-star{
- display:block;width:17px;height:17px;
- background:linear-gradient(#fff0cb 30%,#fffcef 48% 55%,#edd9b1 74%);
- clip-path:polygon(47% 0,53% 0,53% 24%,59% 24%,59% 36%,65% 36%,65% 41%,76% 41%,76% 47%,100% 47%,100% 53%,76% 53%,76% 59%,65% 59%,65% 65%,59% 65%,59% 76%,53% 76%,53% 100%,47% 100%,47% 76%,41% 76%,41% 65%,35% 65%,35% 59%,24% 59%,24% 53%,0 53%,0 47%,24% 47%,24% 41%,35% 41%,35% 36%,41% 36%,41% 24%,47% 24%);
-}
 .board-star-drag{filter:drop-shadow(0 0 5px #f5deba)}
+
+.pixel-star{display:block;width:30px;height:26px;image-rendering:pixelated;pointer-events:none}
+.sky-clue-grid{inset:5% 5.5% 30%}
+.sky-clue-cell .pixel-star{width:30px;height:26px}
+.sky-clue-anchor{opacity:.42}
+.sky-clue-anchor .pixel-star{width:22px;height:19px}
+.sky-clue-marker .pixel-star{filter:drop-shadow(0 0 4px #a1b8ef83)}
+.framed-constellation .slot .pixel-star,.board-star-drag .pixel-star{width:32px;height:28px}
+
+.orrery-model{position:relative;aspect-ratio:320/144;background:radial-gradient(ellipse at center,#343050,#181f3d 72%);overflow:hidden;border:1px solid #9c88a5}
+.orrery-diagram{display:block;width:100%;height:100%;pointer-events:none}
+.orrery-sun,.orrery-body{position:absolute;transform:translate(-50%,-50%)}
+.orrery-sun{top:50%;left:50%;width:27px;aspect-ratio:1;border-radius:50%;background:#ffcc89;box-shadow:0 0 10px #ffba6a,inset 4px 0 #fff0b8}
+.orrery-body{width:44px;height:44px;padding:0;touch-action:none;border:0;background:none;display:grid;place-items:center;z-index:2;color:#f7e7d7}
+.orrery-body:active{z-index:3}
+.orrery-body i{display:block;grid-area:1/1;width:21px;height:21px;border:1px solid #b4c1d5;border-radius:50%;background:radial-gradient(circle at 36% 32%,#91bcaf,#456ba0 61%,#2c426d 64%)}
+.orrery-body[data-orbit-body="moon"] i{width:13px;height:13px;background:#acabbf;border-color:#d5ccdf;box-shadow:inset -3px -1px #74758e}
+.orrery-body span{grid-area:1/1;align-self:end;padding:0 2px;background:#181a3dd9;font-size:10px;line-height:1}
+.orrery-panel .orrery-guide{margin:4px 0;font-size:12px}
+.orrery-observer{display:grid;grid-template-columns:66px 1fr auto;align-items:center;gap:7px}
+.orrery-observer b{font-size:12px}
+.orrery-observer .btn{padding:5px 7px}
+#modalBody #orbitStatus{font-size:11px;margin:2px 0;line-height:1.4}
+.eclipse-view{position:relative;width:66px;height:58px;border:1px solid #837594;overflow:hidden;background:#10142d;isolation:isolate}
+.eclipse-sun,.eclipse-moon{position:absolute;top:50%;left:50%;border-radius:50%;transform:translate(-50%,-50%)}
+.eclipse-sun{width:36px;height:36px;background:#ffcf82;box-shadow:0 0 9px #ffc07775}
+.eclipse-moon{width:44px;height:44px;transform:translate(calc(-50% + var(--eclipse-offset)), -50%);background:#11152d}
+.orrery-panel[data-eclipse="total"] .eclipse-moon{width:36px;height:36px;outline:1px solid #fae6d6;box-shadow:0 0 12px #c8b9faad}
+.eclipse-complete .orrery-model{animation:eclipse-model-dim .7s ease both}
+@keyframes eclipse-model-dim{45%{filter:brightness(.17)}}
+@media(prefers-reduced-motion:reduce){.eclipse-complete .orrery-model{animation:none}}

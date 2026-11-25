@@ -1,104 +1,185 @@
 'use strict';
 
-(() => {
- const directions=[0,2,1,0,1,2,0,2];
- const goal=5, limit=3;
- function screenMarkup(){
-  return `<div class="tv-shooter" id="tvShooter" aria-label="星くずシューティング画面">
-   <div class="tv-shooter-sight" aria-hidden="true"></div>
+window.observatoryShooter=(()=>{
+ const width=192,height=120,shipY=105;
+ const bossTime=29,runLimit=45;
+ const stars=Array.from({length:44},(_,i)=>[i*53%width,i*29%height,8+i%5*3]);
+ const route=[24,145,76,164,42,106,64,128,22,161,91,42];
+ let losses=0;
+ const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+ function screenMarkup(mode){
+  if(mode==='demo')return `<video id="tvShooterDemo" muted loop playsinline preload="metadata" poster="tv/star-dust.png" aria-label="星屑シューティング専用のデモ映像"><source src="tv/star-dust.mp4" type="video/mp4"></video>`;
+  return `<div class="tv-shooter" id="tvShooter" tabindex="0" aria-label="星屑シューティング。指で左右に移動。キーボードは左右矢印。">
+   <canvas width="${width}" height="${height}" aria-hidden="true"></canvas>
    <span class="tv-shooter-label" aria-hidden="true">STAR DUST</span>
-   ${['左','中央','右'].map((label,lane)=>`<button type="button" class="tv-shot-lane" data-shot-lane="${lane}" aria-label="${label}に撃つ"><i class="tv-shot-trail" aria-hidden="true"></i></button>`).join('')}
-   <i id="tvTarget" class="tv-shooter-star" aria-hidden="true" hidden></i>
    <span class="tv-shooter-caption" role="status"></span>
   </div>`;
  }
- function controlsMarkup(){
-  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">金色の帯まで星を引きつけて、同じ列をタップ。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button></div>';
+ function controlsMarkup(mode){
+  if(mode==='demo')return '<p id="tvShootingHelp">機体を左右にスライド。弾は自動。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons"><button class="btn primary" id="launchStarShooter">出撃する</button><button class="btn" id="leaveStarShooter">番組へ戻る</button></div>';
+  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">左右にスライド。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button><button class="btn" id="leaveStarShooter">番組へ戻る</button></div>';
  }
- function start(root,{hit,miss,retry,won,reward}){
+ function start(root,{hit,miss,retry,leave,won,reward}){
   const field=root.querySelector('#tvShooter');
-  const target=field.querySelector('#tvTarget');
+  const ctx=field.querySelector('canvas').getContext('2d');
   const caption=field.querySelector('.tv-shooter-caption');
-  const lanes=[...field.querySelectorAll('[data-shot-lane]')];
   const score=root.querySelector('#tvScore');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const fallTime=reduced?2100:1650;
-  let wave=0,hits=0,misses=0,frame,rewardTimer;
-  let begins=performance.now()+650;
-  let active=true;
-  const depth=now=>(now-begins)/fallTime;
-  const inRange=progress=>progress>=.68&&progress<=1;
-  const laneForWave=()=>directions[wave%directions.length];
+  const assisted=losses>=2;
+  const maxHealth=assisted?6:4;
+  const hostiles=[],bullets=[],sparks=[];
+  const keys=new Set();
+  let x=width/2,health=maxHealth,points=0,elapsed=0;
+  let phase='ready',last=performance.now(),readyUntil=last+600;
+  let nextShot=0,nextSpawn=.3,spawn=0,protectedUntil=0,pointer=null,frame,rewardTimer;
 
-  function updateScore(message=''){
-   score.textContent=`星くず ${hits} / ${goal}　ミス ${misses} / ${limit}${message?'　'+message:''}`;
+  function fill(color,l,t,w,h){ctx.fillStyle=color;ctx.fillRect(Math.round(l),Math.round(t),w,h)}
+  function glint(px,py,r,bright='#ffe9b0'){
+   fill('#bb8f68',px-r,py-1,r*2+1,3);fill('#bb8f68',px-1,py-r,3,r*2+1);
+   fill(bright,px-r+2,py,r*2-3,1);fill(bright,px,py-r+2,1,r*2-3);fill(bright,px-2,py-2,5,5);
+   fill('#fffde0',px-1,py-1,3,3);
   }
-  function freeze(){
-   active=false;cancelAnimationFrame(frame);
-   field.classList.remove('meteor-in-range');
-   target.hidden=true;lanes.forEach(button=>button.disabled=true);
-  }
-  function next(judgedHit,lane){
-   if(!active)return;
-   if(judgedHit){hits++;hit()}
-   else{misses++;miss()}
-   const shot=lanes[lane];
-   if(shot){
-    shot.classList.remove('fired');
-    void shot.offsetWidth;
-    shot.classList.add('fired');
+  function scatter(px,py,color,count){
+   for(let i=0;i<count;i++){
+    const a=i*2.4, speed=12+i%4*14;
+    sparks.push({x:px,y:py,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:.38+i%3*.09,color});
    }
-   updateScore(judgedHit?'命中！':'逃した！');
-   if(hits===goal){
-    freeze();won();
-    field.dataset.phase='clear';caption.textContent='CLEAR';
-    rewardTimer=setTimeout(()=>{if(field.isConnected)reward()},reduced?220:510);
+  }
+  function updateScore(status=''){
+   score.textContent=`SCORE ${String(points).padStart(4,'0')}　機体 ${health} / ${maxHealth}${assisted?'　やさしいモード':''}${status?'　'+status:''}`;
+  }
+  function finish(success){
+   phase=success?'clear':'over';
+   field.dataset.phase=phase;
+   caption.textContent=success?'CLEAR':'RETRY';
+   if(success){
     return;
    }
-   if(misses===limit){
-    freeze();
-    field.dataset.phase='over';caption.textContent='FINISH';
-    root.querySelector('#tvRetry').hidden=false;
-    root.querySelector('#retryShooting').focus({preventScroll:true});
-    return;
+   losses++;
+   updateScore(losses===2?'次はやさしいモード':'');
+   root.querySelector('#tvRetry').hidden=false;
+   root.querySelector('#retryShooting').focus({preventScroll:true});
+  }
+  function addEnemy(){
+   if(elapsed>=bossTime)return;
+   const rock=spawn>=3&&spawn%3===1;
+   const position=route[spawn%route.length];
+   hostiles.push({type:rock?'rock':'star',base:position,x:position,y:-8,drift:spawn%2?12:0,phase:spawn,r:rock?6:7,hp:1});
+   spawn++;
+  }
+  function step(dt){
+   elapsed+=dt;
+   if(keys.size)x=clamp(x+((keys.has('ArrowRight')?1:0)-(keys.has('ArrowLeft')?1:0))*84*dt,8,width-8);
+   if(elapsed>=nextShot){
+    bullets.push({x,y:shipY-8});
+    nextShot=elapsed+.23;
    }
-   wave++;
-   begins=performance.now()+370;
-   target.hidden=true;
-   field.classList.remove('meteor-in-range');
+   if(elapsed>=nextSpawn){
+    addEnemy();
+    nextSpawn=elapsed+Math.max(.59,1.02-elapsed*.014)+(assisted?.13:0);
+   }
+   if(elapsed>=bossTime&&elapsed-dt<bossTime){
+    // Clear the approach so the player can concentrate on the large star.
+    hostiles.length=0;
+    hostiles.push({type:'boss',x:width/2,y:-15,r:17,hp:assisted?4:6});
+    updateScore('大きな星が近づいてきた');
+   }
+   for(const o of hostiles){
+    if(o.type==='boss'){
+     o.y=Math.min(35,o.y+25*dt);
+     o.x=width/2+Math.sin((elapsed-bossTime)*1.32)*(assisted?22:35);
+    }else{
+     o.y+=(23+elapsed*.39+(o.type==='rock'?2:0))*(assisted?.86:1)*dt;
+     o.x=o.base+Math.sin(elapsed*2+o.phase)*o.drift;
+    }
+   }
+   for(const b of bullets){
+    b.y-=111*dt;
+    for(const o of hostiles){
+     if(o.dead||o.type==='rock'||Math.abs(o.x-b.x)>o.r||Math.abs(o.y-b.y)>o.r)continue;
+     b.y=-20;hit();
+     scatter(b.x,o.y,'#fbe7b2',4);
+     if(--o.hp===0){
+      o.dead=true;points+=o.type==='boss'?500:100;
+      scatter(o.x,o.y,'#fbe7b2',o.type==='boss'?22:10);
+      updateScore();
+      if(o.type==='boss'){
+       won();finish(true);
+       rewardTimer=setTimeout(()=>{if(field.isConnected)reward()},reduced?280:780);
+       return;
+      }
+     }
+     break;
+    }
+   }
+   for(const o of hostiles){
+    if(o.type!=='rock'||o.dead||Math.abs(o.x-x)>10||Math.abs(shipY-o.y)>9||elapsed<protectedUntil)continue;
+    o.dead=true;protectedUntil=elapsed+1.05;health--;miss();updateScore('被弾');
+    scatter(x,shipY,'#efa6b8',9);
+    if(health===0){finish(false);return}
+   }
+   for(let i=bullets.length-1;i>=0;i--)if(bullets[i].y<0)bullets.splice(i,1);
+   for(let i=hostiles.length-1;i>=0;i--)if(hostiles[i].dead||hostiles[i].y>height+12)hostiles.splice(i,1);
+   if(elapsed>=runLimit)finish(false);
+  }
+  function render(dt){
+   fill('#17172f',0,0,width,height);
+   for(const [sx,sy,speed] of stars){
+    const y=(sy+elapsed*speed)%height;
+    fill(speed>14?'#967cae':'#4a456e',sx,y,1,speed>15?2:1);
+   }
+   for(const b of bullets)fill('#bee9ff',b.x,b.y,1,5);
+   for(const o of hostiles){
+    if(o.dead)continue;
+    if(o.type==='rock'){
+     fill('#6c5682',o.x-5,o.y-4,10,8);fill('#675478',o.x-3,o.y-6,6,11);
+     fill('#ae8dac',o.x-3,o.y-4,5,2);fill('#534665',o.x+1,o.y+2,3,2);
+    }else glint(o.x,o.y,o.r,o.type==='boss'?'#ffd0ef':'#ffe9b0');
+   }
+   if(reduced||elapsed>=protectedUntil||Math.floor(elapsed*14)%2===0){
+    fill('#e6d7ff',x-1,shipY-8,3,10);fill('#b2a8eb',x-6,shipY-1,13,5);
+    fill('#77b2cf',x-1,shipY-3,3,4);fill('#ffb990',x-1,shipY+5,3,3);
+   }
+   for(let i=sparks.length-1;i>=0;i--){
+    const p=sparks[i];p.life-=dt;
+    if(p.life<=0){sparks.splice(i,1);continue}
+    p.x+=p.vx*dt;p.y+=p.vy*dt;fill(p.color,p.x,p.y,2,2);
+   }
   }
   function tick(now){
-   if(!active||!field.isConnected)return;
-   const progress=depth(now);
-   if(progress>=0&&field.dataset.phase==='ready'){
-    field.dataset.phase='play';caption.textContent='';
+   if(!field.isConnected)return;
+   const dt=Math.min(.048,(now-last)/1000);
+   last=now;
+   if(phase==='ready'&&now>=readyUntil){
+    phase='play';field.dataset.phase=phase;caption.textContent='';
    }
-   if(progress>1){
-    next(false);
-    if(!active)return;
-   }else{
-    target.hidden=progress<0;
-    target.dataset.lane=laneForWave();
-    const position=Math.max(0,progress);
-    target.style.top=(19+(reduced?Math.floor(position*12)/12:position)*70)+'%';
-    field.classList.toggle('meteor-in-range',inRange(progress));
-   }
-   frame=requestAnimationFrame(tick);
+   if(phase==='play')step(dt);
+   render(dt);
+   if(phase==='ready'||phase==='play'||(phase==='clear'&&sparks.length))frame=requestAnimationFrame(tick);
   }
-  lanes.forEach((button,lane)=>button.onclick=()=>{
-   const progress=depth(performance.now());
-   if(active&&progress>=0)next(inRange(progress)&&lane===laneForWave(),lane);
-  });
-  root.querySelector('#retryShooting').onclick=retry;
-  field.dataset.phase='ready';
-  caption.textContent='READY';
-  updateScore();
-  frame=requestAnimationFrame(tick);
-  return ()=>{
-   active=false;
-   cancelAnimationFrame(frame);
-   clearTimeout(rewardTimer);
+  function move(event){
+   const bounds=field.getBoundingClientRect();
+   x=clamp((event.clientX-bounds.left)*width/bounds.width,8,width-8);
+  }
+  field.onpointerdown=event=>{
+   if(!event.isPrimary||event.button!==0||!['ready','play'].includes(phase))return;
+   pointer=event.pointerId;field.setPointerCapture(pointer);move(event);
   };
+  field.onpointermove=event=>{if(pointer===event.pointerId)move(event)};
+  field.onlostpointercapture=()=>{pointer=null};
+  field.onkeydown=event=>{
+   if(event.key!=='ArrowLeft'&&event.key!=='ArrowRight')return;
+   event.preventDefault();keys.add(event.key);
+  };
+  field.onkeyup=event=>keys.delete(event.key);
+  field.onblur=()=>keys.clear();
+  root.querySelector('#retryShooting').onclick=retry;
+  root.querySelector('#leaveStarShooter').onclick=leave;
+  field.dataset.phase='ready';caption.textContent='READY';
+  updateScore();
+  field.focus({preventScroll:true});
+  frame=requestAnimationFrame(tick);
+  return ()=>{cancelAnimationFrame(frame);clearTimeout(rewardTimer)};
  }
- window.observatoryShooter={screenMarkup,controlsMarkup,start};
+ return {screenMarkup,controlsMarkup,start};
 })();
