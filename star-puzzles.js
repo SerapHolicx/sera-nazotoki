@@ -86,9 +86,9 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
 
   function journal() {
     const state = getState();
-    const page = `<div class="paper blue-journal"><b>雨上がりの観測メモ</b>
+    const page = `<article class="observatory-notebook"><b>雨上がりの観測メモ</b>
       <div class="journal-letter-grid">${journalRows((_,letter)=>`<span>${letter}</span>`)}</div>
-      </div>`;
+      <p class="journal-margin-note">今夜の空と、同じ並び。</p></article>`;
     if (owned('journal')) {
       open('星の観測日誌',page+eclipseNote());
       return;
@@ -121,7 +121,7 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
     };
     element('journalCheck').onclick = () => {
       if (!isNight()) {
-        element('journalStatus').textContent = 'ページの端に「星が出たら照合」と書いてある。';
+        element('journalStatus').textContent = 'まだ外は明るい。';
         return;
       }
       if (answer === clueSlots.map(index=>journalLetters[index]).join('')) reward('journal','',eclipseNote());
