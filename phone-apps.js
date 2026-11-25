@@ -13,6 +13,12 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
   const settings = {airplane:false,wifi:false,bluetooth:true,wall:'mist'};
   const button = (label,attrs='') => `<button type="button" ${attrs}>${label}</button>`;
   const root = () => element('handsetContent');
+  let reading=null;
+  function finishReading(done){
+    const id=reading;
+    reading=null;
+    return id?thought(id,done):false;
+  }
   function on(selector,call) {
     root().querySelectorAll(selector).forEach(node=>{node.onclick=()=>call(node)});
   }
@@ -23,6 +29,7 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
       <div class="phone-app-grid">${apps.map(([id,label,icon])=>
         button(`<span class="app-icon app-${id}" aria-hidden="true">${icon}</span><span>${label}</span>`,`class="home-app" data-app="${id}"`)).join('')}</div></div>`);
     on('[data-app]',node=>views[node.dataset.app]());
+    finishReading();
   }
 
   function screen(app,content,back=home,backLabel='ホーム') {
@@ -32,6 +39,7 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
       <h3><span aria-hidden="true">${icon}</span> ${title}</h3>
       </header><section class="phone-app-body">${content}</section>`);
     on('#phoneAppBack',back);
+    finishReading();
   }
 
   function tabs(labels,current) {
@@ -48,9 +56,9 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
     screen('diary',`<div class="diary-index"><h4>ピン留め</h4>${rows(true)}<h4>日記</h4>${rows(false)}</div>`);
     on('[data-entry]',node=>{
       const entry=data.diary[Number(node.dataset.entry)];
-      const note=entry.thought?thought(entry.thought):'';
       screen('diary',`<article class="diary-entry"><time>${entry.date}</time><h4>${escape(entry.title)}</h4>
-       <p>${escape(entry.text)}</p>${note}</article>`,diary,'一覧');
+       <p>${escape(entry.text)}</p></article>`,diary,'一覧');
+      reading=entry.thought;
     });
   }
   function social(account='public') {
@@ -86,14 +94,13 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
     viewPhoto(index,observationPhotos,home,'ホーム');
   }
 
-  function viewPhoto(index,indices,back,backLabel,previousThought='') {
+  function viewPhoto(index,indices,back,backLabel) {
     const photo=data.photos[index];
     const position=indices.indexOf(index);
     screen('photos',`<div class="photo-view">
       <figure id="phonePhotoTouch" class="photo-viewport" aria-label="スワイプで写真切り替え。ピンチで拡大・縮小">
         <img src="${escape(photo.src)}" alt="${escape(photo.alt)}" draggable="false">
       </figure><time>${photo.date}</time>
-      <div id="photoThought" aria-live="polite">${previousThought}</div>
       <div class="photo-nav">
       ${button('‹','id="prevPhonePhoto" aria-label="前の写真" '+(position===0?'disabled':''))}
       ${button('＋','id="zoomPhonePhoto" aria-label="写真を拡大・縮小" aria-pressed="false"')}
@@ -106,7 +113,10 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
     let scale=1, x=0, y=0, origin=null, pinch=null;
     const go=step=>{
       const next=indices[position+step];
-      if(next!==undefined)viewPhoto(next,indices,back,backLabel,photo.anomaly?thought('photo'):'');
+      if(next!==undefined){
+        viewPhoto(next,indices,back,backLabel);
+        if(photo.anomaly)thought('photo');
+      }
     };
     function paint() {
       const limitX=viewport.clientWidth*(scale-1)/2;
@@ -116,10 +126,7 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
       image.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
       zoomButton.setAttribute('aria-pressed',String(scale>1));
       zoomButton.textContent=scale>1?'−':'＋';
-      if(photo.anomaly&&scale>=1.6){
-        const note=thought('photo');
-        if(note)element('photoThought').innerHTML=note;
-      }
+      if(photo.anomaly&&scale>=1.6)thought('photo');
     }
     on('#prevPhonePhoto',()=>go(-1));
     on('#nextPhonePhoto',()=>go(1));
@@ -186,7 +193,8 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
          <a class="phone-page-link" href="${escape(data.profile.x)}" target="_blank" rel="noopener">X　${data.profile.handle}</a>`
       :`<p>${escape(page.text)}</p>`;
     screen('browser',`<div class="browser-address">${escape(page.host)}</div><article class="cached-page">
-      <h4>${escape(page.title)}</h4>${content}${page.external?thought('site'):''}</article>`,back,'戻る');
+      <h4>${escape(page.title)}</h4>${content}</article>`,back,'戻る');
+    if(page.external)reading='site';
   }
 
   function voice() {
@@ -267,5 +275,5 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
   }
 
   const views={diary,photos,x:social,browser,voice,messages,calendar,music,settings:settingsView};
-  return {showHome,showLastPhoto};
+  return {showHome,showLastPhoto,finishReading};
 };
