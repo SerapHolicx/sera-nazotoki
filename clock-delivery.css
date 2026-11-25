@@ -6,21 +6,17 @@
 .clock-equation{display:flex;align-items:center;justify-content:center;gap:8px;color:#f5deb5;font-size:15px}
 .clock-equation b{min-width:1.3em;text-align:center}
 .clock-panel-socket{display:grid;place-items:center;width:40px;height:40px;background:#29223e;border:2px inset #977498;border-radius:3px}
-.clock-kana,.clock-panel-tray{display:flex;justify-content:center;gap:4px;margin-top:6px}
-.clock-kana button{min-width:0;flex:1 1 40px;max-width:55px;padding:0;min-height:44px}
-.clock-kana [aria-pressed="true"],.tv-fruit-products [aria-pressed="true"]{background:#655079;outline:1px solid #ffd5a0;outline-offset:-3px}
+.clock-panel-tray{display:flex;justify-content:center;gap:4px;margin-top:6px}
+.tv-fruit-products [aria-pressed="true"]{background:#655079;outline:1px solid #ffd5a0;outline-offset:-3px}
 .clock-actions{margin-top:6px}
 .clock-actions .btn{min-width:0;padding:5px;font-size:13px}
 .clock-panel-tray .btn{display:grid;justify-items:center;min-width:0;flex:1 1 52px;max-width:70px;padding:4px 1px;font-size:11px}
-.inventory-panels{display:flex;justify-content:center;gap:6px;margin-top:2px}
-.inventory-panels img{width:19px;height:19px;image-rendering:pixelated}
 #clockStatus:empty,#fruitOrderStatus:empty{display:none}
 .tv-fruit-shop{padding:7px;background:#25243d;border:1px solid #a4879b;text-align:center}
 .tv-fruit-shop header{display:flex;justify-content:space-between;align-items:center;gap:4px;color:#ffe0a2}
 .tv-fruit-shop header span{color:#e4b8c8;font-size:11px}
 .tv-fruit-products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:6px 0}
 .tv-fruit-products .btn{display:grid;justify-items:center;gap:2px;padding:3px 1px;min-width:0;font-size:12px}
-.tv-order-dock{margin-top:7px}
 #orderFruit{min-height:44px;padding:5px 14px}
 #fruitOrderStatus{color:#ffe2a3;margin:4px 0 0}
 .tv-screen .tv-observation-time{left:6px;right:6px;bottom:5px;padding:5px 6px;background:#161d37ed;font-size:clamp(12px,4vw,17px);color:#fff4d7;text-align:center;letter-spacing:0}
@@ -35,3 +31,20 @@
 }
 @keyframes parcel-appear{from{opacity:.45;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
 @keyframes window-meteor{0%,18%{opacity:0;translate:30% -18px}49%{opacity:.95}78%,100%{opacity:0;translate:-50% 24px}}
+.clock-dial .clock-minute{height:24%;width:2px;left:calc(50% - 1px);background:#926f78;box-shadow:none}
+.clock-kana-wheel{display:grid;grid-template-rows:29px 23px 29px;justify-items:center;align-items:center;gap:1px}
+.clock-kana-wheel button{width:44px;height:29px;padding:0;border:1px solid #a68aa7;border-radius:3px;background:#38355f;color:#f5deb5;font-size:16px;line-height:1;touch-action:manipulation}
+.clock-kana-wheel output{font-size:18px;font-weight:700;color:#fff1cd}
+.inventory-slots{grid-template-columns:repeat(6,minmax(0,1fr));gap:3px}
+.inventory-item{font-size:clamp(8px,2.5vw,11px);text-align:center;line-height:1.1}
+.inventory-item span:not(.kept-star){overflow-wrap:anywhere}
+.tv-fruit-shop{position:absolute;inset:0;z-index:4;overflow:auto;padding:5px;background:#29283ff7}
+.tv-fruit-shop header{justify-content:space-between;padding:0 2px}
+.tv-fruit-shop header button{min-height:32px;min-width:36px;padding:0}
+.tv-fruit-products{margin:3px 0}
+.tv-fruit-products .btn{min-height:38px;height:auto;font-size:11px}
+.tv-fruit-products img{width:25px;height:25px}
+#orderFruit{min-height:34px}
+#fruitOrderStatus{font-size:11px;margin:2px 0}
+
+.clock-part-picture{background:#523f61;border:1px solid #c19b79;padding:1px;border-radius:2px;box-sizing:border-box}

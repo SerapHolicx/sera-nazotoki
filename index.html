@@ -339,25 +339,20 @@ body{position:fixed;inset:0;min-height:0}
 .eye-storage span{padding-left:8px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style><link rel="stylesheet" href="star-puzzles.css?v=3">
-<link rel="stylesheet" href="television.css?v=1">
-<link rel="stylesheet" href="clock-delivery.css?v=1">
+<link rel="stylesheet" href="television.css?v=2">
+<link rel="stylesheet" href="clock-delivery.css?v=2">
 </head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
 <h2 id="inventoryHeading">持ち物ボックス</h2>
-<div class="inventory-slots" id="inventorySlots">
- <div class="inventory-slot"><button class="inventory-item" data-item="key" aria-pressed="false" hidden><img src="staff-key.png" alt="">鍵</button></div>
- <div class="inventory-slot"><button class="inventory-item" data-item="remote" aria-pressed="false" hidden><img src="tv-remote.png" alt="">リモコン</button></div>
- <div class="inventory-slot"><span class="inventory-item" data-item="meteor" hidden><span class="kept-star" aria-hidden="true"></span>白い星</span></div>
-</div>
+<div class="inventory-slots" id="inventorySlots"></div>
 <p class="inventory-note" id="inventoryNote" aria-live="polite">持ち物はまだない。</p>
-<div class="inventory-panels" id="inventoryPanels" aria-label="所持品の絵のパネル" hidden></div>
 </section><div class="tip" id="tip">星の印をタップして調べよう。</div></section><div class="devline"><button id="resetBtn">はじめから</button></div></main>
 <div class="veil" id="veil" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><header class="modal-head"><h2 id="modalTitle"></h2><button class="x" id="modalClose" aria-label="閉じる">×</button></header><div id="modalBody"></div></section></div>
 <div class="finish" id="titleScreen"><div><img class="title-img" src="title-dusk.webp" alt="夜空の下の宵空天文台"><h1>宵空天文台</h1><div id="titleStars"></div><p id="titleSubtitle">君と紡ぐ、ひとつの星座。</p><button class="btn primary menubtn" id="startBtn">ゲームをはじめる</button><button class="btn menubtn" id="titleReset">最初から遊ぶ</button></div></div>
 <div class="finish" id="endingScreen" hidden><div><div class="end-sky"><img class="end-art" src="ending-night.png" alt="展望台で夜空を見上げるセラとあなた"><svg viewBox="0 0 100 100" class="const" id="endConst" aria-hidden="true"></svg></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 歌を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="ending_song.mp3" preload="none"></audio></div></div>
 <script src="constellation.js?v=matching-gates-2"></script>
 <script src="star-puzzles.js?v=3"></script>
-<script src="clock-delivery.js?v=1"></script>
+<script src="clock-delivery.js?v=2"></script>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);const key='sera-observatory-v8-20261123';const scenes=['left','center','right'];const names=['図書コーナー','観測室','管理・休憩コーナー'];
@@ -377,11 +372,11 @@ const hasPattern=pattern=>st.placed.length===pattern.length&&pattern.every(slot=
 const phoneOrder=[4,1,3,0,5,2];
 const newObservationId=()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');
 const {eveningHour,nightHour,meteorHour,formatTime}=window.observatoryClock;
-const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:2,eyeTaken:false,scopeFocus:0,clockVersion:1,clockHour:eveningHour,clockKana:'か',clockPanel:'cross',panels:[],delivery:null,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteorStar:false,restored:false,endingDone:false,secondRun:false,phoneUnlocked:false,phoneRead:[],phoneConfessionSeen:false,observationVersion:2,observationPending:null,observationLinked:false,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1,moonAngle:0});
+const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:2,eyeTaken:false,scopeFocus:0,clockVersion:2,clockHour:eveningHour,clockKana:'か',clockPanel:'cross',panels:[],fruits:[],itemOrder:[],delivery:null,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteorStar:false,restored:false,endingDone:false,secondRun:false,phoneUnlocked:false,phoneRead:[],phoneConfessionSeen:false,observationVersion:2,observationPending:null,observationLinked:false,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1,moonAngle:0});
 let st;
 try{
  const saved=JSON.parse(localStorage.getItem(key)||'{}');
- st={...defaults(),...saved,tvPuzzleVersion:saved.tvPuzzleVersion===1?1:0,clockVersion:saved.clockVersion===1?1:0};
+ st={...defaults(),...saved,tvPuzzleVersion:saved.tvPuzzleVersion===1?1:0,clockVersion:saved.clockVersion??0};
  delete st.phone;
  if(saved.observationVersion!==2){st.observationVersion=2;st.observationPending=null;st.observationLinked=false}
  if(saved?.boardVersion!==2)st.placed=Array.isArray(saved?.placed)?saved.placed.map(slot=>legacySlots[slot]):[];
@@ -421,33 +416,37 @@ const meteorAvailable=()=>seraSilent()&&st.news&&st.clockHour===meteorHour&&!st.
 const canResolveGate=()=>st.secondRun&&st.phoneConfessionSeen;
 let msgQueue=[],onMsgsDone=null, audioCtx=null,musicTimer=null,musicOn=false,internalModalCloser=null;
 let selectedItem=null;
-const itemButtons=[...$('inventorySlots').querySelectorAll('[data-item]')];
+const rawItemMarkup={
+ key:{label:'鍵',image:'<img src="staff-key.png" alt="">'},
+ remote:{label:'リモコン',image:'<img src="tv-remote.png" alt="">'},
+ meteor:{label:'白い星',image:'<span class="kept-star" aria-hidden="true"></span>'}
+};
+const rememberItem=id=>window.observatoryClock.rememberItem(st,id);
 function syncInventory(){
- const items={
-  key:st.keyFound&&!st.staff,
-  remote:st.remote,
-  meteor:st.meteorStar&&!st.restored
- };
- if(!items[selectedItem])selectedItem=null;
- for(const button of itemButtons){
-  const item=button.dataset.item;
-  button.hidden=!items[item];
-  if(button.tagName==='BUTTON')button.setAttribute('aria-pressed',String(item===selectedItem));
- }
- const labels={key:'鍵',remote:'リモコン',meteor:'白い星'};
- const inventoryPanels=$('inventoryPanels');
- inventoryPanels.hidden=!st.panels.length;
- inventoryPanels.innerHTML=st.panels.map(id=>window.observatoryClock.panelImage(id)).join('');
- $('inventoryNote').textContent=selectedItem
-  ?labels[selectedItem]+'を選択中。使う場所をタップ。'
-  :itemButtons.some(button=>button.tagName==='BUTTON'&&!button.hidden)?'使いたい持ち物を選ぼう。':items.meteor?'白い星を保管している。':st.panels.length?'絵のパネルを保管している。':'持ち物はまだない。';
-}
-for(const button of itemButtons.filter(item=>item.tagName==='BUTTON')){
- button.onclick=()=>{
+ const active=['key','remote','meteor'].filter(id=>id==='key'?st.keyFound&&!st.staff:id==='remote'?st.remote:st.meteorStar&&!st.restored);
+ active.push(...st.panels,...st.fruits);
+ const ordered=[...new Set([...st.itemOrder,...active])].filter(id=>active.includes(id));
+ if(!ordered.includes(selectedItem))selectedItem=null;
+ const toggleable=id=>id==='key'||id==='remote';
+ const slots=Array.from({length:6},(_,i)=>{
+  const id=ordered[i];
+  if(!id)return '<div class="inventory-slot"></div>';
+  const {label,image}=rawItemMarkup[id]||{label:window.observatoryClock.itemLabel(id),image:window.observatoryClock.panelImage(id,true)};
+  const content=image+'<span>'+label+'</span>';
+  const item=toggleable(id)?`<button type="button" class="inventory-item" data-item="${id}" aria-pressed="${id===selectedItem}">${content}</button>`
+   :`<span class="inventory-item" data-item="${id}">${content}</span>`;
+  return '<div class="inventory-slot">'+item+'</div>';
+ });
+ const inventory=$('inventorySlots');
+ inventory.innerHTML=slots.join('');
+ inventory.querySelectorAll('button[data-item]').forEach(button=>button.onclick=()=>{
   const item=button.dataset.item;
   selectedItem=selectedItem===item?null:item;
   clickTone();syncInventory();
- };
+  inventory.querySelector(`[data-item="${item}"]`)?.focus({preventScroll:true});
+ });
+ $('inventoryNote').textContent=selectedItem?rawItemMarkup[selectedItem].label+'を選択中。使う場所をタップ。'
+  :ordered.some(toggleable)?'使いたい持ち物を選ぼう。':ordered.length?'持ち物を保管している。':'持ち物はまだない。';
 }
 function tone(hz,d=.35,vol=.04,when=0){try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();audioCtx.resume();let t=audioCtx.currentTime+when,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=hz;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(audioCtx.destination);o.start(t);o.stop(t+d+.03)}catch(e){}}
 function chime(){[659,880,1174,1568].forEach((f,i)=>tone(f,.7,.042,i*.10))}function clickTone(){tone(680,.14,.025);tone(930,.25,.018,.09)}function placeTone(){[698,1046].forEach((f,i)=>tone(f,.3,.028,i*.11))}
@@ -475,7 +474,7 @@ function fitModal(){
 const modalObserver=new ResizeObserver(fitModal);
 modalObserver.observe(modal);
 modalObserver.observe(veil);
-function openModal(title,body){$('veil').classList.remove('phone-mode');$('modalTitle').textContent=title;const container=$('modalBody');alignMarkers(container);container.innerHTML=body;$('veil').hidden=false;fitModal();internalModalCloser=null;$('modalClose').focus({preventScroll:true})}
+function openModal(title,body){$('veil').classList.remove('phone-mode','tv-mode');$('modalTitle').textContent=title;const container=$('modalBody');alignMarkers(container);container.innerHTML=body;$('veil').hidden=false;fitModal();internalModalCloser=null;$('modalClose').focus({preventScroll:true})}
 function closeModal(){
  const onClose=internalModalCloser;
  internalModalCloser=null;
@@ -672,7 +671,7 @@ function examineUnlitSera(){
   }
   $('seraSearchResult').textContent='腰のポケットから、小さな真鍮の鍵が出てきた。';
   offerItem($('pocketFound'),'staff-key.png','スタッフ室の鍵','鍵に「スタッフ室」と刻まれている。',()=>{
-   st.keyFound=true;
+   st.keyFound=true;rememberItem('key');
    $('lookPocket').dataset.searched='true';
    $('lookPocket').classList.remove('target-lit');
   });
@@ -792,14 +791,14 @@ function showStaffRoom(unlocked=false){
    return;
   }
   offerItem(info,'tv-remote.png','テレビのリモコン','ボタンが並んでいる。',()=>{
-   st.remote=true;
+   st.remote=true;rememberItem('remote');
    cabinet.setAttribute('aria-label','戸棚、リモコン回収済み');
   });
  };
 }
 const channels=[
  {id:'variety',title:'おやつの時間',description:'クッキーを焼く小さな台所'},
- {id:'weather',title:'星空予報',description:'夜空に流れる雲と月'},
+ {id:'weather',title:'夜の街並み',description:'夜の街を流れる雲と月'},
  {id:'news',title:'天文ニュース',description:'スタジオのキャスターと流星の映像'},
  {id:'shop',title:'夜の通販',description:'ステージに並んだりんご、バナナ、いちじく'}
 ];
@@ -823,21 +822,26 @@ function television(playing=false,previewChannel=null){
  const canShop=c.id==='shop';
  const canPlay=channel===0&&st.got.includes('clock')&&!st.got.includes('tv');
  if(c.id==='news'&&!st.news){st.news=true;save()}
+ const newsLine=`今夜、流星群は午前${meteorHour}時ごろ見頃を迎えます。空の開けた場所で観測できる見込みです。`;
  openModal('テレビ',`<div class="tv-cabinet">
   <div class="tv-screen">
    <video id="tvBroadcast" muted loop playsinline preload="metadata" poster="tv/${c.id}.png${canShop?'?v=fruit':''}" aria-label="${c.description}">
     <source src="tv/${c.id}.mp4${canShop?'?v=fruit':''}" type="video/mp4">
    </video>
    <span class="tv-channel" aria-hidden="true">CH ${String(channel+1).padStart(2,'0')}</span>
-   ${c.id==='news'?`<time class="tv-observation-time" datetime="${formatTime(meteorHour)}">流星群　午前${meteorHour}時（${formatTime(meteorHour)}）</time>`:''}
+   ${c.id==='news'?`<div class="tv-observation-time" aria-label="${newsLine}"><div class="tv-news-scroll"><span>${newsLine}</span><span aria-hidden="true">${newsLine}</span></div></div>`:''}
+   ${canShop?`<button class="tv-shop-screen-button" type="button" id="openFruitPrompt" aria-label="テレビ画面を押して注文"><span>ご注文受付中</span></button>${clockDelivery.shopMarkup()}`:''}
   </div>
   <div class="tv-ticker" aria-live="polite"><span>YOIZORA TV</span><b>${c.title}</b></div>
-  ${canShop?'<div class="tv-order-dock">'+clockDelivery.shopMarkup()+'</div>':''}
  </div>
- ${usedNow?'<p>ピッ。リモコンが反応した。</p>':''}
+ <div class="tv-actions">
+ ${usedNow?'<span class="tv-remote-status" role="status">ピッ</span>':''}
  ${canPlay?`<div id="tvGame" class="tv-game">${playing?'':'<button type="button" class="btn primary" id="startTVGame">型ぬきに参加する</button>'}</div>`:''}
  ${previewChannel!==null?'<div class="buttons"><button class="btn" id="leaveShopping">番組に戻る</button></div>':!canChange&&st.got.includes('clock')&&!canShop?'<div class="buttons"><button class="btn" id="openShopping">くだもの通販</button></div>':''}
- ${canChange&&previewChannel===null?'<div class="buttons"><button class="btn" id="prevTV" aria-label="前のチャンネル">◀</button><button class="btn" id="nextTV" aria-label="次のチャンネル">▶</button></div>':''}`);
+ ${canChange&&previewChannel===null?'<div class="buttons"><button class="btn" id="prevTV" aria-label="前のチャンネル">◀</button><button class="btn" id="nextTV" aria-label="次のチャンネル">▶</button></div>':''}
+ </div>`);
+ veil.classList.add('tv-mode');
+ fitModal();
  const broadcast=$('tvBroadcast');
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)broadcast.play().catch(()=>{});
  if(canShop)clockDelivery.bindShop();
@@ -1015,7 +1019,7 @@ function meteorTake(){
   <img src="meteor-pixel.png" alt=""><span>白い星を拾う</span>
  </button><p>流れ星の光の中に、白い星がある。</p>`);
  $('catchMeteor').onclick=()=>{
-  st.meteorStar=true;save();syncInventory();chime();
+  st.meteorStar=true;rememberItem('meteor');save();syncInventory();chime();
   openModal('流れ星の白い星','<div class="item-found"><span class="kept-star" aria-hidden="true"></span><b>白い星を手に入れた</b><p>「もちもの」に保管した。</p></div>');
  };
 }
