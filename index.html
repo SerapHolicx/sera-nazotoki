@@ -272,7 +272,7 @@ body{position:fixed;inset:0;min-height:0}
 .eye-storage.drop-target{outline:2px solid #fff2c9;background:#61547d}
 .eye-storage span{padding-left:8px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-</style><link rel="stylesheet" href="star-puzzles.css?v=15">
+</style><link rel="stylesheet" href="star-puzzles.css?v=16">
 <link rel="stylesheet" href="television.css?v=7">
 <link rel="stylesheet" href="star-shooter.css?v=2">
 <link rel="stylesheet" href="clock-delivery.css?v=7">
@@ -497,25 +497,36 @@ function closeModal(){
 function triggerFlash(){const el=$('flash');el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
 function hotspot({id,x,y,label,done=false,plain=false,lit=!done}){const b=document.createElement('button');b.type='button';b.dataset.object=id;b.className='object'+(done?' done':'')+(plain?' object-plain':'')+(lit?' target-lit':'');b.style.setProperty('--x',x+'%');b.style.setProperty('--y',y+'%');b.setAttribute('aria-label',label+(done?'、星を回収済み':''));b.onclick=()=>inspect(id);
  $('scene').appendChild(b)}
-function nextStarGuide(){
- if(st.eyeTaken)return null;
- if(!st.got.includes('books'))return [0,'books','まずは本棚を調べよう。'];
- if(!st.got.includes('clock'))return [0,'clock','次は時計を調べよう。'];
- if(!st.got.includes('tv'))return [2,'tv','テレビで星屑シューティングに挑戦しよう。'];
- if(!st.got.includes('journal')){
-  if(!st.nightWindowSeen)return [1,'window','観測室の窓から、夜空を見てみよう。'];
-  return [1,'journal','窓で見た星と、星の観測日誌を見比べよう。'];
- }
- if(!st.got.includes('orrery'))return [1,'orrery','観測室の天体模型を調べよう。'];
- return [1,'scope','観測室の望遠鏡を調べよう。'];
+const starRoute=[
+ [0,'books','まずは本棚を調べよう。'],
+ [0,'clock','次は時計を調べよう。'],
+ [2,'tv','テレビで星屑シューティングに挑戦しよう。'],
+ [1,'window','観測室の窓から、夜空を見てみよう。'],
+ [1,'journal','窓で見た星と、星の観測日誌を見比べよう。'],
+ [1,'orrery','観測室の天体模型を調べよう。'],
+ [1,'scope','観測室の望遠鏡を調べよう。']
+];
+function nextStarStep(){
+ if(st.eyeTaken)return -1;
+ return starRoute.findIndex(([,id])=>id==='window'
+  ? !st.nightWindowSeen&&!st.got.includes('journal')&&!st.puzzleSolved.includes('journal')
+  : !st.got.includes(id));
+}
+function canInspect(id,step=nextStarStep()){
+ if(step<0||id==='sera'||st.got.includes(id)||st.puzzleSolved.includes(id))return true;
+ const index=starRoute.findIndex(([,target])=>target===id);
+ return index>=0&&index<=step;
 }
 function renderStarGuide(){
- const guide=nextStarGuide();
+ const step=nextStarStep();
+ const guide=starRoute[step];
  const tip=$('tip');
  $('goLeft').classList.toggle('guide-next',Boolean(guide&&guide[0]<st.zone));
  $('goRight').classList.toggle('guide-next',Boolean(guide&&guide[0]>st.zone));
  for(const node of $('scene').querySelectorAll('[data-object]')){
-  node.classList.toggle('guide-next',Boolean(guide&&guide[0]===st.zone&&node.dataset.object===guide[1]));
+  const id=node.dataset.object;
+  node.disabled=!canInspect(id,step);
+  node.classList.toggle('guide-next',Boolean(guide&&guide[0]===st.zone&&id===guide[1]));
  }
  tip.classList.toggle('guide-active',Boolean(guide));
  const message=guide?(guide[0]!==st.zone?`${names[guide[0]]}へ。 ${guide[2]}`:guide[2])
@@ -954,6 +965,7 @@ const investigation={
  scope:{name:'望遠鏡',examine:scope,together:'なになに？　何か見えた？'}
 };
 function inspect(id){
+ if(!canInspect(id))return;
  if(id==='sera'){examineSera();return}
  const object=investigation[id];
  const usingClockPicture=id==='clock'&&st.panels.includes(selectedItem);
