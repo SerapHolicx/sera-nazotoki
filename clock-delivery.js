@@ -57,9 +57,9 @@
  function itemLabel(id){
   return items[id].name+'パネル';
  }
- function panelImage(id,decorative=false,advert=false){
+ function panelImage(id,decorative=false){
   const panel=items[id];
-  return `<img ${!advert?'class="clock-part-picture" ':''}src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
+  return `<img class="clock-part-picture" src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
  }
 
  function create({getState,open,save,draw,tap,chime,element,applyTime,onDelivered}){
@@ -142,7 +142,7 @@
    return `<section id="tvFruitShop" class="tv-fruit-shop" aria-label="くだもの通販" hidden>
     <header><strong>ご注文しますか？</strong><button id="closeFruitPrompt" type="button" class="btn" aria-label="注文画面を閉じる">×</button></header>
     <div class="tv-fruit-products">
-     ${products.map(id=>`<button type="button" class="btn" data-fruit="${id}" aria-pressed="false">${panelImage(id,true,true)}<b>${items[id].name}</b></button>`).join('')}
+     ${products.map(id=>`<button type="button" class="btn" data-fruit="${id}" aria-pressed="false">${panelImage(id,true)}<b>${itemLabel(id)}</b></button>`).join('')}
     </div>
     <button class="btn primary" id="orderFruit" type="button" disabled>注文する</button>
     <p id="fruitOrderStatus" role="status"></p>

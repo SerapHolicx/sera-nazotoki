@@ -5,10 +5,11 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
   const journalLines = ['あめあがりの','ひとつぶが','ひかりをよぶ'];
   const journalLetters = [...journalLines.join('')];
   const clueSlots = [6,12,4];
-  const constellations = [
-    ['....#....','....#....','...###...','..#####..','####+####','..#####..','...###...','....#....'],
-    ['..#...#..','..#...#..','.###.###.','.#######.','..##+##..','...###...','....#....'],
-    ['#...#...#','#...#...#','##.###.##','#########','.###+###.','..#####..','...###...','....#....']
+  const answerKeys = ['あ','か','し','と','ひ','ぶ','よ','り'];
+  const clueSprites = [
+    ['....+....','....#....','....#....','...###...','.+##+##+.','...###...','....#....','....+....'],
+    ['..+...+..','..#...#..','...#.#...','...###...','.+##+##+.','...###...','....#....','....+....'],
+    ['..+.+.+..','..#.#.#..','...###...','...###...','.+##+##+.','...###...','....#....','....+....']
   ];
   const journalRows = renderRow => {
     let offset = 0;
@@ -58,11 +59,11 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
     ctx.fillStyle='#e6bfaa';
     [[34,88],[46,89],[119,88],[129,87],[148,92]].forEach(([x,y])=>ctx.fillRect(x,y,1,1));
     element('modalBody').querySelectorAll('[data-sky-glyph]').forEach(sprite => {
-      const pixels = constellations[Number(sprite.dataset.skyGlyph)];
+      const pixels = clueSprites[Number(sprite.dataset.skyGlyph)];
       const ink = sprite.getContext('2d');
       pixels.forEach((line,y)=>[...line].forEach((pixel,x)=>{
         if(pixel==='.')return;
-        ink.fillStyle=pixel==='+'?'#fffaf0':y>=5?'#a0b9ff':'#f6dfbe';
+        ink.fillStyle=pixel==='+'?(x===4&&y===4?'#fffaf0':'#adbce8'):y>=5?'#a0b9ff':'#f6dfbe';
         ink.fillRect(x,y,1,1);
       }));
     });
@@ -76,35 +77,36 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
 
   function journal() {
     const state = getState();
+    const page = `<div class="paper blue-journal"><b>雨上がりの観測メモ</b>
+      <div class="journal-letter-grid">${journalRows((_,letter)=>`<span>${letter}</span>`)}</div>
+      </div>`;
     if (owned('journal')) {
-      open('星の観測日誌',eclipseNote());
+      open('星の観測日誌',page+eclipseNote());
       return;
     }
     if (isNight() && state.puzzleSolved.includes('journal')) return reward('journal','',eclipseNote());
-    let answer = [];
-    open('星の観測日誌',`<div class="paper blue-journal"><b>雨上がりの観測メモ</b>
-      <div class="journal-letter-grid" aria-label="上から六文字、五文字、六文字">${journalRows((offset,letter,column)=>`<button type="button" data-journal-cell="${offset+column}" aria-label="${letter}、行の左から${column+1}番目" aria-pressed="false">${letter}</button>`)}</div>
-      </div>
+    let answer = '';
+    open('星の観測日誌',page+`
       <output id="journalAnswer" aria-live="polite">□ □ □</output>
+      <div class="journal-answer-keys" aria-label="答えの文字を選ぶ">${answerKeys.map(letter=>`<button class="btn" type="button" data-journal-letter="${letter}">${letter}</button>`).join('')}</div>
       <div class="buttons"><button class="btn" id="journalErase" type="button">一文字消す</button><button class="btn primary" id="journalCheck" type="button">確かめる</button></div>
       <p class="puzzle-feedback" id="journalStatus" aria-live="polite"></p>`);
-    const cells = [...element('modalBody').querySelectorAll('[data-journal-cell]')];
+    const keys = element('modalBody').querySelectorAll('[data-journal-letter]');
     function displayAnswer() {
-      element('journalAnswer').textContent = [...answer.map(index=>journalLetters[index]),...Array(3-answer.length).fill('□')].join(' ');
-      element('journalCheck').disabled = answer.length !== 3;
-      element('journalErase').disabled = !answer.length;
-      cells.forEach((cell,index) => cell.setAttribute('aria-pressed', String(answer.includes(index))));
+      element('journalAnswer').textContent = [...answer.padEnd(clueSlots.length,'□')].join(' ');
+      element('journalCheck').disabled = answer.length !== clueSlots.length;
+      element('journalErase').disabled = !answer;
     }
-    cells.forEach((button,index) => {
+    keys.forEach(button => {
       button.onclick = () => {
-        if (answer.length === 3 || answer.includes(index)) return;
-        answer.push(index);
+        if (answer.length === clueSlots.length) return;
+        answer += button.dataset.journalLetter;
         element('journalStatus').textContent = '';
         tap();displayAnswer();
       };
     });
     element('journalErase').onclick = () => {
-      answer.pop();
+      answer = answer.slice(0,-1);
       element('journalStatus').textContent = '';
       displayAnswer();
     };
@@ -113,10 +115,10 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
         element('journalStatus').textContent = 'ページの端に「星が出たら照合」と書いてある。';
         return;
       }
-      if (answer.length === clueSlots.length && answer.every((index,order)=>index===clueSlots[order])) reward('journal','',eclipseNote());
+      if (answer === clueSlots.map(index=>journalLetters[index]).join('')) reward('journal','',eclipseNote());
       else {
         element('journalStatus').textContent = '文字が青く光ったが、日誌は開かない。';
-        answer = [];
+        answer = '';
         displayAnswer();
       }
     };
