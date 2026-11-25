@@ -19,7 +19,6 @@
 .app-calendar{background:linear-gradient(#a43c5f 28%,#fff5f9 28%);color:#542a4e;font-size:15px;padding-top:5px}
 .app-music{background:#aa4775}
 .app-settings{background:#485879}
-.phone-exit{min-height:40px;border-radius:18px;color:#fff;border:1px solid #b9c6ea8c;background:#172447b8;font-size:12px}
 .phone-app{background:#171d31}
 .phone-app-bar{display:grid;grid-template-columns:minmax(68px,1fr) auto minmax(68px,1fr);
  align-items:center;min-height:45px;gap:2px;padding:0 5px;border-bottom:1px solid #ffffff22}

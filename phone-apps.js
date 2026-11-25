@@ -1,6 +1,6 @@
 'use strict';
 
-window.createSeraPhone = ({open,home,exit,time,element}) => {
+window.createSeraPhone = ({open,home,time,element}) => {
   const data = window.seraPhoneContent;
   const apps = [
     ['diary','日記','▤'],['photos','写真','✿'],['x','X','𝕏'],
@@ -21,10 +21,8 @@ window.createSeraPhone = ({open,home,exit,time,element}) => {
     open('phone-home wall-'+settings.wall,`<div class="phone-desktop">
       <strong class="lock-time">${time()}</strong>
       <div class="phone-app-grid">${apps.map(([id,label,icon])=>
-        button(`<span class="app-icon app-${id}" aria-hidden="true">${icon}</span><span>${label}</span>`,`class="home-app" data-app="${id}"`)).join('')}</div>
-      ${button('セラのそばに戻る','class="phone-exit" id="phoneExit"')}</div>`);
+        button(`<span class="app-icon app-${id}" aria-hidden="true">${icon}</span><span>${label}</span>`,`class="home-app" data-app="${id}"`)).join('')}</div></div>`);
     on('[data-app]',node=>views[node.dataset.app]());
-    on('#phoneExit',exit);
   }
 
   function screen(app,content,back=home,backLabel='ホーム') {

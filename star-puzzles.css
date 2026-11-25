@@ -183,7 +183,7 @@
 
 
 .observatory-notebook{
- background:#e5ceab url("observation-paper.png") center/100% 100%;
+ background:#e5ceab url("observation-paper-v2.png") center/100% 100%;
  color:#43324e;image-rendering:pixelated;padding:10px 12% 19px 15%;margin:4px 0 5px;
 }
 .observatory-notebook b{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:clamp(12px,4vw,15px)}
@@ -205,3 +205,11 @@
 }
 .night-surprise p{margin:0;color:#fff4dc;font-size:13px}
 @keyframes night-reaction{from{opacity:0}to{opacity:1}}
+
+
+.debug-mode #dialog{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 48px)}
+.debug-tools{display:flex;justify-content:center;gap:8px;padding:5px 0}
+.debug-tools button{
+ min-height:40px;padding:5px 7px;font-size:11px;border:1px solid #8885ac;background:#272640;color:#ede7fa
+}
+.share-object{justify-content:center}

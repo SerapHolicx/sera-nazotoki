@@ -88,7 +88,7 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
     const state = getState();
     const page = `<article class="observatory-notebook"><b>雨上がりの観測メモ</b>
       <div class="journal-letter-grid">${journalRows((_,letter)=>`<span>${letter}</span>`)}</div>
-      <p class="journal-margin-note">今夜の空と、同じ並び。</p></article>`;
+      <p class="journal-margin-note">今夜の星と、同じ並び。</p></article>`;
     if (owned('journal')) {
       open('星の観測日誌',page+eclipseNote());
       return;
