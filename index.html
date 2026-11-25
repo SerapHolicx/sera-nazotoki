@@ -340,6 +340,7 @@ body{position:fixed;inset:0;min-height:0}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style><link rel="stylesheet" href="star-puzzles.css?v=3">
 <link rel="stylesheet" href="television.css?v=1">
+<link rel="stylesheet" href="clock-delivery.css?v=1">
 </head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
 <h2 id="inventoryHeading">持ち物ボックス</h2>
@@ -349,12 +350,14 @@ body{position:fixed;inset:0;min-height:0}
  <div class="inventory-slot"><span class="inventory-item" data-item="meteor" hidden><span class="kept-star" aria-hidden="true"></span>白い星</span></div>
 </div>
 <p class="inventory-note" id="inventoryNote" aria-live="polite">持ち物はまだない。</p>
-</section><div class="tip" id="tip">星の印をタップして調べよう。</div></section><div class="devline"><button id="devBtn">DEV：流れ星</button><button id="resetBtn">はじめから</button></div></main>
+<div class="inventory-panels" id="inventoryPanels" aria-label="所持品の絵のパネル" hidden></div>
+</section><div class="tip" id="tip">星の印をタップして調べよう。</div></section><div class="devline"><button id="resetBtn">はじめから</button></div></main>
 <div class="veil" id="veil" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><header class="modal-head"><h2 id="modalTitle"></h2><button class="x" id="modalClose" aria-label="閉じる">×</button></header><div id="modalBody"></div></section></div>
 <div class="finish" id="titleScreen"><div><img class="title-img" src="title-dusk.webp" alt="夜空の下の宵空天文台"><h1>宵空天文台</h1><div id="titleStars"></div><p id="titleSubtitle">君と紡ぐ、ひとつの星座。</p><button class="btn primary menubtn" id="startBtn">ゲームをはじめる</button><button class="btn menubtn" id="titleReset">最初から遊ぶ</button></div></div>
 <div class="finish" id="endingScreen" hidden><div><div class="end-sky"><img class="end-art" src="ending-night.png" alt="展望台で夜空を見上げるセラとあなた"><svg viewBox="0 0 100 100" class="const" id="endConst" aria-hidden="true"></svg></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 歌を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="ending_song.mp3" preload="none"></audio></div></div>
 <script src="constellation.js?v=matching-gates-2"></script>
 <script src="star-puzzles.js?v=3"></script>
+<script src="clock-delivery.js?v=1"></script>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);const key='sera-observatory-v8-20261123';const scenes=['left','center','right'];const names=['図書コーナー','観測室','管理・休憩コーナー'];
@@ -373,21 +376,21 @@ const shuffledBooks=[4,2,6,1,5,3];
 const hasPattern=pattern=>st.placed.length===pattern.length&&pattern.every(slot=>st.placed.includes(slot));
 const phoneOrder=[4,1,3,0,5,2];
 const newObservationId=()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');
-const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:2,eyeTaken:false,scopeFocus:0,clockHour:6,night:false,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteor:false,meteorStar:false,restored:false,endingDone:false,secondRun:false,phoneUnlocked:false,phoneRead:[],phoneConfessionSeen:false,observationVersion:2,observationPending:null,observationLinked:false,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1,moonAngle:0});
+const {eveningHour,nightHour,meteorHour,formatTime}=window.observatoryClock;
+const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:2,eyeTaken:false,scopeFocus:0,clockVersion:1,clockHour:eveningHour,clockKana:'か',clockPanel:'cross',panels:[],delivery:null,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteorStar:false,restored:false,endingDone:false,secondRun:false,phoneUnlocked:false,phoneRead:[],phoneConfessionSeen:false,observationVersion:2,observationPending:null,observationLinked:false,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1,moonAngle:0});
 let st;
 try{
  const saved=JSON.parse(localStorage.getItem(key)||'{}');
- st={...defaults(),...saved,tvPuzzleVersion:saved.tvPuzzleVersion===1?1:0};
+ st={...defaults(),...saved,tvPuzzleVersion:saved.tvPuzzleVersion===1?1:0,clockVersion:saved.clockVersion===1?1:0};
  delete st.phone;
  if(saved.observationVersion!==2){st.observationVersion=2;st.observationPending=null;st.observationLinked=false}
  if(saved?.boardVersion!==2)st.placed=Array.isArray(saved?.placed)?saved.placed.map(slot=>legacySlots[slot]):[];
  delete st.bookProgress;
  if(Array.isArray(saved?.got)&&saved.got.includes('lamp')){
-  st.got=saved.got.map(id=>id==='lamp'?'clock':id);st.night=true;
+  st.got=saved.got.map(id=>id==='lamp'?'clock':id);
  }
  if(saved?.npcMoving)st.npcAtScope=true;
  delete st.npcMoving;
- if(st.eyeTaken||st.got?.includes?.('clock'))st.night=true;
  if(st.remote){st.staff=true;if(saved.remoteUsed===undefined)st.remoteUsed=st.news||st.channel>0}
 }catch(e){st=defaults()}
 const starLabels={books:'本棚',clock:'時計',tv:'テレビ',journal:'星の観測日誌',orrery:'天体模型'};
@@ -405,14 +408,16 @@ st.placed=Array.isArray(st.placed)?[...new Set(st.placed.filter(x=>Number.isInte
 if(!Array.isArray(st.bookOrder)||st.bookOrder.length!==numberOrder.length||!numberOrder.every(n=>st.bookOrder.includes(n)))st.bookOrder=shuffledBooks.slice();
 st.phoneRead=Array.isArray(st.phoneRead)?st.phoneRead.filter(id=>typeof id==='string'):[];
 if(!Number.isInteger(st.channel)||st.channel<0||st.channel>3)st.channel=0;
-if(!Number.isInteger(st.clockHour)||st.clockHour<0||st.clockHour>11)st.clockHour=6;
+window.observatoryClock.sanitize(st);
+const isNight=()=>st.clockHour===nightHour||st.clockHour===meteorHour;
+const gameTime=()=>formatTime(st.clockHour);
 const save=()=>{try{localStorage.setItem(key,JSON.stringify(st))}catch(e){}};
 if(!st.runId){st.runId=newObservationId();save()}
 const total=()=>st.got.length+(st.eyeTaken?1:0);
 const seraSilent=()=>st.eyeTaken&&!st.restored;
 const seraArea=()=>st.got.length===5||st.npcAtScope||st.eyeTaken?1:0;
 const orreryReady=()=>['books','clock','tv','journal'].every(id=>st.got.includes(id));
-const meteorAvailable=()=>seraSilent()&&st.news&&st.clockHour===0&&!st.meteorStar;
+const meteorAvailable=()=>seraSilent()&&st.news&&st.clockHour===meteorHour&&!st.meteorStar;
 const canResolveGate=()=>st.secondRun&&st.phoneConfessionSeen;
 let msgQueue=[],onMsgsDone=null, audioCtx=null,musicTimer=null,musicOn=false,internalModalCloser=null;
 let selectedItem=null;
@@ -430,9 +435,12 @@ function syncInventory(){
   if(button.tagName==='BUTTON')button.setAttribute('aria-pressed',String(item===selectedItem));
  }
  const labels={key:'鍵',remote:'リモコン',meteor:'白い星'};
+ const inventoryPanels=$('inventoryPanels');
+ inventoryPanels.hidden=!st.panels.length;
+ inventoryPanels.innerHTML=st.panels.map(id=>window.observatoryClock.panelImage(id)).join('');
  $('inventoryNote').textContent=selectedItem
   ?labels[selectedItem]+'を選択中。使う場所をタップ。'
-  :itemButtons.some(button=>button.tagName==='BUTTON'&&!button.hidden)?'使いたい持ち物を選ぼう。':items.meteor?'白い星を保管している。':'持ち物はまだない。';
+  :itemButtons.some(button=>button.tagName==='BUTTON'&&!button.hidden)?'使いたい持ち物を選ぼう。':items.meteor?'白い星を保管している。':st.panels.length?'絵のパネルを保管している。':'持ち物はまだない。';
 }
 for(const button of itemButtons.filter(item=>item.tagName==='BUTTON')){
  button.onclick=()=>{
@@ -485,7 +493,7 @@ function draw(){
  alignMarkers(scene);
  $('areaLabel').textContent=names[zone];
  $('areaShort').textContent=names[zone];
- $('sceneImg').src=zone===0?'left-clock.webp':zone===1&&!st.night?'center-evening.webp':scenes[zone]+'.png?v=scope-1';
+ $('sceneImg').src=zone===0?'left-clock.webp':zone===1&&!isNight()?'center-evening.webp':scenes[zone]+'.png?v=scope-1';
  $('sceneImg').alt=names[zone];
  $('goLeft').disabled=zone===0;$('goRight').disabled=zone===2;
  scene.querySelectorAll('.object,.scene-puzzle-art').forEach(node=>node.remove());
@@ -493,6 +501,13 @@ function draw(){
  if(zone===0){
   hotspot({id:'books',x:44,y:43,label:'本棚',done:st.got.includes('books')});
   hotspot({id:'clock',x:81,y:24,label:'時計',done:st.got.includes('clock'),lit:true});
+  if(st.delivery){
+   const parcel=document.createElement('button');
+   parcel.type='button';parcel.className='scene-puzzle-art parcel-scene';parcel.id='deliveryBox';
+   parcel.setAttribute('aria-label','絨毯の上の段ボール');
+   parcel.innerHTML='<img src="clock-parts/parcel.png" width="54" height="44" alt="">';
+   parcel.onclick=clockDelivery.showParcel;scene.append(parcel);
+  }
  }
  if(zone===1){
   if(st.got.includes('tv')){
@@ -602,45 +617,27 @@ function books(){
  }
  orderView();
 }
-function clock(selectedHour=st.clockHour){
- if(!st.got.includes('clock')&&st.puzzleSolved.includes('clock'))return collect('clock');
- const dial=Array.from({length:12},(_,hour)=>{
-  const angle=hour*Math.PI/6;
-  const x=50+27*Math.sin(angle);
-  const y=50-27*Math.cos(angle);
-  return `<button type="button" data-hour="${hour}" aria-label="${hour}時" aria-pressed="${selectedHour===hour}" style="--hx:${x}%;--hy:${y}%">${hour||12}</button>`;
- }).join('');
- openModal('時計',`<div class="clock-clues">
-  <div><span class="clock-example" role="img" aria-label="1時の時計"><img src="observatory-clock.png" width="30" height="30" alt=""></span> ＋ く ＝ <img src="clock-fig.png" width="32" height="32" alt="いちじくの断面"></div>
-  <div>？時 ＋ ら ＝ <img src="clock-whale.png" width="32" height="32" alt="クジラ"></div>
- </div><div class="clock-dial" aria-label="時計の針を動かす">
-  <span class="clock-hand" aria-hidden="true" style="transform:rotate(${selectedHour*30}deg)"></span>${dial}
- </div><div class="buttons"><button class="btn primary" id="setHour">${selectedHour}時に合わせる</button></div><p id="clockStatus" aria-live="polite"></p>`);
- $('modalBody').querySelectorAll('[data-hour]').forEach(button=>{
-  button.onclick=()=>clock(Number(button.dataset.hour));
- });
- $('setHour').onclick=()=>{
-  st.clockHour=selectedHour;save();clickTone();
-  if(st.clockHour===9&&!st.got.includes('clock')){
-   if(!st.got.includes('books')){
-    $('clockStatus').textContent='時計の奥で小さな音がした。';
-    return;
-   }
-   const wasNight=st.night;
-   st.night=true;save();draw();
-   collect('clock',wasNight?'':'窓の外が、夕方から夜に変わった。');
-   return;
-  }
-  if(meteorAvailable()){st.meteor=true;save()}
-  closeModal();
- };
+const clockDelivery=window.observatoryClock.create({
+ getState:()=>st,open:openModal,save,draw,tap:clickTone,chime,element:$,
+ applyTime(before){
+  if(st.clockHour!==nightHour||st.got.includes('clock')||!st.got.includes('books'))return false;
+  collect('clock',before===eveningHour?'窓の外が、夕方から夜に変わった。':'');
+  return true;
+ },
+ onDelivered(){
+  if(st.zone===seraArea()&&!seraSilent())say('わ、もう届いてる！　早いね〜！');
+ }
+});
+function clock(){
+ if(!st.got.includes('clock')&&st.puzzleSolved.includes('clock')){collect('clock');return}
+ clockDelivery.clock();
 }
 const {journal,orrery}=window.createObservatoryStarPuzzles({
  getState:()=>st,open:openModal,save,reward:collect,tap:clickTone,element:$
 });
 function examineSera(){if(!st.eyeTaken){
  const remark=st.got.length===5?'あとひとつ、どこにあるんだろう……？':
-  st.night?'夜の天文台って、音まで遠くなる気がするね。':'ここ、夕方は床まであったかい色になるんだよ。';
+  isNight()?'夜の天文台って、音まで遠くなる気がするね。':'ここ、夕方は床まであったかい色になるんだよ。';
  openModal('セラ',`<div class="sera-clue"><img src="sera-dusk-face.webp" alt="両目の瞳に星が光るセラ"></div>
   <p>「どうしたの？　何か見つけた？」</p><div class="buttons"><button class="btn" id="askConstellation">話す</button></div>`);
  $('askConstellation').onclick=()=>{closeModal();say(remark)};
@@ -804,7 +801,7 @@ const channels=[
  {id:'variety',title:'おやつの時間',description:'クッキーを焼く小さな台所'},
  {id:'weather',title:'星空予報',description:'夜空に流れる雲と月'},
  {id:'news',title:'天文ニュース',description:'スタジオのキャスターと流星の映像'},
- {id:'shop',title:'夜の通販',description:'ステージに並んだ星形のクッション'}
+ {id:'shop',title:'夜の通販',description:'ステージに並んだりんご、バナナ、いちじく'}
 ];
 const cookieShapes={
  star:{icon:'★',label:'星'},
@@ -817,29 +814,36 @@ const cookieRounds=[
  {goal:'crescent',choices:['diamond','heart','crescent']},
  {goal:'diamond',choices:['diamond','star','crescent']}
 ];
-function television(playing=false){
+function television(playing=false,previewChannel=null){
  const canChange=st.remote&&selectedItem==='remote';
  const usedNow=canChange&&!st.remoteUsed;
  if(usedNow){st.remoteUsed=true;clickTone();save()}
- const c=channels[st.channel];
- const canPlay=st.channel===0&&st.got.includes('clock')&&!st.got.includes('tv');
+ const channel=previewChannel??st.channel;
+ const c=channels[channel];
+ const canShop=c.id==='shop';
+ const canPlay=channel===0&&st.got.includes('clock')&&!st.got.includes('tv');
  if(c.id==='news'&&!st.news){st.news=true;save()}
  openModal('テレビ',`<div class="tv-cabinet">
   <div class="tv-screen">
-   <video id="tvBroadcast" muted loop playsinline preload="metadata" poster="tv/${c.id}.png" aria-label="${c.description}">
-    <source src="tv/${c.id}.mp4" type="video/mp4">
+   <video id="tvBroadcast" muted loop playsinline preload="metadata" poster="tv/${c.id}.png${canShop?'?v=fruit':''}" aria-label="${c.description}">
+    <source src="tv/${c.id}.mp4${canShop?'?v=fruit':''}" type="video/mp4">
    </video>
-   <span class="tv-channel" aria-hidden="true">CH ${String(st.channel+1).padStart(2,'0')}</span>
-   ${c.id==='news'?'<time class="tv-observation-time" datetime="00:00">流星群　00:00</time>':''}
+   <span class="tv-channel" aria-hidden="true">CH ${String(channel+1).padStart(2,'0')}</span>
+   ${c.id==='news'?`<time class="tv-observation-time" datetime="${formatTime(meteorHour)}">流星群　午前${meteorHour}時（${formatTime(meteorHour)}）</time>`:''}
   </div>
   <div class="tv-ticker" aria-live="polite"><span>YOIZORA TV</span><b>${c.title}</b></div>
+  ${canShop?'<div class="tv-order-dock">'+clockDelivery.shopMarkup()+'</div>':''}
  </div>
  ${usedNow?'<p>ピッ。リモコンが反応した。</p>':''}
  ${canPlay?`<div id="tvGame" class="tv-game">${playing?'':'<button type="button" class="btn primary" id="startTVGame">型ぬきに参加する</button>'}</div>`:''}
- ${canChange?'<div class="buttons"><button class="btn" id="prevTV" aria-label="前のチャンネル">◀</button><button class="btn" id="nextTV" aria-label="次のチャンネル">▶</button></div>':''}`);
+ ${previewChannel!==null?'<div class="buttons"><button class="btn" id="leaveShopping">番組に戻る</button></div>':!canChange&&st.got.includes('clock')&&!canShop?'<div class="buttons"><button class="btn" id="openShopping">くだもの通販</button></div>':''}
+ ${canChange&&previewChannel===null?'<div class="buttons"><button class="btn" id="prevTV" aria-label="前のチャンネル">◀</button><button class="btn" id="nextTV" aria-label="次のチャンネル">▶</button></div>':''}`);
  const broadcast=$('tvBroadcast');
  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)broadcast.play().catch(()=>{});
- if(canChange){
+ if(canShop)clockDelivery.bindShop();
+ if($('openShopping'))$('openShopping').onclick=()=>television(false,3);
+ if($('leaveShopping'))$('leaveShopping').onclick=()=>television();
+ if(canChange&&previewChannel===null){
   $('prevTV').onclick=()=>{st.channel=(st.channel+channels.length-1)%channels.length;clickTone();save();television()};
   $('nextTV').onclick=()=>{st.channel=(st.channel+1)%channels.length;clickTone();save();television()};
  }
@@ -912,8 +916,8 @@ function constellationSvg(cls,slots=numberSlots){
 }
 function sky(){
  if(finishObservation())return;
- if(meteorAvailable()&&!st.meteor){st.meteor=true;save()}
  const available=total()-st.placed.length;
+ const canSeeMeteor=meteorAvailable();
  const resolving=canResolveGate();
  const gate=matchGate(st.placed);
  const numberGate=gate==='number';
@@ -922,12 +926,12 @@ function sky(){
   ?(st.observationLinked?'窓の向こうに、光が返った。':'窓の奥で、小さな光が瞬いた。')
   :numberGate?'窓の向こうに、何かの気配がする。':'';
  openModal('窓の向こうの夜空',`
-  <div class="sky board-sky">${holes.map(([x,y],i)=>`<button class="slot ${st.placed.includes(i)?'filled':''}" data-position="${i}" style="left:${x}%;top:${y}%" aria-label="${i%columns+1}列、${Math.floor(i/columns)+1}段の穴">${st.placed.includes(i)?'✦':'·'}</button>`).join('')}</div>
+  <div class="sky board-sky">${canSeeMeteor?'<i class="scene-meteor" aria-hidden="true"></i>':''}${holes.map(([x,y],i)=>`<button class="slot ${st.placed.includes(i)?'filled':''}" data-position="${i}" style="left:${x}%;top:${y}%" aria-label="${i%columns+1}列、${Math.floor(i/columns)+1}段の穴">${st.placed.includes(i)?'✦':'·'}</button>`).join('')}</div>
   <p id="boardFeedback" aria-live="polite">${st.observationReply&&!st.observationLinked?'窓の向こうから、返事が届いている。':''}</p><button class="btn star-tray" data-star-tray>✦ 保管箱 ${available} 個 ／ 夜空 ${st.placed.length} / 6</button>
   ${resolving?`<div class="gate-resolution"><p>${note}</p><div class="buttons">
    ${numberGate?'<button class="btn primary" id="observeGate">星座を観測する</button>':waitingGate&&st.observationLinked?'<button class="btn primary" id="replayObservation">真エンドをもう一度見る</button>':''}
   </div></div>`:'<p class="muted">保管箱の星を穴へ。タップでも、置いたり戻したりできる。</p>'}
-  ${st.meteor&&!st.meteorStar?'<div class="buttons"><button class="btn primary" id="meteorBtn">……流れ星が見える！</button></div>':''}`);
+  ${canSeeMeteor?'<div class="buttons"><button class="btn primary" id="meteorBtn">……流れ星が見える！</button></div>':''}`);
  if($('replayObservation'))$('replayObservation').onclick=showObservationEnding;
  const panel=$('modalBody');
  const tray=panel.querySelector('[data-star-tray]');
@@ -1006,11 +1010,12 @@ function sky(){
  if(numberGate&&resolving)$('observeGate').onclick=()=>showEnding('open');
 }
 function meteorTake(){
+ if(!meteorAvailable())return;
  openModal('流れ星',`<button type="button" class="meteor-pickup" id="catchMeteor">
   <img src="meteor-pixel.png" alt=""><span>白い星を拾う</span>
  </button><p>流れ星の光の中に、白い星がある。</p>`);
  $('catchMeteor').onclick=()=>{
-  st.meteorStar=true;st.meteor=false;save();syncInventory();chime();
+  st.meteorStar=true;save();syncInventory();chime();
   openModal('流れ星の白い星','<div class="item-found"><span class="kept-star" aria-hidden="true"></span><b>白い星を手に入れた</b><p>「もちもの」に保管した。</p></div>');
  };
 }
@@ -1103,7 +1108,7 @@ function openPhoneModal(mode,content){
   $('handsetContent').innerHTML=content;
  }else{
   openModal('セラのスマートフォン',`<div class="handset"><div class="handset-display ${mode}" id="handsetDisplay">
-   <div class="phone-statusbar"><span>00:00</span><span class="camera" aria-hidden="true"></span><span class="status-right">圏外 <span class="phone-battery" aria-label="バッテリー残量あり"></span></span></div>
+   <div class="phone-statusbar"><span>${gameTime()}</span><span class="camera" aria-hidden="true"></span><span class="status-right">圏外 <span class="phone-battery" aria-label="バッテリー残量あり"></span></span></div>
    <div class="handset-content" id="handsetContent" tabindex="-1">${content}</div>
    <div class="phone-home-bar" aria-hidden="true"></div>
   </div></div>`);
@@ -1156,7 +1161,7 @@ function seraConfession(){
 }
 function phoneHome(){
  if(!seraSilent()||!st.secondRun||!st.phoneUnlocked)return;
- openPhoneModal('phone-home',`<strong class="lock-time">00:00</strong><p class="lock-hint">ホーム</p>
+ openPhoneModal('phone-home',`<strong class="lock-time">${gameTime()}</strong><p class="lock-hint">ホーム</p>
   <div class="home-apps"><button class="home-app" id="openSocial"><span class="home-app-icon" aria-hidden="true">…</span>SNS</button></div>
   <button class="phone-back" id="phoneExit">セラのそばに戻る</button>`);
  $('openSocial').onclick=()=>phoneFeed();
@@ -1196,7 +1201,7 @@ function phonePost(index){
 function phone(){
  if(!seraSilent()||!st.secondRun)return;
  if(st.phoneUnlocked){phoneHome();return}
- openPhoneModal('phone-lock',`<strong class="lock-time">00:00</strong><p class="lock-hint">星座ロック</p>
+ openPhoneModal('phone-lock',`<strong class="lock-time">${gameTime()}</strong><p class="lock-hint">星座ロック</p>
   <div class="phone-board" id="phoneBoard">
    ${targets.map(([x,y],i)=>`<button type="button" class="phone-star" data-phone-star="${i}" style="left:${x}%;top:${y}%" aria-pressed="false" aria-label="${i+1}列目の星">✦</button>`).join('')}
   </div>
@@ -1352,7 +1357,6 @@ $('startBtn').onclick=()=>{if(canStartSecondRun())restart();else play()};
 $('titleReset').onclick=()=>{if(confirm('この周の進行をリセットして最初から遊ぶ？'))restart()};
 $('homeBtn').onclick=()=>{closeModal();title()};
 $('resetBtn').onclick=$('titleReset').onclick;
-$('devBtn').onclick=()=>{if(!st.eyeTaken){say({name:'システム',text:'流れ星のテストはセラの瞳から星を取った後に使える。'});return}st.news=true;st.meteor=true;save();say({name:'システム',text:'流れ星が現れた。窓の空を見よう。'})};
 let endPhase=0;
 const endingLines={
  first:['……セラの瞳が、ふたたび光りだす。','セラは望遠鏡から顔を上げ、あなたを見つめた。','……わあ。きれい。','君と一緒に星座を見たかったんだ。','✧ ふたりの星座 ✧'],
