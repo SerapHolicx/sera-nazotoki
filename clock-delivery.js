@@ -41,7 +41,7 @@
   delete state.night;
   delete state.meteor;
   if(![eveningHour,nightHour,meteorHour].includes(state.clockHour))state.clockHour=eveningHour;
-  if(!kana.includes(state.clockKana))state.clockKana=kana[0];
+  if(!kana.includes(state.clockKana))state.clockKana='く';
   if(state.clockPanel!==null&&!panelIds.includes(state.clockPanel))state.clockPanel='cross';
   state.panels=[...new Set([...formerPanels,...formerFruits].filter(id=>panelIds.includes(id)&&id!==state.clockPanel))];
   if(state.clockPanel!=='cross'&&!state.panels.includes('cross'))state.panels.push('cross');
