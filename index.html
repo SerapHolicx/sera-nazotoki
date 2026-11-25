@@ -70,6 +70,8 @@
 .item-found img{width:100px;height:100px;object-fit:contain;image-rendering:pixelated}
 .item-found b{color:var(--gold);text-align:center}
 .item-found p{margin:0}
+.found-item-pickup{display:grid;justify-items:center;gap:6px;min-height:44px;padding:6px 12px;border:1px solid #ad95bc;border-radius:3px;background:#29274e;color:#fff2d1}
+.found-item-pickup img{pointer-events:none;filter:drop-shadow(0 0 5px #d6bbef88)}
 #dialog.sera-speaking{grid-template-columns:112px 1fr auto}
 #dialog.sera-speaking #dialogFace{max-width:112px}
 @media(max-width:370px){
@@ -277,19 +279,30 @@ body{position:fixed;inset:0;min-height:0}
   --marker-rim:#f3d48c;
 }
 .clock-clues{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;color:#ffe8bf;font-size:15px}
+.clock-example{display:inline-grid;position:relative;place-items:center;width:30px;height:30px;vertical-align:middle}
+.clock-example::before,.clock-example::after{content:"";position:absolute;left:calc(50% - 1px);bottom:50%;height:7px;width:2px;background:#493249;transform-origin:bottom}
+.clock-example::after{height:5px;transform:rotate(30deg)}
 .clock-dial{
  position:relative;width:min(224px,100%);aspect-ratio:1;margin:10px auto;border-radius:50%;
- border:2px solid #ae92a4;background:#1d2247
+ background:url("observatory-clock.png") center/contain no-repeat;image-rendering:pixelated
 }
 .clock-dial button{
  position:absolute;left:var(--hx);top:var(--hy);transform:translate(-50%,-50%);
- width:44px;height:44px;border:0;border-radius:50%;background:none;font-size:15px
+ width:clamp(28px,9vw,38px);height:clamp(28px,9vw,38px);padding:0;border:0;border-radius:50%;background:none;font-size:14px;font-weight:700;color:#493249
 }
-.clock-dial button[aria-pressed="true"]{background:#534b78;color:#fff1bc}
+.clock-dial button[aria-pressed="true"]{background:#765978;color:#fff1bc}
 .clock-dial .clock-hand{
- position:absolute;height:29%;width:4px;left:calc(50% - 2px);bottom:50%;
- border-radius:4px;background:#f6cb83;transform-origin:bottom;pointer-events:none
+ position:absolute;height:20%;width:4px;left:calc(50% - 2px);bottom:50%;
+ border-radius:3px;background:#50374b;box-shadow:1px 0 #ab786d;transform-origin:bottom;pointer-events:none
 }
+.staff-door-art{position:relative;width:min(150px,58%);aspect-ratio:113/154;margin:0 auto;overflow:hidden;border:1px solid #a17c80;background:#242347}
+.staff-door-art img{position:absolute;width:318.585%;max-width:none;left:-200.885%;top:-50.65%;height:auto;image-rendering:pixelated}
+.return-inventory{display:grid;justify-items:center;gap:5px;width:min(100%,240px);margin:0 auto;padding:5px;border:1px solid #8376a4;background:#181d3b;color:#e3d5ec;font-size:12px}
+.return-star-item{min-width:82px;min-height:44px;display:flex;justify-content:center;align-items:center;gap:6px;touch-action:none;user-select:none;cursor:grab}
+.return-star-item .kept-star{width:23px;height:23px;margin:0}
+.return-star-item.is-dragging{opacity:.4;cursor:grabbing}
+.return-eye-target{cursor:default}
+.return-eye-target.drop-target{outline:2px solid #ffeabc;outline-offset:-3px;border-radius:50%;background:#d7c6f02b}
 .drag-star{
  position:fixed;z-index:35;pointer-events:none;transform:translate(-50%,-50%);
  font-size:34px;line-height:1;color:#fff;filter:drop-shadow(0 0 7px #b8a6ff)
@@ -333,7 +346,7 @@ body{position:fixed;inset:0;min-height:0}
 <div class="inventory-slots" id="inventorySlots">
  <div class="inventory-slot"><button class="inventory-item" data-item="key" aria-pressed="false" hidden><img src="staff-key.png" alt="">鍵</button></div>
  <div class="inventory-slot"><button class="inventory-item" data-item="remote" aria-pressed="false" hidden><img src="tv-remote.png" alt="">リモコン</button></div>
- <div class="inventory-slot"><button class="inventory-item" data-item="meteor" aria-pressed="false" hidden><span class="kept-star" aria-hidden="true"></span>白い星</button></div>
+ <div class="inventory-slot"><span class="inventory-item" data-item="meteor" hidden><span class="kept-star" aria-hidden="true"></span>白い星</span></div>
 </div>
 <p class="inventory-note" id="inventoryNote" aria-live="polite">持ち物はまだない。</p>
 </section><div class="tip" id="tip">星の印をタップして調べよう。</div></section><div class="devline"><button id="devBtn">DEV：流れ星</button><button id="resetBtn">はじめから</button></div></main>
@@ -409,14 +422,14 @@ function syncInventory(){
  for(const button of itemButtons){
   const item=button.dataset.item;
   button.hidden=!items[item];
-  button.setAttribute('aria-pressed',String(item===selectedItem));
+  if(button.tagName==='BUTTON')button.setAttribute('aria-pressed',String(item===selectedItem));
  }
  const labels={key:'鍵',remote:'リモコン',meteor:'白い星'};
  $('inventoryNote').textContent=selectedItem
   ?labels[selectedItem]+'を選択中。使う場所をタップ。'
-  :itemButtons.some(button=>!button.hidden)?'使いたい持ち物を選ぼう。':'持ち物はまだない。';
+  :itemButtons.some(button=>button.tagName==='BUTTON'&&!button.hidden)?'使いたい持ち物を選ぼう。':items.meteor?'白い星を保管している。':'持ち物はまだない。';
 }
-for(const button of itemButtons){
+for(const button of itemButtons.filter(item=>item.tagName==='BUTTON')){
  button.onclick=()=>{
   const item=button.dataset.item;
   selectedItem=selectedItem===item?null:item;
@@ -594,12 +607,12 @@ function clock(selectedHour=st.clockHour){
  if(!st.got.includes('clock')&&st.puzzleSolved.includes('clock'))return collect('clock');
  const dial=Array.from({length:12},(_,hour)=>{
   const angle=hour*Math.PI/6;
-  const x=50+40*Math.sin(angle);
-  const y=50-40*Math.cos(angle);
-  return `<button type="button" data-hour="${hour}" aria-label="${hour}時" aria-pressed="${selectedHour===hour}" style="--hx:${x}%;--hy:${y}%">${hour}</button>`;
+  const x=50+27*Math.sin(angle);
+  const y=50-27*Math.cos(angle);
+  return `<button type="button" data-hour="${hour}" aria-label="${hour}時" aria-pressed="${selectedHour===hour}" style="--hx:${x}%;--hy:${y}%">${hour||12}</button>`;
  }).join('');
  openModal('時計',`<div class="clock-clues">
-  <div>🕐 ＋ く ＝ <img src="clock-fig.png" width="32" height="32" alt="いちじくの断面"></div>
+  <div><span class="clock-example" role="img" aria-label="1時の時計"><img src="observatory-clock.png" width="30" height="30" alt=""></span> ＋ く ＝ <img src="clock-fig.png" width="32" height="32" alt="いちじくの断面"></div>
   <div>？時 ＋ ら ＝ <img src="clock-whale.png" width="32" height="32" alt="クジラ"></div>
  </div><div class="clock-dial" aria-label="時計の針を動かす">
   <span class="clock-hand" aria-hidden="true" style="transform:rotate(${selectedHour*30}deg)"></span>${dial}
@@ -661,10 +674,12 @@ function examineUnlitSera(){
    $('seraSearchResult').textContent='腰のポケットには、もう何も入っていない。';
    return;
   }
-  st.keyFound=true;save();syncInventory();chime();
-  $('lookPocket').dataset.searched='true';$('lookPocket').classList.remove('target-lit');
   $('seraSearchResult').textContent='腰のポケットから、小さな真鍮の鍵が出てきた。';
-  showItemFound($('pocketFound'),'staff-key.png','スタッフ室の鍵','鍵に「スタッフ室」と刻まれている。');
+  offerItem($('pocketFound'),'staff-key.png','スタッフ室の鍵','鍵に「スタッフ室」と刻まれている。',()=>{
+   st.keyFound=true;
+   $('lookPocket').dataset.searched='true';
+   $('lookPocket').classList.remove('target-lit');
+  });
  };
  $('lookPhone').onclick=()=>{
   if(st.secondRun){phone();return}
@@ -682,8 +697,8 @@ function scope(){
   openModal('望遠鏡',`<div class="scope lens-art"><img src="scope-player.webp" alt="望遠鏡に映る瞳"></div>`);
   return;
  }
- if(st.meteorStar&&selectedItem==='meteor'){restoreScope();return}
  if(st.eyeTaken){
+  if(st.meteorStar){prepareEyeReturn();return}
   openModal('望遠鏡',seraEye({label:'星を失った瞳'})+'<p>セラの瞳から、白い光が消えている。</p>');
   return;
  }
@@ -748,11 +763,16 @@ function takeEye(){
   st.eyeTaken=true;msgQueue=[];onMsgsDone=null;nextMessage();save();draw();scope();
  });
 }
-function itemFound(picture,item,clue){
- return `<div class="item-found"><img src="${picture}" alt=""><b>${item}を手に入れた</b><p>${clue}</p></div>`;
-}
-function showItemFound(container, picture, item, clue){
- container.innerHTML=itemFound(picture,item,clue);
+function offerItem(container,picture,item,clue,collectItem){
+ container.innerHTML=`<div class="item-found"><button type="button" class="found-item-pickup" aria-label="${item}を拾う">
+  <img src="${picture}" alt=""><b>${item}を拾う</b></button><p>${clue}</p></div>`;
+ const button=container.querySelector('.found-item-pickup');
+ button.onclick=()=>{
+  collectItem();
+  save();syncInventory();chime();
+  container.innerHTML=`<div class="item-found"><img src="${picture}" alt=""><b>${item}を手に入れた</b></div>`;
+  fitModal();
+ };
  fitModal();
 }
 function enterStaff(){
@@ -760,7 +780,7 @@ function enterStaff(){
  if(st.keyFound&&selectedItem==='key'){
   st.staff=true;save();syncInventory();clickTone();showStaffRoom(true);return;
  }
- openModal('スタッフ室の扉','<div class="lock-intro">♙</div><p>鍵がかかっている。<br>「スタッフ専用」と書かれている。</p>');
+ openModal('スタッフ室の扉','<div class="staff-door-art"><img src="right.png?v=scope-1" alt="天文台の壁にある星飾りの扉"></div><p>鍵がかかっている。<br>「スタッフ専用」と書かれている。</p>');
 }
 function showStaffRoom(unlocked=false){
  openModal('スタッフ室',`<div class="staffmap"><img src="staff.png?v=mobile-art-1" alt="天文台のスタッフ室"><button id="staffDesk" class="object object-plain target-lit" style="--x:47%;--y:54%" aria-label="セラの机"></button><button id="staffCabinet" class="object object-plain target-lit" style="--x:80%;--y:39%" aria-label="戸棚"></button></div>${unlocked?'<p>カチャリ。鍵が回り、扉が開いた。</p>':''}<div id="staffInfo" aria-live="polite">机と戸棚を調べられそうだ。</div>`);
@@ -775,9 +795,10 @@ function showStaffRoom(unlocked=false){
    if(!info.querySelector('.item-found'))info.textContent='戸棚のリモコンは、もう持っている。';
    return;
   }
-  st.remote=true;chime();save();syncInventory();
-  showItemFound(info,'tv-remote.png','テレビのリモコン','ボタンが並んでいる。');
-  cabinet.setAttribute('aria-label','戸棚、リモコン回収済み');
+  offerItem(info,'tv-remote.png','テレビのリモコン','ボタンが並んでいる。',()=>{
+   st.remote=true;
+   cabinet.setAttribute('aria-label','戸棚、リモコン回収済み');
+  });
  };
 }
 function television(){
@@ -931,6 +952,69 @@ function meteorTake(){
  $('catchMeteor').onclick=()=>{
   st.meteorStar=true;st.meteor=false;save();syncInventory();chime();
   openModal('流れ星の白い星','<div class="item-found"><span class="kept-star" aria-hidden="true"></span><b>白い星を手に入れた</b><p>「もちもの」に保管した。</p></div>');
+ };
+}
+function prepareEyeReturn(){
+ openModal('望遠鏡',seraEye({label:'光を失ったセラの瞳',id:'returnScope'})
+  +`<div class="return-inventory"><b>持ち物ボックス</b>
+   <button type="button" class="btn return-star-item" id="returnStar" aria-label="白い星をドラッグする"><span class="kept-star" aria-hidden="true"></span>白い星</button>
+  </div>`);
+ const lens=$('returnScope');
+ const source=$('returnStar');
+ const target=document.createElement('button');
+ target.type='button';target.id='returnEyeTarget';target.className='eye-hot return-eye-target';
+ target.setAttribute('aria-label','セラの瞳');target.tabIndex=-1;
+ lens.append(target);
+ let drag=null;
+ let ghost=null;
+ let keyboardSelected=false;
+ function aim(event){
+  return document.elementFromPoint(event.clientX,event.clientY)===target;
+ }
+ function clearDrag(){
+  drag=null;ghost?.remove();ghost=null;
+  source.classList.remove('is-dragging');
+  target.classList.remove('drop-target');
+ }
+ internalModalCloser=clearDrag;
+ source.onpointerdown=event=>{
+  if(!event.isPrimary||event.button!==0)return;
+  keyboardSelected=false;
+  clearDrag();
+  drag={id:event.pointerId,x:event.clientX,y:event.clientY};
+  source.setPointerCapture(event.pointerId);
+ };
+ source.onpointermove=event=>{
+  if(drag?.id!==event.pointerId)return;
+  if(!ghost){
+   if(Math.hypot(event.clientX-drag.x,event.clientY-drag.y)<6)return;
+   ghost=document.createElement('span');ghost.className='drag-star';ghost.textContent='✦';
+   ghost.setAttribute('aria-hidden','true');document.body.append(ghost);
+   source.classList.add('is-dragging');
+  }
+  ghost.style.left=event.clientX+'px';ghost.style.top=event.clientY+'px';
+  target.classList.toggle('drop-target',aim(event));
+ };
+ source.onpointerup=event=>{
+  if(drag?.id!==event.pointerId)return;
+  const dropped=Boolean(ghost)&&aim(event);
+  clearDrag();
+  if(dropped)restoreScope();
+ };
+ source.onpointercancel=clearDrag;
+ source.onlostpointercapture=clearDrag;
+ const activationKey=event=>event.key==='Enter'||event.key===' ';
+ source.onkeydown=event=>{
+  if(!activationKey(event))return;
+  event.preventDefault();
+  keyboardSelected=true;
+  target.classList.add('drop-target');
+  target.focus({preventScroll:true});
+ };
+ target.onkeydown=event=>{
+  if(!keyboardSelected||!activationKey(event))return;
+  event.preventDefault();
+  restoreScope();
  };
 }
 function restoreScope(){
