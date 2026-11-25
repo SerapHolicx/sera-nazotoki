@@ -1,0 +1,45 @@
+.title-mood{width:min(100%,420px);height:3px;margin:0 auto;background:#b5add39c}
+#titleScreen[data-mood="first"] .title-mood{background:linear-gradient(90deg,transparent,#ffe3b6,transparent)}
+#titleScreen[data-mood="open"] .title-img{filter:saturate(.78) hue-rotate(24deg) brightness(.72)}
+#titleScreen[data-mood="open"] .title-mood{background:linear-gradient(90deg,transparent,#e499c5,transparent);animation:gate-flicker 4s infinite}
+#titleScreen[data-mood="stop"] .title-img{filter:saturate(.58) brightness(.82)}
+#titleScreen[data-mood="stop"] .title-mood{background:linear-gradient(90deg,transparent,#b0bdd3,transparent)}
+#titleScreen[data-mood="true"] .title-img{filter:brightness(1.18) saturate(1.12)}
+#titleScreen[data-mood="true"] .title-mood{background:linear-gradient(90deg,#b1b6ff,#ffefd0,#b4f5ff);box-shadow:0 0 12px #b4eeff80}
+#endingScreen[data-route="first"] .end-art{filter:brightness(1.12) sepia(.18)}
+#endingScreen[data-route="stop"] .end-art{filter:saturate(.58) brightness(.78)}
+#endingScreen[data-route="true"]:not(.recovering) .end-sky{box-shadow:0 0 28px #a4cafa66}
+#endingScreen[data-route="true"]:not(.recovering) .end-art{filter:brightness(1.23)}
+#endingScreen[data-route="open"] #endOmen{opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity 1.4s,transform 2s;image-rendering:pixelated}
+#endingScreen[data-route="open"][data-phase="1"] #endOmen{opacity:.5;transform:scale(.33)}
+#endingScreen[data-route="open"][data-phase="2"] #endOmen,
+#endingScreen[data-route="open"][data-phase="3"] #endOmen,
+#endingScreen[data-route="open"][data-phase="4"] #endOmen{opacity:.98;transform:scale(2.3)}
+#endingScreen[data-route="open"][data-phase="3"] .end-sky{animation:gate-flicker 1.8s ease-in-out infinite}
+.end-recovery{position:absolute;inset:0;overflow:hidden;background:#0d132647}
+.end-recovery[hidden]{display:none}
+#endClock{position:absolute;right:6%;top:8%;font:bold 16px/1.2 monospace;letter-spacing:.12em;color:#fff0c8;text-shadow:0 0 6px #181737;background:#171e3be8;padding:.35em .55em;border:1px solid #b7a7d490}
+.end-shooting{display:none;position:absolute;width:21%;height:3px;background:linear-gradient(90deg,transparent,#bec8ff 60%,#fffef3);box-shadow:4px 0 8px #a5cbff;transform-origin:right center}
+.end-recovery[data-step="meteor"] .end-shooting{display:block;animation:ending-meteor .8s ease-in both}
+.end-eye{position:absolute;display:none;width:40%;aspect-ratio:1;left:30%;top:3%;overflow:hidden;border-radius:50%;box-shadow:0 0 25px #110d36}
+.end-eye img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.end-recovery[data-step="light"] .end-eye{display:block}
+.end-eye-lit{animation:eye-light .62s ease-out both}
+@keyframes ending-meteor{from{left:65%;top:8%;transform:rotate(145deg);opacity:.2}25%{opacity:1}to{left:12%;top:65%;transform:rotate(145deg);opacity:0}}
+@keyframes gate-flicker{0%,100%{filter:none}26%{filter:brightness(.68)}52%{filter:contrast(1.36) saturate(.62)}}
+.old-record p{line-height:1.8}
+.lock-notation{display:block;letter-spacing:.14em;text-align:center;margin:.65em 0}
+.connection-wait{border:1px solid #9cace8;padding:.75em;color:#d7e5ff;background:#151e42}
+.phone-observation-photo{width:min(100%,250px);height:auto;display:block;margin:auto;image-rendering:pixelated}
+@media(prefers-reduced-motion:reduce){
+ #endingScreen .end-sky,#titleScreen .title-mood,.end-eye-lit{animation:none!important}
+ .end-recovery[data-step="meteor"] .end-shooting{animation:none;left:42%;top:35%;transform:rotate(145deg)}
+ #endingScreen #endOmen{transition:none!important}
+}
+.eye-starlight{pointer-events:none;position:absolute;left:var(--eye-x,50.5%);top:var(--eye-y,56%);width:16%;aspect-ratio:1;transform:translate(-50%,-50%);background:radial-gradient(circle,#5245a4 12%,#3e318c 61%,transparent 74%)}
+.eye-starlight::after{content:"";position:absolute;inset:15%;background:#fffaf9;clip-path:polygon(50% 0,62% 34%,98% 37%,70% 60%,80% 95%,50% 75%,20% 95%,30% 60%,2% 37%,38% 34%)}
+.dragging-eye .eye-starlight{opacity:0}
+.eye-taking+.eye-starlight{animation:eye-dim .45s ease-out both}
+.eye-returning+.eye-starlight,.end-eye .eye-starlight{animation:eye-light .66s ease-out both}
+.lock-notation span{display:inline-flex;flex-direction:column;min-width:2em}
+.phone-observation-photo img{display:block;width:100%;height:auto}

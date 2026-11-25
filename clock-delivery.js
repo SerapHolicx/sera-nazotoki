@@ -11,14 +11,13 @@
   banana:{name:'バナナ',image:'clock-parts/banana.png'},
   fig:{name:'いちじく',image:'clock-fig.png',hour:1,kana:'く',time:meteorHour}
  };
- const panelIds = ['cross','fig'];
- const fruitIds = ['apple','banana'];
- const products = [...fruitIds,'fig'];
+ const panelIds = Object.keys(items);
+ const products = ['apple','banana','fig'];
  const arrival = 'ご注文の商品をお届けしました！';
  const formatTime = hour => String(hour).padStart(2,'0')+':00';
 
  function sanitize(state){
-  if(state.clockVersion!==1&&state.clockVersion!==2){
+  if(![1,2,3].includes(state.clockVersion)){
    const oldMeteor = state.meteor && !state.meteorStar && state.eyeTaken && !state.restored && state.news;
    state.clockHour = oldMeteor ? meteorHour
     : state.night || state.eyeTaken || state.got.includes('clock') || state.puzzleSolved.includes('clock') ? nightHour : eveningHour;
@@ -28,39 +27,39 @@
   }
   const formerPanels=Array.isArray(state.panels)?state.panels:[];
   const formerMounted=state.clockPanel;
-  state.fruits=[...new Set([...(Array.isArray(state.fruits)?state.fruits:[]),...formerPanels,formerMounted].filter(id=>fruitIds.includes(id)))];
+  const formerFruits=Array.isArray(state.fruits)?state.fruits:[];
+  delete state.fruits;
   state.itemOrder=Array.isArray(state.itemOrder)?[...new Set(state.itemOrder)]:[];
-  if(state.clockVersion!==2){
+  if(state.clockVersion<2){
    if(state.keyFound)rememberItem(state,'key');
    if(state.remote)rememberItem(state,'remote');
    if(state.meteorStar)rememberItem(state,'meteor');
    for(const id of [...formerPanels,formerMounted])if(Object.hasOwn(items,id)&&id!=='cross')rememberItem(state,id);
   }
-  state.clockVersion = 2;
+  for(const id of formerFruits)if(products.includes(id))rememberItem(state,id);
+  state.clockVersion = 3;
   delete state.night;
   delete state.meteor;
   if(![eveningHour,nightHour,meteorHour].includes(state.clockHour))state.clockHour=eveningHour;
   if(!kana.includes(state.clockKana))state.clockKana=kana[0];
-  if(fruitIds.includes(state.clockPanel))state.clockPanel=null;
   if(state.clockPanel!==null&&!panelIds.includes(state.clockPanel))state.clockPanel='cross';
-  state.panels=Array.isArray(state.panels)
-   ? [...new Set(state.panels.filter(id=>panelIds.includes(id)&&id!==state.clockPanel))] : [];
+  state.panels=[...new Set([...formerPanels,...formerFruits].filter(id=>panelIds.includes(id)&&id!==state.clockPanel))];
   if(state.clockPanel!=='cross'&&!state.panels.includes('cross'))state.panels.push('cross');
   if(!products.includes(state.delivery)||hasItem(state,state.delivery))state.delivery=null;
  }
 
  function hasItem(state,id){
-  return state.clockPanel===id||state.panels.includes(id)||state.fruits.includes(id);
+  return state.clockPanel===id||state.panels.includes(id);
  }
  function rememberItem(state,id){
   if(!state.itemOrder.includes(id))state.itemOrder.push(id);
  }
  function itemLabel(id){
-  return panelIds.includes(id)?items[id].name+'パネル':items[id].name;
+  return items[id].name+'パネル';
  }
  function panelImage(id,decorative=false,advert=false){
   const panel=items[id];
-  return `<img ${panelIds.includes(id)&&!advert?'class="clock-part-picture" ':''}src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
+  return `<img ${!advert?'class="clock-part-picture" ':''}src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
  }
 
  function create({getState,open,save,draw,tap,chime,element,applyTime,onDelivered}){
@@ -202,7 +201,7 @@
     if(state.delivery!==id)return;
     state.delivery=null;
     if(!hasItem(state,id)){
-     (id==='fig'?state.panels:state.fruits).push(id);
+     state.panels.push(id);
      rememberItem(state,id);
     }
     save();chime();draw();
