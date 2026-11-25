@@ -8,7 +8,7 @@ window.observatoryShooter=(()=>{
  let losses=0;
  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
  function screenMarkup(mode){
-  if(mode==='demo')return `<video id="tvShooterDemo" muted loop playsinline preload="metadata" poster="tv/star-dust.png" aria-label="星屑シューティング専用のデモ映像"><source src="tv/star-dust.mp4" type="video/mp4"></video>`;
+  if(mode==='demo')return `<video id="tvShooterDemo" muted loop playsinline preload="metadata" poster="tv/star-dust.png" aria-label="星屑シューティングの映像"><source src="tv/star-dust.mp4" type="video/mp4"></video>`;
   return `<div class="tv-shooter" id="tvShooter" tabindex="0" aria-label="星屑シューティング。指で左右に移動。キーボードは左右矢印。">
    <canvas width="${width}" height="${height}" aria-hidden="true"></canvas>
    <span class="tv-shooter-label" aria-hidden="true">STAR DUST</span>
@@ -16,7 +16,7 @@ window.observatoryShooter=(()=>{
   </div>`;
  }
  function controlsMarkup(){
-  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">左右にスライド。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button><button class="btn" id="leaveStarShooter">デモへ戻る</button></div>';
+  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">左右にスライド。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button><button class="btn" id="leaveStarShooter">テレビに戻る</button></div>';
  }
  function start(root,{hit,miss,retry,leave,won,reward}){
   const field=root.querySelector('#tvShooter');

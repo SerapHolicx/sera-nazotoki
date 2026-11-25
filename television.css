@@ -6,6 +6,7 @@
  position:relative;aspect-ratio:8/5;overflow:hidden;border:3px solid #171728;border-radius:6px;background:#191b30
 }
 .tv-screen video{display:block;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.tv-screen .news-picture{transform:scaleX(-1)}
 .tv-screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 3px,#100c231c 3px 4px)}
 .tv-channel,.tv-observation-time{
  position:absolute;z-index:1;padding:3px 6px;background:#221d36e8;color:#ffdfae;
@@ -22,7 +23,7 @@
 .tv-remote-status{position:absolute;right:0;top:-26px;color:#fff2d4;background:#533d58;padding:1px 5px;font-size:11px}
 .tv-shop-screen-button{position:absolute;z-index:2;inset:0;border:0;background:none;padding:0;display:flex;align-items:flex-end;justify-content:flex-end}
 .tv-shop-screen-button span{margin:7px;padding:3px 5px;border:1px solid #b495a1;background:#392744ed;color:#f4d4a1;font-size:12px}
-.tv-screen .tv-observation-time{overflow:hidden;text-align:left}
+.tv-screen .tv-observation-time{left:6px;right:6px;overflow:hidden;text-align:left;padding:2px 5px;font-size:clamp(9px,2.6vw,11px);letter-spacing:0}
 .tv-news-scroll{display:flex;width:max-content;white-space:nowrap;gap:1.5rem}
 .tv-news-scroll span:last-child{padding-right:1.5rem}
 @media(prefers-reduced-motion:no-preference){.tv-news-scroll{animation:tv-news-roll 15s linear infinite}}

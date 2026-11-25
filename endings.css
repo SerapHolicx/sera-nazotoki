@@ -25,13 +25,13 @@
 .end-eye img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
 .end-recovery[data-step="light"] .end-eye{display:block}
 .end-eye-lit{animation:eye-light .62s ease-out both}
-@keyframes ending-meteor{from{left:65%;top:8%;transform:rotate(145deg);opacity:.2}25%{opacity:1}to{left:12%;top:65%;transform:rotate(145deg);opacity:0}}
+@keyframes ending-meteor{from{left:9%;top:8%;transform:rotate(35deg);opacity:.2}25%{opacity:1}to{left:67%;top:65%;transform:rotate(35deg);opacity:0}}
 @keyframes gate-flicker{0%,100%{filter:none}26%{filter:brightness(.68)}52%{filter:contrast(1.36) saturate(.62)}}
 .connection-wait{border:1px solid #9cace8;padding:.75em;color:#d7e5ff;background:#151e42}
 .phone-observation-photo{width:min(100%,250px);height:auto;display:block;margin:auto;image-rendering:pixelated}
 @media(prefers-reduced-motion:reduce){
  #endingScreen .end-sky,#titleScreen .title-mood,.end-eye-lit{animation:none!important}
- .end-recovery[data-step="meteor"] .end-shooting{animation:none;left:42%;top:35%;transform:rotate(145deg)}
+ .end-recovery[data-step="meteor"] .end-shooting{animation:none;left:42%;top:35%;transform:rotate(35deg)}
  #endingScreen #endOmen{transition:none!important}
 }
 .phone-observation-photo img{display:block;width:100%;height:auto}
@@ -58,18 +58,16 @@
 #titleStars{position:absolute;top:6%;left:0;width:100%;pointer-events:none}
 #titleStars .title-constellation{margin:0;width:min(58%,280px);height:min(100px,19dvh)}
 .title-controls #titleSubtitle{margin:0 0 9px;color:#ded2e4;font-size:clamp(11px,3.3vw,14px)}
-#titleScreen #startBtn{
+#titleScreen .menubtn{
  position:relative;min-height:52px;width:min(83%,290px);margin:0 auto;
  padding:9px 22px;color:#fff0c5;
  background:linear-gradient(180deg,#403c65,#272744);border:1px solid #e0be8f;
- font:700 14px/1.1 ui-monospace,monospace;letter-spacing:.22em;
+ font:700 14px/1.25 system-ui,sans-serif;letter-spacing:.12em;
  box-shadow:inset 0 0 0 3px #282849,0 3px #151629;
 }
-#titleScreen #startBtn::before,#titleScreen #startBtn::after{content:"✧";position:absolute;top:50%;transform:translateY(-50%);font-size:12px;color:#d9b990}
-#titleScreen #startBtn::before{left:9%}
-#titleScreen #startBtn::after{right:9%}
-#titleScreen #titleReset{min-height:38px;margin:6px auto 0;background:none;border:0;box-shadow:none;font-size:12px;color:#d9c9df}
-
+#titleScreen .menubtn + .menubtn{margin-top:8px}
+#titleScreen .menubtn:not(.primary){background:#24243f;color:#ded4e7;border-color:#9a82a9}
+#titleScreen .menubtn.primary{background:linear-gradient(180deg,#514768,#342d4f)}
 #titleStars .title-star-pattern{position:relative;width:min(54%,240px);aspect-ratio:5/3}
 .title-star-pattern [data-star]{position:absolute;transform:translate(-50%,-50%);opacity:.46}
 .title-star-pattern [data-star].lit{opacity:1;filter:drop-shadow(0 0 5px #d9def8)}
@@ -86,3 +84,35 @@
 
 .title-omen{display:none;position:absolute;inset:18% auto auto 37%;width:43%;height:auto;opacity:.46;pointer-events:none;mix-blend-mode:screen}
 #titleScreen[data-mood="open"] .title-omen{display:block}
+
+.veil.confession-screen{padding:0;background:#080813}
+.confession-screen .modal{
+ inset:0;width:100%;height:100%;max-width:none;max-height:none;
+ padding:0;border:0;transform:none;overflow:hidden;background:#080813;box-shadow:none
+}
+.confession-screen .modal-head{
+ position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)
+}
+.confession-screen .modal-head button{display:none}
+.confession-scene{position:absolute;inset:0;overflow:hidden;background:#0c0b1c}
+.confession-face{
+ position:absolute;inset:0;width:100%;height:100%;object-fit:contain;
+ object-position:center 40%;image-rendering:pixelated;filter:brightness(.73) saturate(.78);
+ animation:confession-reveal .65s ease-out both
+}
+.confession-scene::after{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(180deg,#0c0b1c 0%,transparent 25% 62%,#0c0b1c 95%)
+}
+.confession-dialog{
+ position:absolute;z-index:1;bottom:max(26px,calc(env(safe-area-inset-bottom) + 12px));left:50%;
+ transform:translateX(-50%);width:min(calc(100% - 28px),460px);min-height:108px;padding:14px 60px 14px 16px;
+ background:#161326eb;border:1px solid #948097;color:#fbf0fa;
+ animation:confession-reveal .5s .2s ease-out both
+}
+.confession-dialog strong{color:#d8bbdf;font-size:13px}
+.confession-dialog p{font-size:clamp(15px,4vw,19px);margin:6px 0 0}
+.confession-dialog .btn{position:absolute;right:8px;bottom:8px;min-width:44px;background:#30263f;border-color:#8e799d}
+@keyframes confession-reveal{from{opacity:0}to{opacity:1}}
+@media(max-aspect-ratio:3/4){.confession-face{object-fit:cover}}
+@media(prefers-reduced-motion:reduce){.confession-face,.confession-dialog{animation:none}}
