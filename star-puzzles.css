@@ -91,7 +91,7 @@
 .framed-constellation .slot.filled { color:#fff3ba;text-shadow:0 0 8px #edd0ff,0 0 18px #afaaff; }
 /* Dusk light follows the lamp or window in each room. */
 .scene[data-light="dusk"] .scene-img{
-  filter:sepia(.25) saturate(.9) brightness(1.07);
+  filter:sepia(.34) saturate(1.06) brightness(.91);
 }
 .scene[data-light="dusk"]::after{
   content:"";
@@ -100,8 +100,8 @@
   z-index:1;
   pointer-events:none;
   background:
-    radial-gradient(ellipse 64% 51% at var(--light-x,65%) var(--light-y,38%),#ffbc7b49,transparent 92%),
-    radial-gradient(ellipse 79% 48% at 65% 75%,#ed9b6826,transparent 91%);
+    radial-gradient(ellipse 64% 51% at var(--light-x,65%) var(--light-y,38%),#ee8c482b,transparent 92%),
+    radial-gradient(ellipse 79% 48% at 65% 75%,#d8793d21,transparent 91%);
   mix-blend-mode:screen;
 }
 .scene[data-light="dusk"]::before{
@@ -110,7 +110,7 @@
   inset:0;
   z-index:1;
   pointer-events:none;
-  background:radial-gradient(ellipse 66% 57% at var(--light-x,65%) var(--light-y,38%),#ffcc9869,#dd8c6238 54%,transparent 100%);
+  background:radial-gradient(ellipse 66% 57% at var(--light-x,65%) var(--light-y,38%),#f6a25791,#c77b453c 54%,transparent 100%);
   mix-blend-mode:soft-light;
 }
 .scene[data-room="left"]{--light-x:76%;--light-y:34%}
@@ -165,3 +165,19 @@
 .eclipse-complete .orrery-model{animation:eclipse-model-dim .7s ease both}
 @keyframes eclipse-model-dim{45%{filter:brightness(.17)}}
 @media(prefers-reduced-motion:reduce){.eclipse-complete .orrery-model{animation:none}}
+
+.book-spine[data-volume="1"]{--spine-mid:#694459;--spine-edge:#583443}
+.book-spine[data-volume="2"]{--spine-mid:#3c6676;--spine-edge:#34465b}
+.book-spine[data-volume="3"]{--spine-mid:#525378;--spine-edge:#292d49}
+.book-spine[data-volume="4"]{--spine-mid:#4e6269;--spine-edge:#303f48}
+.book-spine[data-volume="5"]{--spine-mid:#756044;--spine-edge:#463749}
+.book-spine[data-volume]{
+ border-radius:2px;border-color:#a88a6b;
+ background:
+  repeating-linear-gradient(90deg,#f0cb9023 0 1px,transparent 1px 3px) 0 6%/100% 2px no-repeat,
+  repeating-linear-gradient(90deg,#f0cb9040 0 2px,transparent 2px 4px) 0 95%/100% 3px no-repeat,
+  linear-gradient(90deg,#292439 1%,var(--spine-edge) 15%,var(--spine-mid) 39%,var(--spine-edge) 96%);
+ box-shadow:inset 2px 0 #e4be8d2e,inset -2px 0 #201c33,0 2px #261f2c;
+}
+.book-spine[data-volume] .spine-title{inset:12px 3px auto auto;color:#fff0cf}
+.book-spine[data-volume] i{color:#ffe8ad;text-shadow:0 0 4px #211b32,1px 0 #211b32}
