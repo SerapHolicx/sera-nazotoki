@@ -62,7 +62,7 @@
   return `<img class="clock-part-picture" src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
  }
 
- function create({getState,open,save,draw,tap,chime,element,applyTime,onDelivered}){
+ function create({getState,open,save,draw,tap,deliveryBell,element,applyTime}){
   function clock(selectedHour=null,notice=''){
    const state=getState();
    const mounted=items[state.clockPanel];
@@ -181,7 +181,7 @@
    return `<section id="tvFruitShop" class="tv-fruit-shop" aria-label="くだもの通販" hidden>
     <header><strong>ご注文しますか？</strong><button id="closeFruitPrompt" type="button" class="btn" aria-label="注文画面を閉じる">×</button></header>
     <div class="tv-fruit-products">
-     ${products.map(id=>`<button type="button" class="btn" data-fruit="${id}" aria-pressed="false">${panelImage(id,true)}<b>${itemLabel(id)}</b></button>`).join('')}
+     ${products.map(id=>`<button type="button" class="btn" data-fruit="${id}" aria-pressed="false"><img src="${items[id].image}" alt=""><b>${items[id].name}</b></button>`).join('')}
     </div>
     <button class="btn primary" id="orderFruit" type="button" disabled>注文する</button>
     <p id="fruitOrderStatus" role="status"></p>
@@ -222,10 +222,9 @@
    order.onclick=()=>{
     if(!selected||state.delivery||hasItem(state,selected))return;
     state.delivery=selected;
-    save();chime();draw();refresh();
+    save();deliveryBell();draw();refresh();
     notice.textContent=arrival;
     shop.classList.add('delivery-announced');
-    speakArrival();
    };
    if(state.delivery)notice.textContent=items[state.delivery].name+'をお届け済みです。';
    refresh();
@@ -243,24 +242,13 @@
      state.panels.push(id);
      rememberItem(state,id);
     }
-    save();chime();draw();
+    save();tap();draw();
     open('お届けもの',`<div class="item-found parcel-arrived"><img src="clock-parts/parcel-open.png" width="54" height="44" alt="開いた段ボール">${panelImage(id)}
      <b>${itemLabel(id)}を手に入れた</b></div>`);
-    onDelivered();
    };
   }
   return {clock,shopMarkup,bindShop,showParcel};
  }
 
- function speakArrival(){
-  try{
-   const synth=window.speechSynthesis;
-   const voice=synth?.getVoices().find(entry=>entry.lang.toLowerCase().startsWith('ja'));
-   if(!voice)return;
-   const message=new SpeechSynthesisUtterance(arrival);
-   message.voice=voice;message.lang='ja-JP';message.pitch=1.25;message.rate=1.03;
-   synth.speak(message);
-  }catch{}
- }
  window.observatoryClock={eveningHour,nightHour,meteorHour,formatTime,sanitize,create,panelImage,rememberItem,itemLabel};
 })();

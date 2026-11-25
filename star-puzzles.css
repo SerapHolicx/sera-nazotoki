@@ -45,14 +45,15 @@
  height:14px;
  background:linear-gradient(90deg,#fff6cf 0 22%,#a7b9ff 22% 67%,#7586d4 67%);
  clip-path:polygon(0 86%,18% 71%,18% 57%,38% 57%,38% 43%,57% 43%,57% 29%,76% 29%,76% 14%,89% 14%,89% 0,100% 0,100% 29%,87% 29%,87% 43%,69% 43%,69% 57%,49% 57%,49% 71%,28% 71%,28% 86%,11% 86%,11% 100%,0 100%);
+ transform:scaleX(-1);
  animation:pixel-meteor 3s linear infinite;
  pointer-events:none;
 }
 @keyframes pixel-meteor {
- 0%,15% { left:94%;top:5%;opacity:0 }
+ 0%,15% { left:3%;top:5%;opacity:0 }
  19% { opacity:1 }
- 57% { left:20%;top:65%;opacity:1 }
- 68%,100% { left:3%;top:77%;opacity:0 }
+ 57% { left:67%;top:65%;opacity:1 }
+ 68%,100% { left:81%;top:77%;opacity:0 }
 }
 @media(prefers-reduced-motion:reduce) {
  .window-meteor { animation:none;left:60%;top:27%; }
@@ -166,18 +167,17 @@
 @keyframes eclipse-model-dim{45%{filter:brightness(.17)}}
 @media(prefers-reduced-motion:reduce){.eclipse-complete .orrery-model{animation:none}}
 
-.book-spine[data-volume="1"]{--spine-mid:#694459;--spine-edge:#583443}
-.book-spine[data-volume="2"]{--spine-mid:#3c6676;--spine-edge:#34465b}
-.book-spine[data-volume="3"]{--spine-mid:#525378;--spine-edge:#292d49}
-.book-spine[data-volume="4"]{--spine-mid:#4e6269;--spine-edge:#303f48}
-.book-spine[data-volume="5"]{--spine-mid:#756044;--spine-edge:#463749}
+.book-spine[data-volume="2"]{background-position:25% 0}
+.book-spine[data-volume="3"]{background-position:50% 0}
+.book-spine[data-volume="4"]{background-position:75% 0}
+.book-spine[data-volume="5"]{background-position:100% 0}
 .book-spine[data-volume]{
- border-radius:2px;border-color:#a88a6b;
- background:
-  repeating-linear-gradient(90deg,#f0cb9023 0 1px,transparent 1px 3px) 0 6%/100% 2px no-repeat,
-  repeating-linear-gradient(90deg,#f0cb9040 0 2px,transparent 2px 4px) 0 95%/100% 3px no-repeat,
-  linear-gradient(90deg,#292439 1%,var(--spine-edge) 15%,var(--spine-mid) 39%,var(--spine-edge) 96%);
- box-shadow:inset 2px 0 #e4be8d2e,inset -2px 0 #201c33,0 2px #261f2c;
+ border:0;border-radius:0;
+ background-image:url("book-spines.png");
+ background-size:500% 100%;
+ background-repeat:no-repeat;
+ image-rendering:pixelated;
 }
-.book-spine[data-volume] .spine-title{inset:12px 3px auto auto;color:#fff0cf}
-.book-spine[data-volume] i{color:#ffe8ad;text-shadow:0 0 4px #211b32,1px 0 #211b32}
+.book-spine[data-volume] .spine-title{inset:12px 5px auto auto;color:#fff0cf;text-shadow:1px 1px #22172e}
+.book-spine[data-volume] i canvas{width:clamp(11px,4vw,16px);height:auto}
+.shelf-confirmed i{filter:drop-shadow(0 0 4px #ffc885)}
