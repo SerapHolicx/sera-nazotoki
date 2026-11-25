@@ -78,7 +78,7 @@
  mask-image:radial-gradient(ellipse at center,#000 57%,#000 70%,transparent 85%);
 }
 
-.handset .phone-board{width:min(225px,100%,37dvh);aspect-ratio:5/3}
+.handset .phone-board{width:min(225px,100%,37dvh);aspect-ratio:5/3;margin:12px auto 3px}
 .phone-board .phone-star{display:grid;place-items:center;width:min(44px,20%);height:min(44px,33%)}
 .phone-star[aria-pressed="true"] .pixel-star{filter:drop-shadow(0 0 5px #ffc992)}
 
@@ -116,3 +116,7 @@
 @keyframes confession-reveal{from{opacity:0}to{opacity:1}}
 @media(max-aspect-ratio:3/4){.confession-face{object-fit:cover}}
 @media(prefers-reduced-motion:reduce){.confession-face,.confession-dialog{animation:none}}
+
+.phone-intro-thought{color:#ebe7ff;padding:11px 10px;margin:12px 0;background:#110f2585;border-left:2px solid #a9b3dc}
+
+.phone-lock{background:linear-gradient(#17172f85,#111225ec),url("phone-media/wallpaper.webp") center/cover}

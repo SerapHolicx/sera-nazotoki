@@ -64,3 +64,9 @@
 
 button.clock-panel-socket{min-width:44px;min-height:44px;padding:0}
 button.clock-panel-socket:active{background:#4d3f62}
+
+.clock-time-strip{display:flex;justify-content:center;gap:16px;color:#d2cbeb;font-size:12px}
+.clock-time-strip b{color:#ffebb8}
+.modal .clock-inscription{margin:4px 0;text-align:center;color:#f1d8a6;font:13px/1.35 serif}
+.clock-dial.time-confirmed{animation:clock-commits .65s ease-out}
+@keyframes clock-commits{0%,45%{filter:drop-shadow(0 0 10px #ffdf85) brightness(1.22)}100%{filter:none}}

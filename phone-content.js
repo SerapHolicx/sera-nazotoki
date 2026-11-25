@@ -9,10 +9,11 @@ window.seraPhoneContent = {
   },
   diary: [
     {date:'11/24',title:'本棚の整理',text:'本棚を整理しようと思ったけど、途中で本を読み始めちゃった。あと一頁だけ。'},
-    {date:'11/23',title:'接続実験',text:'同じ星座で、別の世界との接続を試みた。\n\n結果は失敗。\n\n一度つながった星座は、ほかの世界とはつながれないらしい。'},
+    {date:'11/23',title:'接続実験',pinned:2,thought:'connection',text:'すでに接続されている星座を使って、別の世界との接続を試みた。\n\n結果は失敗。\n\n一度つながった星座は、ほかの世界からの呼びかけには応じないらしい。\n\n別の世界とつながるには、別の星座を作る必要がある。'},
     {date:'11/22',title:'通販が届いた',text:'通販で頼んだものがもう届いた。ここの配送、相変わらず早いなあ。'},
-    {date:'11/21',title:'古い本の余白',text:'数をたどる者は、星を結ぶ。\n言葉をたどる者もまた、星を結ぶ。'},
-    {date:'11/19',title:'星座について',text:'同じ星座を描いた世界同士は、つながることができるらしい。\n\n星座の形が、世界の宛先になるのかもしれない。'},
+    {date:'11/21',title:'古い本の余白',pinned:3,text:'数をたどる者は、星を結ぶ。\n言葉をたどる者もまた、星を結ぶ。'},
+    {date:'11/19',title:'星座について',pinned:1,thought:'world',text:'星座は、別の世界とつながるための目印らしい。\n\nこちらの世界で星座を作るだけでは、門は開かない。\n\n向こうの世界でも同じ形の星座を作り、双方から門を開いたとき、初めて二つの世界がつながる。\n\n星座の形は、世界の宛先のようなものなのかもしれない。'},
+    {date:'11/20',title:'違う形の星座',text:'同じ星でも、結び方を変えれば、別の星座になる。\n\n別の星座を作れば、今までとは違う世界につながる可能性がある。'},
     {date:'11/18',title:'歌の練習',text:'久しぶりに歌の練習をした。録音で聞くと、息を吸うところが思ってたより難しい。'}
   ],
   posts: {
@@ -37,10 +38,10 @@ window.seraPhoneContent = {
   photos: [
     {src:'phone-media/self.webp',date:'11/24 17:46',alt:'セラの自撮り'},
     {src:'phone-media/fruit.webp',date:'11/23 20:31',alt:'果物を並べた皿'},
-    {src:'phone-media/sky-4.webp',date:'11/23 00:48',alt:'夜空の写真'},
-    {src:'phone-media/sky-3.webp',date:'11/23 00:33',alt:'夜空の写真'},
-    {src:'phone-media/sky-2.webp',date:'11/23 00:18',alt:'夜空の写真'},
-    {src:'phone-media/sky-1.webp',date:'11/23 00:03',alt:'夜空の写真'},
+    {src:'phone-media/sky-4.webp',observation:true,resume:true,anomaly:true,date:'11/23 00:48',alt:'夜空の写真'},
+    {src:'phone-media/sky-3.webp',observation:true,anomaly:true,date:'11/23 00:33',alt:'夜空の写真'},
+    {src:'phone-media/sky-2.webp',observation:true,date:'11/23 00:18',alt:'夜空の写真'},
+    {src:'phone-media/sky-1.webp',observation:true,date:'11/23 00:03',alt:'夜空の写真'},
     {src:'phone-media/book.webp',date:'11/22 21:06',alt:'読みかけの本'},
     {src:'phone-media/room.webp',date:'11/22 19:20',alt:'天文台の室内'},
     {src:'phone-media/dusk.webp',date:'11/22 17:14',alt:'窓からの夕焼け'},

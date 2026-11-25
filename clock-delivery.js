@@ -55,14 +55,22 @@
   if(!state.itemOrder.includes(id))state.itemOrder.push(id);
  }
  function itemLabel(id){
-  return items[id].name+'パネル';
+  return items[id].name;
  }
  function panelImage(id,decorative=false){
   const panel=items[id];
   return `<img class="clock-part-picture" src="${panel.image}" width="32" height="32" alt="${decorative?'':panel.name}">`;
  }
 
- function create({getState,open,save,draw,tap,deliveryBell,element,applyTime}){
+ function create({getState,open,save,draw,tap,deliveryBell,element,applyTime,timeSound}){
+  function mountPanel(id){
+   const state=getState();
+   if(!state.panels.includes(id))return;
+   state.panels=state.panels.filter(panel=>panel!==id);
+   if(state.clockPanel){rememberItem(state,state.clockPanel);state.panels.push(state.clockPanel)}
+   state.clockPanel=id;
+   save();draw();timeSound();
+  }
   function clock(selectedHour=null,notice=''){
    const state=getState();
    const mounted=items[state.clockPanel];
@@ -72,11 +80,13 @@
     const x=50+27*Math.sin(angle),y=50-27*Math.cos(angle);
     return `<button type="button" data-hour="${hour}" aria-label="${hour||12}時" aria-pressed="${selectedHour===hour}" style="--hx:${x}%;--hy:${y}%">${hour||12}</button>`;
    }).join('');
-   open('時計',`<div class="clock-examples" aria-label="時計の例題">
+   open('時計',`<div class="clock-time-strip"><span>現在 <b>${formatTime(state.clockHour)}</b></span><span>候補 <b id="clockCandidate">${selectedHour===null?'未選択':(selectedHour||12)+'時'}</b></span></div>
+   <p class="clock-inscription">言葉が完成したとき、時計はその時を刻む。</p>
+   <div class="clock-examples" aria-label="時計の例題">
     <div class="clock-example-row"><span>2時 ＋ く ＝</span><img src="clock-parts/axes.png" width="28" height="28" alt="二軸（にじく）"></div>
     <div class="clock-example-row"><span>9時 ＋ ら ＝</span><img src="clock-whale.png" width="28" height="28" alt="鯨（くじら）"></div>
    </div>
-   <div class="clock-dial" id="clockDial" aria-label="短針をドラッグ、または数字をタップして時刻を選ぶ">
+   <div class="clock-dial${notice?' time-confirmed':''}" id="clockDial" aria-label="短針をドラッグ、または数字をタップして時刻を選ぶ">
     <span class="clock-hand clock-minute" aria-hidden="true"></span><span class="clock-hand clock-hour-hand" id="clockHourHand" aria-hidden="true" style="transform:rotate(${(selectedHour??state.clockHour%12)*30}deg)"></span>${dial}
    </div>
    <div class="clock-equation">
@@ -85,11 +95,11 @@
      <output id="clockKanaChoice" aria-live="polite">${state.clockKana}</output>
      <button id="clockKanaDown" type="button" aria-label="次のひらがな">▽</button>
     </div><span>＝</span>
-    ${mounted?`<button class="clock-panel-socket" id="mountedClockPanel" type="button" aria-label="${mounted.name}のパネルをタップして外す">${panelImage(state.clockPanel)}</button>`:'<span class="clock-panel-socket" aria-label="パネルなし">―</span>'}
+    ${mounted?`<button class="clock-panel-socket" id="mountedClockPanel" type="button" aria-label="${mounted.name}の絵を外す">${panelImage(state.clockPanel)}</button>`:'<span class="clock-panel-socket" aria-label="絵なし">―</span>'}
    </div>
-   <div class="buttons clock-actions"><button class="btn primary" id="setHour" type="button"${selectedHour===null||!mounted?' disabled':''}>確かめる</button>
+   <div class="buttons clock-actions"><button class="btn primary" id="setHour" type="button"${selectedHour===null||!mounted?' disabled':''}>時刻を確かめる</button>
    </div>
-   ${loosePanels.length?`<div class="clock-panel-tray" aria-label="持ち物の絵のパネル">${loosePanels.map(id=>`<button class="btn" type="button" data-mount-panel="${id}" aria-label="${items[id].name}のパネルをセット">${panelImage(id,true)}<span>${items[id].name}</span></button>`).join('')}</div>`:''}
+   ${loosePanels.length?`<div class="clock-panel-tray" aria-label="持ち物の絵">${loosePanels.map(id=>`<button class="btn" type="button" data-mount-panel="${id}" aria-label="${items[id].name}の絵をはめる">${panelImage(id,true)}<span>${items[id].name}</span></button>`).join('')}</div>`:''}
    <p id="clockStatus" role="status">${notice}</p>`);
    const body=element('modalBody');
    const hourButtons=[...body.querySelectorAll('[data-hour]')];
@@ -101,6 +111,7 @@
     selectedHour=hour;
     hand.style.transform=`rotate(${angle}deg)`;
     element('clockHourChoice').textContent=(hour===null?'？':hour||12)+'時';
+    element('clockCandidate').textContent=hour===null?'未選択':(hour||12)+'時';
     hourButtons.forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.hour)===hour)));
     element('setHour').disabled=hour===null||!mounted;
     element('clockStatus').textContent='';
@@ -158,22 +169,17 @@
     save();draw();tap();clock(selectedHour);
    };
    body.querySelectorAll('[data-mount-panel]').forEach(button=>button.onclick=()=>{
-    const id=button.dataset.mountPanel;
-    if(!state.panels.includes(id))return;
-    state.panels=state.panels.filter(panel=>panel!==id);
-    if(state.clockPanel){rememberItem(state,state.clockPanel);state.panels.push(state.clockPanel)}
-    state.clockPanel=id;
-    save();draw();tap();clock(selectedHour);
+    mountPanel(button.dataset.mountPanel);clock(selectedHour);
    });
    element('setHour').onclick=()=>{
     if(!mounted||selectedHour===null||mounted.hour!==selectedHour||mounted.kana!==state.clockKana){
-     element('clockStatus').textContent='……何も起こらない。';
+     element('clockStatus').textContent='時計は動き出さない。まだ、言葉が完成していないようだ。';
      return;
     }
      const before=state.clockHour;
     state.clockHour=mounted.time;
-    save();tap();draw();
-    if(!applyTime(before))clock(selectedHour,formatTime(state.clockHour)+'　カチリ。');
+    save();draw();timeSound();
+    if(!applyTime(before))clock(selectedHour,'カチリ。時計が '+formatTime(state.clockHour)+' を刻み始めた。');
    };
   }
 
@@ -247,7 +253,7 @@
      <b>${itemLabel(id)}を手に入れた</b></div>`);
    };
   }
-  return {clock,shopMarkup,bindShop,showParcel};
+  return {clock,shopMarkup,bindShop,showParcel,mountPanel};
  }
 
  window.observatoryClock={eveningHour,nightHour,meteorHour,formatTime,sanitize,create,panelImage,rememberItem,itemLabel};
