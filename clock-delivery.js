@@ -76,8 +76,8 @@
     <div class="clock-example-row"><span>2時 ＋ く ＝</span><img src="clock-parts/axes.png" width="28" height="28" alt="二軸（にじく）"></div>
     <div class="clock-example-row"><span>9時 ＋ ら ＝</span><img src="clock-whale.png" width="28" height="28" alt="鯨（くじら）"></div>
    </div>
-   <div class="clock-dial" aria-label="合わせたい時刻を指定">
-    <span class="clock-hand clock-minute" aria-hidden="true"></span><span class="clock-hand" aria-hidden="true" style="transform:rotate(${(state.clockHour%12)*30}deg)"></span>${dial}
+   <div class="clock-dial" id="clockDial" aria-label="短針をドラッグ、または数字をタップして時刻を選ぶ">
+    <span class="clock-hand clock-minute" aria-hidden="true"></span><span class="clock-hand clock-hour-hand" id="clockHourHand" aria-hidden="true" style="transform:rotate(${(selectedHour??state.clockHour%12)*30}deg)"></span>${dial}
    </div>
    <div class="clock-equation">
     <span id="clockHourChoice">${selectedHour===null?'？':selectedHour||12}時</span><span>＋</span><div class="clock-kana-wheel" aria-label="ひらがなを切り替える">
@@ -94,13 +94,53 @@
    <p id="clockStatus" role="status">${notice}</p>`);
    const body=element('modalBody');
    const hourButtons=[...body.querySelectorAll('[data-hour]')];
-   hourButtons.forEach(button=>button.onclick=()=>{
-    selectedHour=Number(button.dataset.hour);
-    element('clockHourChoice').textContent=(selectedHour||12)+'時';
-    hourButtons.forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
-    element('setHour').disabled=!mounted;
+   const clockFace=element('clockDial');
+   const hand=element('clockHourHand');
+   let drag=null;
+   let suppressTapUntil=0;
+   function chooseHour(hour, angle=(hour??state.clockHour%12)*30){
+    selectedHour=hour;
+    hand.style.transform=`rotate(${angle}deg)`;
+    element('clockHourChoice').textContent=(hour===null?'？':hour||12)+'時';
+    hourButtons.forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.hour)===hour)));
+    element('setHour').disabled=hour===null||!mounted;
     element('clockStatus').textContent='';
+   }
+   hourButtons.forEach(button=>button.onclick=event=>{
+    if(event.detail&&performance.now()<suppressTapUntil)return;
+    chooseHour(Number(button.dataset.hour));
    });
+   clockFace.onpointerdown=event=>{
+    if(!event.isPrimary||event.button!==0)return;
+    drag={id:event.pointerId,x:event.clientX,y:event.clientY,hour:selectedHour,moving:false};
+   };
+   clockFace.onpointermove=event=>{
+    if(!drag||drag.id!==event.pointerId)return;
+    if(!drag.moving){
+     if(Math.hypot(event.clientX-drag.x,event.clientY-drag.y)<6)return;
+     drag.moving=true;clockFace.setPointerCapture(event.pointerId);
+    }
+    updateFromPoint(event);
+   };
+   function updateFromPoint(event){
+    const bounds=clockFace.getBoundingClientRect();
+    const x=event.clientX-bounds.left-bounds.width/2,y=event.clientY-bounds.top-bounds.height/2;
+    if(Math.hypot(x,y)<bounds.width*.07)return;
+    const angle=(Math.atan2(x,-y)*180/Math.PI+360)%360;
+    chooseHour(Math.round(angle/30)%12,angle);
+   }
+   function stopDrag(event,canceled=false){
+    if(!drag||drag.id!==event.pointerId)return;
+    const previous=drag;
+    drag=null;
+    if(!previous.moving)return;
+    if(!canceled)updateFromPoint(event);
+    suppressTapUntil=performance.now()+250;
+    chooseHour(canceled?previous.hour:selectedHour);
+   }
+   clockFace.onpointerup=event=>stopDrag(event);
+   clockFace.onpointercancel=event=>stopDrag(event,true);
+   clockFace.onlostpointercapture=event=>{if(event.target===clockFace)stopDrag(event,true)};
    function cycleKana(direction){
     const index=kana.indexOf(state.clockKana);
     state.clockKana=kana[(index+direction+kana.length)%kana.length];
@@ -128,13 +168,13 @@
    });
    element('setHour').onclick=()=>{
     if(!mounted||selectedHour===null||mounted.hour!==selectedHour||mounted.kana!==state.clockKana){
-     element('clockStatus').textContent='……針は動かなかった。';
+     element('clockStatus').textContent='……何も起こらない。';
      return;
     }
-    const before=state.clockHour;
+     const before=state.clockHour;
     state.clockHour=mounted.time;
     save();tap();draw();
-    if(!applyTime(before))clock(selectedHour,formatTime(state.clockHour)+'　針が動いた。');
+    if(!applyTime(before))clock(selectedHour,formatTime(state.clockHour)+'　カチリ。');
    };
   }
 

@@ -38,3 +38,37 @@
 }
 .lock-notation span{display:inline-flex;flex-direction:column;min-width:2em}
 .phone-observation-photo img{display:block;width:100%;height:auto}
+
+#titleScreen{
+ overflow:auto;
+ background:radial-gradient(ellipse at 49% 30%,#29274c,#151a36 60%,#0c1024);
+ padding:clamp(12px,4vw,32px);
+}
+#titleScreen[data-mood="open"]{background:radial-gradient(ellipse at 49% 30%,#35233c,#161329 65%,#0d0e22)}
+#titleScreen[data-mood="stop"]{background:radial-gradient(ellipse at 49% 30%,#292d46,#15192b 63%,#0e1320)}
+#titleScreen[data-mood="true"]{background:radial-gradient(ellipse at 49% 30%,#44476d,#202847 63%,#101939)}
+.title-stage{display:grid;gap:clamp(8px,2dvh,16px);width:min(100%,650px)}
+.title-heading h1{
+ font-family:"Hiragino Mincho ProN","Yu Mincho",serif;letter-spacing:.14em;
+ font-size:clamp(29px,8vw,55px);line-height:1.2;margin:0 0 10px;
+}
+.title-heading .title-mood{height:1px;width:min(88%,420px)}
+.title-scene{position:relative;isolation:isolate;border:1px solid #bca18e;box-shadow:0 0 0 3px #3d3658,0 8px 28px #0b1021}
+#titleScreen .title-img{
+ display:block;width:100%;height:clamp(145px,39dvh,365px);max-width:none;
+ object-fit:cover;object-position:65% center;border:0;border-radius:0;
+}
+#titleStars{position:absolute;top:6%;left:0;width:100%;pointer-events:none}
+#titleStars .title-constellation{margin:0;width:min(58%,280px);height:min(100px,19dvh)}
+.title-controls #titleSubtitle{margin:0 0 9px;color:#ded2e4;font-size:clamp(11px,3.3vw,14px)}
+#titleScreen #startBtn{
+ position:relative;min-height:52px;width:min(83%,290px);margin:0 auto;
+ padding:9px 22px;color:#fff0c5;
+ background:linear-gradient(180deg,#403c65,#272744);border:1px solid #e0be8f;
+ font:700 14px/1.1 ui-monospace,monospace;letter-spacing:.22em;
+ box-shadow:inset 0 0 0 3px #282849,0 3px #151629;
+}
+#titleScreen #startBtn::before,#titleScreen #startBtn::after{content:"✧";position:absolute;top:50%;transform:translateY(-50%);font-size:12px;color:#d9b990}
+#titleScreen #startBtn::before{left:9%}
+#titleScreen #startBtn::after{right:9%}
+#titleScreen #titleReset{min-height:38px;margin:6px auto 0;background:none;border:0;box-shadow:none;font-size:12px;color:#d9c9df}

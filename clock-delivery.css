@@ -11,7 +11,7 @@
 .clock-actions{margin-top:6px}
 .clock-actions .btn{min-width:0;padding:5px;font-size:13px}
 .clock-panel-tray .btn{display:grid;justify-items:center;min-width:0;flex:1 1 52px;max-width:70px;padding:4px 1px;font-size:11px}
-#clockStatus:empty,#fruitOrderStatus:empty{display:none}
+#fruitOrderStatus:empty{display:none}
 .tv-fruit-shop{padding:7px;background:#25243d;border:1px solid #a4879b;text-align:center}
 .tv-fruit-shop header{display:flex;justify-content:space-between;align-items:center;gap:4px;color:#ffe0a2}
 .tv-fruit-shop header span{color:#e4b8c8;font-size:11px}
@@ -48,3 +48,16 @@
 #fruitOrderStatus{font-size:11px;margin:2px 0}
 
 .clock-part-picture{background:#ebd3ab;border:2px outset #cc9e7c;padding:2px;border-radius:2px;box-sizing:border-box;image-rendering:pixelated}
+
+#clockDial{touch-action:none;user-select:none;cursor:grab}
+#clockDial:active{cursor:grabbing}
+#clockDial .clock-hour-hand{
+ width:6px;height:23%;left:calc(50% - 3px);
+ background:#574067;box-shadow:1px 0 #946d83;z-index:1;
+}
+#clockDial::after{
+ content:"";position:absolute;left:50%;top:50%;z-index:2;pointer-events:none;
+ width:10px;height:10px;background:#715572;outline:1px solid #503a55;border-radius:50%;
+ transform:translate(-50%,-50%);
+}
+#modalBody #clockStatus{min-height:1.8em;margin:5px 0 0}

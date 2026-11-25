@@ -1,0 +1,39 @@
+#modalBody #tvScore,#modalBody #tvShootingHelp{margin:4px 0;text-align:center}
+#tvScore{font-weight:700;color:#ffdeb3}
+#tvShootingHelp{color:#e1c6dc}
+.tv-shooter {
+ position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);
+ background:
+  radial-gradient(circle at 25% 22%,#f1d2ac 0 1px,transparent 2px),
+  radial-gradient(circle at 67% 29%,#e0b4cc 0 1px,transparent 2px),
+  radial-gradient(circle at 81% 58%,#c496b1 0 1px,transparent 2px),
+  radial-gradient(circle at 46% 51%,#ecc3b7 0 1px,transparent 2px),
+  linear-gradient(#201b35 16%,#443050 72%,#503551);
+}
+.tv-shot-lane{position:relative;z-index:1;background:transparent;border:0;border-right:1px dashed #a97c9b59;touch-action:manipulation}
+.tv-shot-lane:last-of-type{border:0}
+.tv-shooter .tv-shot-lane:focus-visible{outline-offset:-5px}
+.tv-shooter-sight{position:absolute;inset:66% 0 10%;border-block:1px solid #e0af884a;background:#cf92672b}
+.tv-shooter.meteor-in-range .tv-shooter-sight{border-color:#fbd29e;background:#ce8f6d45}
+.tv-shooter-star {
+ position:absolute;left:16.666%;top:19%;width:21px;height:21px;
+ transform:translate(-50%,-50%);
+ background:#ffdfad;pointer-events:none;
+ clip-path:polygon(43% 0,57% 0,57% 30%,70% 30%,70% 43%,100% 43%,100% 57%,70% 57%,70% 70%,57% 70%,57% 100%,43% 100%,43% 70%,30% 70%,30% 57%,0 57%,0 43%,30% 43%,30% 30%,43% 30%);
+}
+.tv-shooter-star[data-lane="1"]{left:50%}
+.tv-shooter-star[data-lane="2"]{left:83.333%}
+.tv-shot-trail{position:absolute;inset:auto 50% 4% auto;width:4px;height:63%;background:linear-gradient(transparent,#f7b5a8,#fff2ca);opacity:0}
+.fired .tv-shot-trail{animation:tv-trail .27s steps(4) both}
+@keyframes tv-trail{0%{opacity:1;transform:translateY(15%)}100%{opacity:0;transform:translateY(-35%)}}
+@media(prefers-reduced-motion:reduce){.fired .tv-shot-trail{animation:tv-trail .15s both}}
+
+.tv-shooter-label{position:absolute;top:6px;left:8px;color:#f5cca0;font:700 10px ui-monospace,monospace;letter-spacing:.13em}
+.tv-shooter-caption{
+ position:absolute;z-index:2;inset:35% 0 auto;text-align:center;pointer-events:none;
+ color:#fff0c9;font:700 clamp(16px,6vw,25px) ui-monospace,monospace;letter-spacing:.22em;
+ text-shadow:2px 2px #3b2751,0 0 12px #ba8e74;
+}
+.tv-shooter[data-phase="clear"]{animation:tv-clear .5s steps(4) both}
+@keyframes tv-clear{25%{filter:brightness(1.5)}}
+@media(prefers-reduced-motion:reduce){.tv-shooter[data-phase="clear"]{animation:none}}
