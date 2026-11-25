@@ -17,9 +17,7 @@
 .tv-ticker span{letter-spacing:.08em;color:#bfacd0;font:11px ui-monospace,monospace}
 .tv-game{margin-top:9px;text-align:center}
 .tv-cookie-target{display:flex;justify-content:center;gap:10px;align-items:center;color:#f4d9ae}
-.tv-cookie-target b{display:grid;place-items:center;min-width:38px;height:38px;font-size:26px;background:#231c3a;border:1px dashed #a78a9d}
-.tv-cookie-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:6px auto 0;width:min(250px,100%)}
-.tv-cookie-choices .btn{height:45px;padding:0;color:#f6d6a2;font-size:24px}
+.tv-cookie-target b{font-size:15px;color:#fff4cf}
 #tvCookieStatus:empty{display:none}
 .veil.tv-mode .modal{max-height:calc(100dvh - 24px);overflow:auto}
 .veil.tv-mode{align-items:flex-start}
@@ -33,3 +31,29 @@
 @media(prefers-reduced-motion:no-preference){.tv-news-scroll{animation:tv-news-roll 15s linear infinite}}
 @media(prefers-reduced-motion:reduce){.tv-news-scroll{display:block;width:auto;white-space:normal}.tv-news-scroll span[aria-hidden]{display:none}}
 @keyframes tv-news-roll{0%,7%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+#modalBody .cookie-guide{margin:4px 0;font-size:12px;text-align:center}
+.cookie-dough {
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ width:min(100%,205px,34dvh);
+ margin:5px auto;
+ padding:6px;
+ gap:2px;
+ background:#b67a53;
+ border:3px ridge #e8b475;
+ box-shadow:0 2px #9b583d;
+ touch-action:none;
+}
+.cookie-dough > * {
+ min-width:0;
+ aspect-ratio:1;
+ padding:0;
+ border:0;
+ background:#dda572;
+ box-shadow:inset 2px 2px #eeb782,inset -2px -2px #ca905f;
+}
+.cookie-dough button{background:#e6b186;box-shadow:inset 0 0 0 2px #a66e59;touch-action:none}
+.cookie-dough .next-cut{background:#fff2c0;box-shadow:inset 0 0 0 3px #b87a53}
+.cookie-dough .is-cut{background:#965f50;box-shadow:inset 2px 2px #754b45}
+#modalBody #tvCookieStatus{margin:5px 0 0;min-height:1.5em;text-align:center}
