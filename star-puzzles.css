@@ -226,3 +226,13 @@
 }
 
 #dialog.over-modal{z-index:36}
+
+#tip.guide-active{color:#ffebbb}
+#scene .object.guide-next{
+ --marker-ink:#fff3ba;--marker-rim:#ffe19b;
+}
+#scene .object.guide-next::after{background:#674c37}
+.nav.guide-next{
+ border-color:#ffe19b;background:#4e405b;color:#fff2ca;
+ box-shadow:0 0 7px #f6c8798a;
+}
