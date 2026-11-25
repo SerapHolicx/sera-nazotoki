@@ -4,7 +4,7 @@
   const columns = 5;
   const rows = 3;
   const starCount = 6;
-  const spineRows = [[2], [1], [0, 2], [0], [1]];
+  const spineRows = [[2], [0, 1], [0], [1], [2]];
   const numberOrder = [1, 2, 3, 4, 5];
   const wordOrder = [4, 2, 5, 1, 3];
   const slotsInBookOrder = order => order.flatMap((book, column) =>
@@ -14,6 +14,8 @@
   const oldPatterns = {number:[12,7,2,9,4,17],word:[6,7,2,15,16,5]};
   const previousPatterns = {number:[12,7,2,3,10,17],word:[0,7,8,15,16,5]};
 
+  const fiveColumnPatterns = {number:[10,6,2,12,3,9],word:[0,6,7,13,4,14]};
+
   function matchPattern(slots, shapes) {
     return Object.keys(shapes).find(kind =>
       slots.length === starCount && shapes[kind].every(slot => slots.includes(slot))
@@ -21,6 +23,10 @@
   }
 
   function migratePlacement(slots, version) {
+    if (version === 4) {
+      const previous = matchPattern(slots,fiveColumnPatterns);
+      return previous ? patterns[previous].slice() : slots;
+    }
     const original = version === 2 || version === 3 ? slots
       : slots.map(slot => oldPatterns.number[[0,1,2,4,5,3][slot]]);
     const previous = matchPattern(original, version === 3 ? previousPatterns : oldPatterns);

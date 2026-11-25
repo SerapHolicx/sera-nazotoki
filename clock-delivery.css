@@ -47,4 +47,4 @@
 #orderFruit{min-height:34px}
 #fruitOrderStatus{font-size:11px;margin:2px 0}
 
-.clock-part-picture{background:#523f61;border:1px solid #c19b79;padding:1px;border-radius:2px;box-sizing:border-box}
+.clock-part-picture{background:#ebd3ab;border:2px outset #cc9e7c;padding:2px;border-radius:2px;box-sizing:border-box;image-rendering:pixelated}
