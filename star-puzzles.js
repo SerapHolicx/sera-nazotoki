@@ -1,7 +1,6 @@
 'use strict';
 
 window.createObservatoryStarPuzzles = ({getState,open,save,reward,tap,element}) => {
-  const moonPositions = [17,34,51,68,85];
   const orbit = [[86,25],[95,56],[70,82],[44,53],[58,25]];
   const journalLines = [
     'ひそやかな足音が、空の奥で止まった。',
@@ -10,43 +9,6 @@ window.createObservatoryStarPuzzles = ({getState,open,save,reward,tap,element}) 
   ];
   const keys = ['か','つ','り','よ','ひ','き'];
   const owned = id => getState().got.includes(id);
-
-  function mirror() {
-    const state = getState();
-    if (owned('mirror')) {
-      open('月を映す鏡','<p>鏡の縁に、青い光が残っている。</p>');
-      return;
-    }
-    if (!owned('clock')) {
-      open('月を映す鏡','<p>壁に三日月の絵がある。鏡には、まだ何も映っていない。</p>');
-      return;
-    }
-    if (state.puzzleSolved.includes('mirror')) return reward('mirror');
-    open('月を映す鏡',`<p>鏡の中にだけ、月が浮かんでいる。</p>
-      <div class="mirror-puzzle" id="mirrorPuzzle" role="img">
-        <div class="moon-trace" aria-hidden="true"></div>
-        <div class="mirror-glass" aria-hidden="true"><i></i><b class="mirror-moon"></b></div>
-      </div>
-      <div class="buttons"><button class="btn" id="mirrorLeft" type="button">◀ 左へ傾ける</button><button class="btn" id="mirrorRight" type="button">右へ傾ける ▶</button></div>`);
-    const board = element('mirrorPuzzle');
-    function display() {
-      board.style.setProperty('--moon-x',moonPositions[state.mirrorAngle]+'%');
-      board.setAttribute('aria-label',`壁の三日月は右から2番目。鏡の月は左から${state.mirrorAngle+1}番目。`);
-      element('mirrorLeft').disabled = state.mirrorAngle === 0;
-      element('mirrorRight').disabled = state.mirrorAngle === moonPositions.length-1;
-    }
-    function tilt(direction) {
-      state.mirrorAngle += direction;
-      tap();
-      display();
-      if (state.mirrorAngle === 3) {
-        reward('mirror','鏡から、青い光が伸びた。');
-      } else save();
-    }
-    element('mirrorLeft').onclick = () => tilt(-1);
-    element('mirrorRight').onclick = () => tilt(1);
-    display();
-  }
 
   function eclipseNote() {
     return '<div class="paper eclipse-note"><b>日食の観測記録</b><div class="eclipse-diagram" role="img" aria-label="左から大きな太陽、小さな月、青い地球が一列に描かれている"><i></i><i></i><i></i></div></div>';
@@ -58,7 +20,7 @@ window.createObservatoryStarPuzzles = ({getState,open,save,reward,tap,element}) 
       open('星の観測日誌',eclipseNote());
       return;
     }
-    if (!owned('mirror')) {
+    if (!owned('tv')) {
       open('星の観測日誌','<div class="paper blank-journal" aria-hidden="true"></div><p>ページは白紙だ。</p>');
       return;
     }
@@ -106,7 +68,7 @@ window.createObservatoryStarPuzzles = ({getState,open,save,reward,tap,element}) 
       open('天体模型','<p>月の影が地球に重なったまま、模型は止まっている。</p>');
       return;
     }
-    if (!owned('journal') || !owned('mirror') || !owned('clock') || !owned('books')) {
+    if (!owned('journal') || !owned('tv') || !owned('clock') || !owned('books')) {
       open('天体模型','<p>つまみは固く、動かない。</p>');
       return;
     }
@@ -144,5 +106,5 @@ window.createObservatoryStarPuzzles = ({getState,open,save,reward,tap,element}) 
     };
     display();
   }
-  return {mirror,journal,orrery};
+  return {journal,orrery};
 };
