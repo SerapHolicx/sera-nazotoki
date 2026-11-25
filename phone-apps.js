@@ -106,6 +106,7 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
       ${button('＋','id="zoomPhonePhoto" aria-label="写真を拡大・縮小" aria-pressed="false"')}
       ${button('›','id="nextPhonePhoto" aria-label="次の写真" '+(position===indices.length-1?'disabled':''))}
       </div></div>`,back,backLabel);
+    if(photo.anomaly)reading='photo';
     const viewport=element('phonePhotoTouch');
     const image=viewport.firstElementChild;
     const zoomButton=element('zoomPhonePhoto');
@@ -113,10 +114,7 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
     let scale=1, x=0, y=0, origin=null, pinch=null;
     const go=step=>{
       const next=indices[position+step];
-      if(next!==undefined){
-        viewPhoto(next,indices,back,backLabel);
-        if(photo.anomaly)thought('photo');
-      }
+      if(next!==undefined)viewPhoto(next,indices,back,backLabel);
     };
     function paint() {
       const limitX=viewport.clientWidth*(scale-1)/2;
@@ -126,7 +124,7 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
       image.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
       zoomButton.setAttribute('aria-pressed',String(scale>1));
       zoomButton.textContent=scale>1?'−':'＋';
-      if(photo.anomaly&&scale>=1.6)thought('photo');
+      if(photo.anomaly&&scale>=1.6)finishReading();
     }
     on('#prevPhonePhoto',()=>go(-1));
     on('#nextPhonePhoto',()=>go(1));
