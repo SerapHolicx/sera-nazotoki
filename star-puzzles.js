@@ -30,14 +30,22 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
     return `<div class="sky-clue-grid" role="img" aria-label="${descriptions.join('。')}">${rows}</div>`;
   }
 
-  function drawWindowSky(canvas, night) {
+  function drawWindowSky(canvas, night, showClues=true) {
     const ctx = canvas.getContext('2d');
-    const bands = night ? ['#111430','#17193e','#202653','#2b3063','#403a70']
-      : ['#333762','#584674','#8d5984','#c67e98','#eda69d','#ffc99d'];
-    bands.forEach((color,i) => {
-      ctx.fillStyle = color;
-      ctx.fillRect(0,i*14,160,96-i*14);
-    });
+    if(night){
+      const atmosphere=ctx.createLinearGradient(0,0,0,96);
+      atmosphere.addColorStop(0,'#111632');
+      atmosphere.addColorStop(.62,'#20294e');
+      atmosphere.addColorStop(1,'#45446a');
+      ctx.fillStyle=atmosphere;
+      ctx.fillRect(0,0,160,96);
+    }else{
+      const bands=['#333762','#584674','#8d5984','#c67e98','#eda69d','#ffc99d'];
+      bands.forEach((color,i) => {
+        ctx.fillStyle=color;
+        ctx.fillRect(0,i*14,160,96-i*14);
+      });
+    }
     if (!night) {
       ctx.fillStyle = '#ffe2ad';
       for(let y=-11;y<=11;y++){
@@ -45,8 +53,15 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
         ctx.fillRect(81-w,68+y,w*2+1,1);
       }
     }
-    ctx.fillStyle = night?'#454175':'#ca89a0';
-    [[4,51,24],[11,49,12],[30,65,22],[34,63,12],[111,49,30],[120,47,14],[136,58,20]].forEach(([x,y,w]) => ctx.fillRect(x,y,w,2));
+    const clouds = [[4,51,26],[33,65,20],[109,47,28],[133,59,22]];
+    for(const [x,y,w] of clouds){
+      ctx.fillStyle=night?'#383e66':'#cf8da5';
+      ctx.fillRect(x+7,y-2,w-16,2);
+      ctx.fillRect(x+3,y,w-7,2);
+      ctx.fillRect(x,y+2,w,2);
+      ctx.fillStyle=night?'#30365b':'#b67895';
+      ctx.fillRect(x+5,y+4,w-6,2);
+    }
     const horizons = [
       [night?'#252847':'#7d5b7d', [83,81,76,78,80,83,86,86,81,78,72,74,77,82,84,85]],
       [night?'#161933':'#4a415d', [90,87,84,82,85,89,89,91,92,91,88,86,83,86,88,91]]
@@ -56,8 +71,17 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       heights.forEach((height,x)=>ctx.fillRect(x*10,height,10,96-height));
     }
     if (!night) return;
-    ctx.fillStyle='#e6bfaa';
-    [[34,88],[46,89],[119,88],[129,87],[148,92]].forEach(([x,y])=>ctx.fillRect(x,y,1,1));
+    ctx.fillStyle='#7782a9';
+    [[5,12],[12,32],[22,8],[30,43],[43,17],[51,30],[66,11],[73,43],[86,21],[97,9],[105,36],[121,15],[133,30],[145,12],[153,43]].forEach(([x,y])=>ctx.fillRect(x,y,1,1));
+    for(const [x,y,w] of [[19,87,7],[33,86,10],[47,89,7],[111,86,9],[123,85,8],[141,89,7]]){
+      ctx.fillStyle='#202039';
+      ctx.fillRect(x,y,w,96-y);
+      ctx.fillRect(x+1,y-1,w-2,1);
+      ctx.fillStyle='#d3a691';
+      ctx.fillRect(x+2,y+2,1,1);
+      if(w>7)ctx.fillRect(x+5,y+3,1,1);
+    }
+    if(!showClues)return;
     element('modalBody').querySelectorAll('[data-sky-glyph]').forEach(sprite => {
       const pixels = clueSprites[Number(sprite.dataset.skyGlyph)];
       const ink = sprite.getContext('2d');
