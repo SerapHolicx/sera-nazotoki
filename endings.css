@@ -27,8 +27,6 @@
 .end-eye-lit{animation:eye-light .62s ease-out both}
 @keyframes ending-meteor{from{left:65%;top:8%;transform:rotate(145deg);opacity:.2}25%{opacity:1}to{left:12%;top:65%;transform:rotate(145deg);opacity:0}}
 @keyframes gate-flicker{0%,100%{filter:none}26%{filter:brightness(.68)}52%{filter:contrast(1.36) saturate(.62)}}
-.old-record p{line-height:1.8}
-.lock-notation{display:block;letter-spacing:.14em;text-align:center;margin:.65em 0}
 .connection-wait{border:1px solid #9cace8;padding:.75em;color:#d7e5ff;background:#151e42}
 .phone-observation-photo{width:min(100%,250px);height:auto;display:block;margin:auto;image-rendering:pixelated}
 @media(prefers-reduced-motion:reduce){
@@ -36,7 +34,6 @@
  .end-recovery[data-step="meteor"] .end-shooting{animation:none;left:42%;top:35%;transform:rotate(145deg)}
  #endingScreen #endOmen{transition:none!important}
 }
-.lock-notation span{display:inline-flex;flex-direction:column;min-width:2em}
 .phone-observation-photo img{display:block;width:100%;height:auto}
 
 #titleScreen{
@@ -73,6 +70,19 @@
 #titleScreen #startBtn::after{right:9%}
 #titleScreen #titleReset{min-height:38px;margin:6px auto 0;background:none;border:0;box-shadow:none;font-size:12px;color:#d9c9df}
 
-#titleStars .title-star-pattern{position:relative;width:min(68%,320px);height:clamp(62px,17dvh,118px)}
+#titleStars .title-star-pattern{position:relative;width:min(54%,240px);aspect-ratio:5/3}
 .title-star-pattern [data-star]{position:absolute;transform:translate(-50%,-50%);opacity:.46}
 .title-star-pattern [data-star].lit{opacity:1;filter:drop-shadow(0 0 5px #d9def8)}
+
+.eye-star-cover{
+ position:absolute;pointer-events:none;left:41%;top:47%;width:19%;height:18%;
+ background:radial-gradient(ellipse at 49% 48%,#291a77 32%,#33208e 63%,#37289b 83%);
+ mask-image:radial-gradient(ellipse at center,#000 57%,#000 70%,transparent 85%);
+}
+
+.handset .phone-board{width:min(225px,100%,37dvh);aspect-ratio:5/3}
+.phone-board .phone-star{display:grid;place-items:center;width:min(44px,20%);height:min(44px,33%)}
+.phone-star[aria-pressed="true"] .pixel-star{filter:drop-shadow(0 0 5px #ffc992)}
+
+.title-omen{display:none;position:absolute;inset:18% auto auto 37%;width:43%;height:auto;opacity:.46;pointer-events:none;mix-blend-mode:screen}
+#titleScreen[data-mood="open"] .title-omen{display:block}

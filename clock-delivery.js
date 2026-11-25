@@ -85,10 +85,9 @@
      <output id="clockKanaChoice" aria-live="polite">${state.clockKana}</output>
      <button id="clockKanaDown" type="button" aria-label="次のひらがな">▽</button>
     </div><span>＝</span>
-    <span class="clock-panel-socket">${mounted?panelImage(state.clockPanel):'<span aria-label="パネルなし">―</span>'}</span>
+    ${mounted?`<button class="clock-panel-socket" id="mountedClockPanel" type="button" aria-label="${mounted.name}のパネルをタップして外す">${panelImage(state.clockPanel)}</button>`:'<span class="clock-panel-socket" aria-label="パネルなし">―</span>'}
    </div>
    <div class="buttons clock-actions"><button class="btn primary" id="setHour" type="button"${selectedHour===null||!mounted?' disabled':''}>確かめる</button>
-    ${mounted?'<button class="btn" id="removeClockPanel" type="button">パネルを外す</button>':''}
    </div>
    ${loosePanels.length?`<div class="clock-panel-tray" aria-label="持ち物の絵のパネル">${loosePanels.map(id=>`<button class="btn" type="button" data-mount-panel="${id}" aria-label="${items[id].name}のパネルをセット">${panelImage(id,true)}<span>${items[id].name}</span></button>`).join('')}</div>`:''}
    <p id="clockStatus" role="status">${notice}</p>`);
@@ -151,7 +150,7 @@
    }
    element('clockKanaUp').onclick=()=>cycleKana(-1);
    element('clockKanaDown').onclick=()=>cycleKana(1);
-   const remove=element('removeClockPanel');
+   const remove=element('mountedClockPanel');
    if(remove)remove.onclick=()=>{
     rememberItem(state,state.clockPanel);
     state.panels.push(state.clockPanel);

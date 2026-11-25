@@ -2,7 +2,7 @@
 
 window.observatoryShooter=(()=>{
  const width=192,height=120,shipY=105;
- const bossTime=29,runLimit=45;
+ const bossTime=11.5,runLimit=25;
  const stars=Array.from({length:44},(_,i)=>[i*53%width,i*29%height,8+i%5*3]);
  const route=[24,145,76,164,42,106,64,128,22,161,91,42];
  let losses=0;
@@ -15,9 +15,8 @@ window.observatoryShooter=(()=>{
    <span class="tv-shooter-caption" role="status"></span>
   </div>`;
  }
- function controlsMarkup(mode){
-  if(mode==='demo')return '<p id="tvShootingHelp">機体を左右にスライド。弾は自動。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons"><button class="btn primary" id="launchStarShooter">出撃する</button><button class="btn" id="leaveStarShooter">番組へ戻る</button></div>';
-  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">左右にスライド。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button><button class="btn" id="leaveStarShooter">番組へ戻る</button></div>';
+ function controlsMarkup(){
+  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">左右にスライド。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button><button class="btn" id="leaveStarShooter">デモへ戻る</button></div>';
  }
  function start(root,{hit,miss,retry,leave,won,reward}){
   const field=root.querySelector('#tvShooter');
@@ -31,7 +30,7 @@ window.observatoryShooter=(()=>{
   const keys=new Set();
   let x=width/2,health=maxHealth,points=0,elapsed=0;
   let phase='ready',last=performance.now(),readyUntil=last+600;
-  let nextShot=0,nextSpawn=.3,spawn=0,protectedUntil=0,pointer=null,frame,rewardTimer;
+  let nextShot=0,nextSpawn=.15,spawn=0,protectedUntil=0,pointer=null,frame,rewardTimer;
 
   function fill(color,l,t,w,h){ctx.fillStyle=color;ctx.fillRect(Math.round(l),Math.round(t),w,h)}
   function glint(px,py,r,bright='#ffe9b0'){
@@ -62,7 +61,7 @@ window.observatoryShooter=(()=>{
   }
   function addEnemy(){
    if(elapsed>=bossTime)return;
-   const rock=spawn>=3&&spawn%3===1;
+   const rock=spawn%3===1;
    const position=route[spawn%route.length];
    hostiles.push({type:rock?'rock':'star',base:position,x:position,y:-8,drift:spawn%2?12:0,phase:spawn,r:rock?6:7,hp:1});
    spawn++;
@@ -76,7 +75,7 @@ window.observatoryShooter=(()=>{
    }
    if(elapsed>=nextSpawn){
     addEnemy();
-    nextSpawn=elapsed+Math.max(.59,1.02-elapsed*.014)+(assisted?.13:0);
+    nextSpawn=elapsed+Math.max(.48,.91-elapsed*.026)+(assisted?.13:0);
    }
    if(elapsed>=bossTime&&elapsed-dt<bossTime){
     // Clear the approach so the player can concentrate on the large star.
@@ -86,10 +85,10 @@ window.observatoryShooter=(()=>{
    }
    for(const o of hostiles){
     if(o.type==='boss'){
-     o.y=Math.min(35,o.y+25*dt);
+     o.y=Math.min(35,o.y+32*dt);
      o.x=width/2+Math.sin((elapsed-bossTime)*1.32)*(assisted?22:35);
     }else{
-     o.y+=(23+elapsed*.39+(o.type==='rock'?2:0))*(assisted?.86:1)*dt;
+     o.y+=(31+elapsed*1.15+(o.type==='rock'?2:0))*(assisted?.86:1)*dt;
      o.x=o.base+Math.sin(elapsed*2+o.phase)*o.drift;
     }
    }
