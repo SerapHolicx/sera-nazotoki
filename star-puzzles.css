@@ -3,16 +3,12 @@
 .puzzle-feedback { min-height:1.4em }
 .blank-journal { min-height:100px;background:repeating-linear-gradient(#e9dec8 0 23px,#c6b49e 23px 24px) }
 .blue-journal { background:#c5ddf3;color:#202e55;border-color:#607ca9;box-shadow:0 0 16px #3765a8 }
-#modalBody .blue-journal p { margin:3px 0 }
-.journal-initial { color:#144b85; text-shadow:0 0 5px #7ca3ee }
 .eclipse-diagram { display:flex;align-items:center;justify-content:center;gap:12%;padding:7px }
 .eclipse-diagram i { display:block;border-radius:50%;aspect-ratio:1 }
 .eclipse-diagram i:nth-child(1) { width:34px;background:#d78b49;box-shadow:inset 5px 0 #f0b76e }
 .eclipse-diagram i:nth-child(2) { width:13px;background:#635a6f }
 .eclipse-diagram i:nth-child(3) { width:24px;background:#587698;box-shadow:inset 3px 0 #93867e }
 #journalAnswer { display:block;text-align:center;margin:8px;color:#d3e7ff;font-size:21px;letter-spacing:.14em }
-.journal-keys { display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px }
-.journal-keys button { padding:4px 0;min-height:44px }
 .orrery-puzzle { background:radial-gradient(ellipse at 19% 53%,#805444,#23264d 41%,#101938 74%) }
 .orbit-ring { position:absolute;left:44%;right:5%;top:24%;bottom:18%;border:1px dashed #aaa7ce;border-radius:50%;opacity:.7 }
 .planet,.planet-label { position:absolute;transform:translate(-50%,-50%);top:53% }
@@ -30,3 +26,90 @@
 @keyframes orrery-eclipse { 36% { filter:brightness(.2) } }
 .clock-clues img { image-rendering:pixelated;vertical-align:middle }
 #clockStatus:empty { display:none }
+.sky-clue-grid,.journal-letter-grid {
+ display:grid;
+ grid-template-columns:repeat(5,minmax(0,1fr));
+ grid-template-rows:repeat(3,1fr);
+}
+.window-sky {
+ position:relative;
+ isolation:isolate;
+ overflow:hidden;
+ aspect-ratio:5/3.2;
+ margin:0 auto;
+ max-height:48dvh;
+ border:3px solid #b4a4cd;
+ box-shadow:inset 0 0 0 3px #172044;
+}
+.window-sky.is-dusk { background:linear-gradient(#2b3261,#675795 43%,#d88d9e 73%,#ffd395 94%) }
+.window-sky.is-night { background:radial-gradient(ellipse at 18% 60%,#333d76,transparent 72%),linear-gradient(#101431,#1e295c) }
+.window-sky::after {
+ content:"";
+ position:absolute;
+ z-index:-1;
+ inset:auto 0 0;
+ height:25%;
+ background:#151c40;
+ clip-path:polygon(0 61%,8% 61%,8% 45%,15% 45%,15% 24%,20% 24%,20% 34%,27% 34%,27% 54%,35% 54%,35% 67%,49% 67%,49% 52%,63% 52%,63% 37%,70% 37%,70% 19%,78% 19%,78% 30%,86% 30%,86% 49%,94% 49%,94% 62%,100% 62%,100% 100%,0 100%);
+}
+.window-sky.is-dusk::after { background:#514063 }
+.window-sky.is-dusk::before {
+ content:"";
+ position:absolute;
+ width:12%;
+ aspect-ratio:1;
+ bottom:13%;
+ left:44%;
+ border-radius:50%;
+ background:#ffe2ac;
+ box-shadow:0 0 22px #ffd58c;
+}
+.sky-clue-grid { position:absolute;inset:5% 5% 17%; }
+.sky-clue-cell { display:grid;place-items:center; }
+.sky-clue-count {
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:3px;
+ width:40px;
+ height:29px;
+ filter:drop-shadow(0 0 4px #aaa8fa);
+}
+.sky-clue-count i {
+ display:block;
+ width:12px;
+ aspect-ratio:1;
+ background:#fff4cc;
+ clip-path:polygon(50% 0,64% 35%,100% 50%,64% 65%,50% 100%,36% 65%,0 50%,36% 35%);
+}
+.sky-clue-count.count-3 { position:relative;align-items:end;justify-content:space-evenly;padding-bottom:3px; }
+.sky-clue-count.count-3 i:first-child { position:absolute;left:14px;top:1px; }
+.journal-letter-grid { margin-top:9px;gap:3px; }
+.journal-letter-grid button {
+ min-height:44px;
+ padding:0;
+ color:#202e55;
+ background:#e7f0fa;
+ border:1px solid #899cc3;
+ border-radius:2px;
+ font-size:clamp(15px,5vw,21px);
+}
+.journal-letter-grid button[aria-pressed="true"] { background:#304778;color:#fff4cc; }
+.sky.board-sky.framed-constellation {
+ box-sizing:border-box;
+ border:5px ridge #d0a873;
+ border-radius:3px;
+ box-shadow:0 0 0 1px #352849,inset 0 0 0 2px #e6cfa55c;
+ background:radial-gradient(ellipse at 50% 45%,#384876,#161b3c 75%);
+}
+.framed-constellation::before { display:none; }
+.framed-constellation .slot:not(.filled) { background:#303c66;border:1px solid #9195b997;color:#c5c5e5; }
+.framed-constellation .slot.filled { color:#fff3ba;text-shadow:0 0 8px #edd0ff,0 0 18px #afaaff; }
+.scene .object[data-object="board"] { width:23%;height:19%; }
+.sky-clue-cell:empty::before {
+ content:"";
+ width:2px;
+ height:2px;
+ background:#a1a7d1;
+ opacity:.6;
+}
