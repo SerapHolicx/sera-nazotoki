@@ -7,12 +7,12 @@ window.observatoryStars = (() => {
  function markup(count=0,tint=''){
   return `<canvas class="pixel-star" width="15" height="13" data-pixel-star="${count}"${tint?' data-star-tint="'+tint+'"':''} aria-hidden="true"></canvas>`;
  }
- function draw(canvas,count){
+ function draw(canvas,count,tint=canvas.dataset.starTint){
   const ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,15,13);
   core.forEach((row,y)=>[...row].forEach((pixel,x)=>{
    if(pixel==='.')return;
-   ctx.fillStyle=canvas.dataset.starTint&&pixel!=='@'?canvas.dataset.starTint:colors[pixel];ctx.fillRect(4+x,3+y,1,1);
+   ctx.fillStyle=tint?(pixel==='@'?'#ffffff':tint):colors[pixel];ctx.fillRect(4+x,3+y,1,1);
   }));
   companionPositions.slice(0,count).forEach(([x,y])=>{
    ctx.fillStyle='#7993ca';

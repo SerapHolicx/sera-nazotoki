@@ -46,7 +46,10 @@ window.seraPhoneContent = {
     {src:'phone-media/room.webp',date:'11/22 19:20',alt:'天文台の室内'},
     {src:'phone-media/dusk.webp',date:'11/22 17:14',alt:'窓からの夕焼け'},
     {src:'phone-media/night.webp',date:'11/21 22:47',alt:'星の散った夜空'},
-    {src:'phone-media/charm.webp',date:'11/20 17:31',alt:'月の飾りがついたしおり'}
+    {src:'phone-media/charm.webp',date:'11/20 17:31',alt:'月の飾りがついたしおり'},
+    {src:'phone-media/sera-cat.webp',date:'11/19 14:18',alt:'窓辺で眠る茶トラを抱っこするセラ'},
+    {src:'phone-media/sera-mirror.webp',date:'11/18 09:44',alt:'マフラーを巻いたセラの鏡越しの自撮り'},
+    {src:'phone-media/sera-parfait.webp',date:'11/17 15:22',alt:'喫茶店でいちごパフェを食べるセラ'}
   ],
   searches: [
     '自己紹介サイト 作り方','今日の流星群','いちじくのおいしい食べ方','存在しない星の観測記録',
