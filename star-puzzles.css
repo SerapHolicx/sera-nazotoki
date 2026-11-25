@@ -1,0 +1,36 @@
+.scene-mirror { position:absolute;left:23%;top:18%;width:23%;height:18%;object-fit:fill;image-rendering:pixelated;pointer-events:none }
+.scene-mirror.is-reflecting { filter:drop-shadow(0 0 6px #8bd6ff) }
+.scene-blue-light { position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 33% 65%,#62beff69,transparent 24%);mix-blend-mode:screen }
+.mirror-puzzle,.orrery-puzzle { position:relative;height:clamp(112px,25dvh,172px);isolation:isolate;overflow:hidden;border:1px solid #8d83a8;background:#121b3a }
+.mirror-puzzle { background:repeating-linear-gradient(90deg,#33365b 0 27px,#42436b 27px 29px) }
+.mirror-glass { position:absolute;inset:17% 4% 11%;border:6px ridge #ad8c66;border-radius:8px;background:linear-gradient(150deg,#232c55 15%,#43567a 53%,#202844 55%) }
+.mirror-glass i { position:absolute;inset:0;opacity:.5;background:radial-gradient(circle at 24% 29%,#c9e1ff 0 2px,transparent 3px),radial-gradient(circle at 86% 73%,#8abcf4 0 1px,transparent 2px),radial-gradient(circle at 55% 22%,#b1b6ed 0 1px,transparent 2px) }
+.mirror-moon,.moon-trace { position:absolute;top:50%;width:clamp(23px,10vw,42px);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none }
+.mirror-moon { left:var(--moon-x);box-shadow:inset 8px -4px #e7f3ff;filter:drop-shadow(0 0 7px #93bfff) }
+.moon-trace { left:calc(4% + (100% - 8%) * .68);top:53%;z-index:1;outline:2px dashed #f3cc9d;outline-offset:1px }
+.puzzle-feedback { min-height:1.4em }
+.blank-journal { min-height:100px;background:repeating-linear-gradient(#e9dec8 0 23px,#c6b49e 23px 24px) }
+.blue-journal { background:#c5ddf3;color:#202e55;border-color:#607ca9;box-shadow:0 0 16px #3765a8 }
+#modalBody .blue-journal p,#modalBody .eclipse-note p { margin:3px 0 }
+#modalBody .journal-clue { color:#405b87;margin-bottom:8px }
+#journalAnswer { display:block;text-align:center;margin:8px;color:#d3e7ff;font-size:21px;letter-spacing:.14em }
+.journal-keys { display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px }
+.journal-keys button { padding:4px 0;min-height:44px }
+.orrery-puzzle { background:radial-gradient(ellipse at 19% 53%,#805444,#23264d 41%,#101938 74%) }
+.orbit-ring { position:absolute;left:44%;right:5%;top:24%;bottom:18%;border:1px dashed #aaa7ce;border-radius:50%;opacity:.7 }
+.planet,.planet-label { position:absolute;transform:translate(-50%,-50%);top:53% }
+.planet { border-radius:50%;aspect-ratio:1 }
+.planet.sun { left:17%;width:clamp(28px,12vw,54px);background:radial-gradient(circle at 37% 38%,#ffefd0 0 27%,#ffbd80 29% 58%,#c87552 60%);box-shadow:0 0 13px #ffa857 }
+.planet.earth { left:70%;width:clamp(23px,9vw,42px);background:radial-gradient(ellipse at 34% 26%,#92c6a4 0 19%,transparent 21%),radial-gradient(ellipse at 68% 68%,#63977d 0 19%,transparent 21%),radial-gradient(circle at 30% 35%,#a7cff3,#4d69a3 53%,#2a3d76 64%) }
+.planet.moon { left:var(--moon-x);top:var(--moon-y);width:clamp(13px,6vw,24px);background:radial-gradient(circle at 34% 32%,#dcd5e4,#9b91ae 56%,#5e566d 65%);box-shadow:0 0 0 1px #f0ddde45 }
+.planet-label { top:90%;color:#fbe8cf;font-size:11px }
+.sun-label { left:17% }
+.earth-label { left:70% }
+@media(prefers-reduced-motion:no-preference) {
+ .mirror-moon,.planet.moon { transition:left .17s ease,top .17s ease }
+ .item-found[data-puzzle="orrery"] { animation:orrery-eclipse .65s ease }
+}
+@keyframes orrery-eclipse { 36% { filter:brightness(.2) } }
+.clock-clues img { image-rendering:pixelated;vertical-align:middle }
+#clockStatus:empty { display:none }
+.moon-trace { outline:none;box-shadow:inset 8px -4px #f2ba8d70 }

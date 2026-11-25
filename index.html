@@ -276,12 +276,6 @@ body{position:fixed;inset:0;min-height:0}
   --marker-rim:#f3d48c;
 }
 .clock-clues{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;color:#ffe8bf;font-size:15px}
-.clock-clues span[role="img"]{font-size:24px;vertical-align:middle}
-.fig-icon{display:inline-block;width:18px;height:22px;border-radius:45% 45% 50% 50%;
- background:radial-gradient(ellipse at 52% 65%,#ffc5ad 0 22%,#c45a7a 30% 50%,#eee0a5 55% 66%,#663f79 71%);
- border:2px solid #644075;transform:rotate(14deg)
-}
-.object[data-object="clock"]{--marker-y:-11px}
 .clock-dial{
  position:relative;width:min(224px,100%);aspect-ratio:1;margin:10px auto;border-radius:50%;
  border:2px solid #ae92a4;background:#1d2247
@@ -326,7 +320,8 @@ body{position:fixed;inset:0;min-height:0}
 .eye-storage.drop-target{outline:2px solid #fff2c9;background:#61547d}
 .eye-storage span{padding-left:8px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-</style></head><body>
+</style><link rel="stylesheet" href="star-puzzles.css?v=1">
+</head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
 <h2 id="inventoryHeading">持ち物ボックス</h2>
 <div class="inventory-slots" id="inventorySlots">
@@ -340,6 +335,7 @@ body{position:fixed;inset:0;min-height:0}
 <div class="finish" id="titleScreen"><div><img class="title-img" src="title-dusk.webp" alt="夜空の下の宵空天文台"><h1>宵空天文台</h1><div id="titleStars"></div><p id="titleSubtitle">君と紡ぐ、ひとつの星座。</p><button class="btn primary menubtn" id="startBtn">ゲームをはじめる</button><button class="btn menubtn" id="titleReset">最初から遊ぶ</button></div></div>
 <div class="finish" id="endingScreen" hidden><div><div class="end-sky"><img class="end-art" src="ending-night.png" alt="展望台で夜空を見上げるセラとあなた"><svg viewBox="0 0 100 100" class="const" id="endConst" aria-hidden="true"></svg></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 歌を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="ending_song.mp3" preload="none"></audio></div></div>
 <script src="constellation.js?v=matching-gates-2"></script>
+<script src="star-puzzles.js?v=1"></script>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);const key='sera-observatory-v8-20261123';const scenes=['left','center','right'];const names=['図書コーナー','観測室','管理・休憩コーナー'];
@@ -357,7 +353,7 @@ const booksByNumber=[
 const shuffledBooks=[4,2,6,1,5,3];
 const hasPattern=pattern=>st.placed.length===pattern.length&&pattern.every(slot=>st.placed.includes(slot));
 const phoneOrder=[4,1,3,0,5,2];
-const defaults=()=>({zone:0,got:[],placed:[],boardVersion:2,eyeTaken:false,scopeFocus:0,clockHour:6,night:false,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteor:false,meteorStar:false,restored:false,endingDone:false,secondRun:false,phoneUnlocked:false,phoneRead:[],phoneConfessionSeen:false,observationVersion:2,observationPending:null,observationLinked:false,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),lampClicks:0,polish:0,seedStep:0,shadowStep:0});
+const defaults=()=>({zone:0,got:[],placed:[],boardVersion:2,eyeTaken:false,scopeFocus:0,clockHour:6,night:false,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteor:false,meteorStar:false,restored:false,endingDone:false,secondRun:false,phoneUnlocked:false,phoneRead:[],phoneConfessionSeen:false,observationVersion:2,observationPending:null,observationLinked:false,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],mirrorAngle:1,moonAngle:0});
 let st;
 try{
  const saved=JSON.parse(localStorage.getItem(key)||'{}');
@@ -374,7 +370,14 @@ try{
  if(st.eyeTaken||st.got?.includes?.('clock'))st.night=true;
  if(st.remote){st.staff=true;if(saved.remoteUsed===undefined)st.remoteUsed=st.news||st.channel>0}
 }catch(e){st=defaults()}
-st.got=Array.isArray(st.got)?st.got.filter(x=>['books','clock','desk','orb','shadow'].includes(x)):[];st.placed=Array.isArray(st.placed)?[...new Set(st.placed.filter(x=>Number.isInteger(x)&&x>=0&&x<holes.length))].slice(0,6):[];
+const starLabels={books:'本棚',clock:'時計',mirror:'月を映す鏡',journal:'星の観測日誌',orrery:'天体模型'};
+const legacyPuzzleIds={shadow:'mirror',orb:'journal',desk:'orrery'};
+const validStars=ids=>Array.isArray(ids)?[...new Set(ids.map(id=>legacyPuzzleIds[id]||id).filter(id=>Object.hasOwn(starLabels,id)))]:[];
+st.got=validStars(st.got);
+st.puzzleSolved=validStars(st.puzzleSolved);
+if(!Number.isInteger(st.mirrorAngle)||st.mirrorAngle<0||st.mirrorAngle>4)st.mirrorAngle=1;
+if(!Number.isInteger(st.moonAngle)||st.moonAngle<0||st.moonAngle>4)st.moonAngle=0;
+st.placed=Array.isArray(st.placed)?[...new Set(st.placed.filter(x=>Number.isInteger(x)&&x>=0&&x<holes.length))].slice(0,6):[];
 if(!Array.isArray(st.bookOrder)||st.bookOrder.length!==numberOrder.length||!numberOrder.every(n=>st.bookOrder.includes(n)))st.bookOrder=shuffledBooks.slice();
 st.phoneRead=Array.isArray(st.phoneRead)?st.phoneRead.filter(id=>typeof id==='string'):[];
 if(!Number.isInteger(st.clockHour)||st.clockHour<0||st.clockHour>11)st.clockHour=6;
@@ -382,7 +385,7 @@ const save=()=>{try{localStorage.setItem(key,JSON.stringify(st))}catch(e){}};
 const total=()=>st.got.length+(st.eyeTaken?1:0);
 const seraSilent=()=>st.eyeTaken&&!st.restored;
 const seraArea=()=>st.got.length===5||st.npcAtScope||st.eyeTaken?1:0;
-const deskReady=()=>['books','clock','orb','shadow'].every(id=>st.got.includes(id));
+const orreryReady=()=>['books','clock','mirror','journal'].every(id=>st.got.includes(id));
 const meteorAvailable=()=>seraSilent()&&st.news&&st.clockHour===0&&!st.meteorStar;
 const canResolveGate=()=>st.secondRun&&st.phoneConfessionSeen;
 let msgQueue=[],onMsgsDone=null, audioCtx=null,musicTimer=null,musicOn=false,internalModalCloser=null;
@@ -459,20 +462,31 @@ function draw(){
  $('sceneImg').src=zone===0?'left-clock.webp':zone===1&&!st.night?'center-evening.webp':scenes[zone]+'.png?v=scope-1';
  $('sceneImg').alt=names[zone];
  $('goLeft').disabled=zone===0;$('goRight').disabled=zone===2;
- scene.querySelectorAll('.object').forEach(node=>node.remove());
+ scene.querySelectorAll('.object,.scene-puzzle-art').forEach(node=>node.remove());
  npc.hidden=zone!==seraArea();
  if(zone===0){
   hotspot({id:'books',x:44,y:43,label:'本棚',done:st.got.includes('books')});
   hotspot({id:'clock',x:81,y:24,label:'時計',done:st.got.includes('clock'),lit:true});
  }
  if(zone===1){
-  hotspot({id:'desk',x:35,y:66,label:'観測机',done:st.got.includes('desk'),lit:deskReady()&&!st.got.includes('desk')});
+  if(st.got.includes('mirror')){
+   const light=document.createElement('span');
+   light.className='scene-puzzle-art scene-blue-light';
+   light.setAttribute('aria-hidden','true');
+   scene.insertBefore(light,npc);
+  }
+  hotspot({id:'journal',x:31,y:65,label:'星の観測日誌',done:st.got.includes('journal'),lit:st.got.includes('mirror')&&!st.got.includes('journal')});
+  hotspot({id:'orrery',x:29,y:47,label:'天体模型',done:st.got.includes('orrery'),lit:orreryReady()&&!st.got.includes('orrery')});
   hotspot({id:'window',x:49,y:25,label:'星空の窓',plain:true});
   hotspot({id:'scope',x:60,y:41,label:'望遠鏡',plain:true});
  }
  if(zone===2){
-  hotspot({id:'orb',x:17,y:37,label:'天球儀',done:st.got.includes('orb')});
-  hotspot({id:'shadow',x:75,y:62,label:'壁のランプ',done:st.got.includes('shadow')});
+  const mirrorArt=document.createElement('img');
+  mirrorArt.className='scene-puzzle-art scene-mirror'+(st.got.includes('mirror')?' is-reflecting':'');
+  mirrorArt.src='moon-mirror.png';
+  mirrorArt.alt='';
+  scene.insertBefore(mirrorArt,npc);
+  hotspot({id:'mirror',x:35,y:27,label:'月を映す鏡',done:st.got.includes('mirror'),lit:st.got.includes('clock')&&!st.got.includes('mirror')});
   hotspot({id:'tv',x:20,y:68,label:'テレビ',plain:true});
   hotspot({id:'door',x:78,y:38,label:'スタッフ室',plain:true});
  }
@@ -489,21 +503,20 @@ function draw(){
  syncInventory();save();
 }
 $('goLeft').onclick=()=>{st.zone=Math.max(0,st.zone-1);clickTone();draw()};$('goRight').onclick=()=>{st.zone=Math.min(2,st.zone+1);clickTone();draw()};
-function collect(id,remark=''){
+function collect(id,remark='',extra=''){
  if(st.got.includes(id))return;
- const label={books:'本棚',clock:'時計',desk:'観測机',orb:'天球儀',shadow:'壁のランプ'}[id];
- chime();
- openModal(label,`<div id="pickup" class="item-found">
-  <p>白い星が現れた。</p>${remark?'<p>'+remark+'</p>':''}
+ if(!st.puzzleSolved.includes(id)){st.puzzleSolved.push(id);save();chime()}
+ openModal(starLabels[id],`<div id="pickup" class="item-found" data-puzzle="${id}">
+  <p>白い星が現れた。</p>${remark?'<p>'+remark+'</p>':''}${extra}
   <button class="click-star" id="pick" aria-label="星を拾う">✦</button>
  </div>`);
  $('pick').onclick=()=>{
-  st.got.push(id);save();closeModal();draw();
-  if(st.got.length===5)say('あとひとつ、どこにあるんだろう……？');
+  st.got.push(id);chime();save();closeModal();draw();
+  if(id==='clock'&&remark)say('えっ！？　急に暗くなった！');
+  else if(st.got.length===5)say('あとひとつ、どこにあるんだろう……？');
   else if(st.zone===seraArea())say('やったね！ また星がひとつ増えたよ！');
  };
 }
-function already(){say({name:'あなた',text:'ここにあった星は、もう拾ったようだ。'})}
 function books(){
  let selected=null;
  let pointerStart=null;
@@ -558,10 +571,9 @@ function books(){
     $('shelfStatus').textContent='まだ本の順番が違うようだ。';
     return;
    }
-   openModal('背表紙の星座',`<p>背表紙の星がつながった。窓でも、各列のこの高さに星を置こう。</p>
-    ${constellationSvg('shelf-chart',slots,true)}
-    ${!numberMatch||st.got.includes('books')?'':'<div class="buttons"><button class="btn primary" id="reward">引き出しを開ける</button></div>'}`);
-   if($('reward'))$('reward').onclick=()=>collect('books');
+   const chart='<p>背表紙の星がつながった。窓でも、各列のこの高さに星を置こう。</p>'+constellationSvg('shelf-chart',slots,true);
+   if(numberMatch&&!st.got.includes('books')){collect('books','',chart);return}
+   openModal('背表紙の星座',chart);
   };
  }
  function swap(first,second){
@@ -571,6 +583,7 @@ function books(){
  orderView();
 }
 function clock(selectedHour=st.clockHour){
+ if(!st.got.includes('clock')&&st.puzzleSolved.includes('clock'))return collect('clock');
  const dial=Array.from({length:12},(_,hour)=>{
   const angle=hour*Math.PI/6;
   const x=50+40*Math.sin(angle);
@@ -578,38 +591,39 @@ function clock(selectedHour=st.clockHour){
   return `<button type="button" data-hour="${hour}" aria-label="${hour}時" aria-pressed="${selectedHour===hour}" style="--hx:${x}%;--hy:${y}%">${hour}</button>`;
  }).join('');
  openModal('時計',`<div class="clock-clues">
-  <div>🕐 ＋ く ＝ <span class="fig-icon" role="img" aria-label="いちじくの断面"></span></div>
-  <div>？時 ＋ ら ＝ <span role="img" aria-label="クジラ">🐋</span></div>
+  <div>🕐 ＋ く ＝ <img src="clock-fig.png" width="32" height="32" alt="いちじくの断面"></div>
+  <div>？時 ＋ ら ＝ <img src="clock-whale.png" width="32" height="32" alt="クジラ"></div>
  </div><div class="clock-dial" aria-label="時計の針を動かす">
   <span class="clock-hand" aria-hidden="true" style="transform:rotate(${selectedHour*30}deg)"></span>${dial}
- </div><div class="buttons"><button class="btn primary" id="setHour">${selectedHour}時に合わせる</button></div>`);
+ </div><div class="buttons"><button class="btn primary" id="setHour">${selectedHour}時に合わせる</button></div><p id="clockStatus" aria-live="polite"></p>`);
  $('modalBody').querySelectorAll('[data-hour]').forEach(button=>{
   button.onclick=()=>clock(Number(button.dataset.hour));
  });
  $('setHour').onclick=()=>{
   st.clockHour=selectedHour;save();clickTone();
   if(st.clockHour===9&&!st.got.includes('clock')){
+   if(!st.got.includes('books')){
+    $('clockStatus').textContent='時計の奥で小さな音がした。そばの本棚に、まだ何か残っているようだ。';
+    return;
+   }
    const wasNight=st.night;
    st.night=true;save();draw();
-   collect('clock',wasNight?'':'セラ「えっ！？　急に暗くなった！」');
+   collect('clock',wasNight?'':'窓の外が、夕方から夜に変わった。');
    return;
   }
   if(meteorAvailable()){st.meteor=true;save()}
   closeModal();
  };
 }
-function desk(){if(st.got.includes('desk'))return already();
- if(!deskReady()){
-  openModal('観測机','<p>瓶と星の種がある。天文台のほかの仕掛けを見てから、もう一度確かめよう。</p>');
-  return;
- }let step=st.seedStep||0;function view(){openModal('観測机',`<div class="paper"><b>星の種を育てる小さな実験</b><p>机に小さな瓶、星の種、透明なふたがある。窓の外には月明かり。</p></div><div style="font-size:65px;text-align:center;margin:18px 0">${['◇','✧','✦'][Math.min(step,2)]}</div><p>${['まず、種を瓶に入れてみよう。','瓶を月明かりの差す窓際に置こう。','瓶の中に、白い星が生まれた！'][Math.min(step,2)]}</p><div class="buttons"><button class="btn primary" id="seedAction">${['種を瓶に入れる','窓際に置く','星を取り出す'][Math.min(step,2)]}</button></div>`);$('seedAction').onclick=()=>{if(step>=2)collect('desk');else{step++;st.seedStep=step;clickTone();save();view()}}}view()}
-function orb(){if(st.got.includes('orb'))return already();let n=st.polish||0;function view(){openModal('天球儀',`<div class="stage" style="display:grid;place-items:center"><button id="polish" style="width:150px;height:150px;border-radius:50%;border:7px solid #c5b58c;background:radial-gradient(circle,#7779b7,#2c326b);color:#fff;font-size:75px;filter:brightness(${.5+n*.075})" aria-label="球体をこする">${n>=7?'✦':'◌'}</button></div><p>表面がくすんだ天球儀。指で何度かこすってみよう。</p><div class="progress-bar"><span style="width:${Math.min(100,n*14)}%"></span></div>`);let btn=$('polish'),last=null;btn.onpointermove=e=>{if(e.buttons&&last!==null&&Math.abs(e.clientX-last)>5){last=e.clientX;n=Math.min(7,n+1);st.polish=n;save();if(n===7)collect('orb');else view()}};btn.onpointerdown=e=>{last=e.clientX};btn.onclick=()=>{n=Math.min(7,n+1);st.polish=n;placeTone();save();if(n>=7)collect('orb');else view()}}view()}
-function shadow(){if(st.got.includes('shadow'))return already();let n=st.shadowStep||0;function view(){openModal('壁のランプ',`<div class="stage" style="display:grid;place-items:center"><div style="font-size:75px;filter:drop-shadow(${n===2?'0 0 12px #fff':'0 0 3px #777'})">${n===2?'✦':'◈'}</div></div><p>${['壁の飾りが、少し変わった影を落としている。','ランプの向きを変えると、星形の影ができた。','影の中心に、星の光が現れた！'][n]}</p><div class="buttons"><button class="btn primary" id="shadowAction">${['ランプを回す','影に触れる','星を拾う'][n]}</button></div>`);$('shadowAction').onclick=()=>{if(n===2)collect('shadow');else{n++;st.shadowStep=n;clickTone();save();view()}}}view()}
+const {mirror,journal,orrery}=window.createObservatoryStarPuzzles({
+ getState:()=>st,open:openModal,save,reward:collect,tap:clickTone,element:$
+});
 function examineSera(){if(!st.eyeTaken){
  const hint=!st.got.includes('books')?'まずは本棚を調べてみようよ！':
   !st.got.includes('clock')?'時計のそば、ちょっと気になるね。':
-  st.got.length<4?'まだ見ていない所がありそう。一緒に探そう。':
-  st.got.length===4?'観測机に、星の種があったね。':'あとひとつ、どこにあるんだろう……？';
+  !st.got.includes('mirror')?'暗くなってから、休憩コーナーの鏡が気になるんだ。':
+  !st.got.includes('journal')?'青い光、観測室の机のほうに伸びてるね。':
+  !st.got.includes('orrery')?'日誌の観測記録、部屋の中で試せそうだね。':'あとひとつ、どこにあるんだろう……？';
  openModal('セラ',`<div class="sera-clue"><img src="sera-dusk-face.webp" alt="両目の瞳に星が光るセラ"></div>
   <p>「どうしたの？　何か見つけた？」</p><div class="buttons"><button class="btn" id="askConstellation">話す</button></div>`);
  $('askConstellation').onclick=()=>{closeModal();say(hint)};
@@ -783,9 +797,9 @@ function television(){
 const investigation={
  books:{name:'本棚',examine:books,together:'背表紙に、小さな印が並んでるね。'},
  clock:{name:'時計',examine:()=>clock(),together:'いつもの時計だと思ったけど、横の絵が気になるね。'},
- desk:{name:'観測机',examine:desk,together:'星の種って、どんなふうに育つんだろう。'},
- orb:{name:'天球儀',examine:orb,together:'丸い模様、近くで見ると繊細だね。'},
- shadow:{name:'壁のランプ',examine:shadow,together:'灯りの向きで影が変わるね。'},
+ mirror:{name:'月を映す鏡',examine:mirror,together:'窓から月が見えないのに、鏡の中は明るいね。'},
+ journal:{name:'星の観測日誌',examine:journal,together:'青い光が当たると、紙の色も変わるね。'},
+ orrery:{name:'天体模型',examine:orrery,together:'この模型、月の位置を動かせるんだね。'},
  tv:{name:'テレビ',examine:television,together:'今日はどんな番組をやってるかな。'},
  door:{name:'スタッフ室',examine:enterStaff},
  window:{name:'窓',examine:sky,together:'ここから見る空、好きなんだ。'},
