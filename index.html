@@ -327,7 +327,7 @@ const lockKeys=[[14,25],[44,14],[83,30],[22,79],[55,53],[80,84]];
 const phoneOrder=[4,1,3,0,5,2];
 const newObservationId=()=>Array.from(crypto.getRandomValues(new Uint8Array(16)),n=>n.toString(16).padStart(2,'0')).join('');
 const {eveningHour,nightHour,meteorHour,formatTime}=window.observatoryClock;
-const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:5,eyeTaken:false,scopeFocus:0,clockVersion:3,clockHour:eveningHour,clockKana:'く',clockPanel:'cross',panels:[],itemOrder:[],delivery:null,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteorStar:false,restored:false,endingDone:false,endingHistory:[],lastEnding:null,runEnding:null,endingTransition:null,phoneViewed:false,phoneUnlocked:false,phoneConfessionSeen:false,thoughts:[],observationVersion:4,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1});
+const defaults=()=>({runId:null,observationReply:null,lastObservationReceipt:null,zone:0,got:[],placed:[],boardVersion:5,eyeTaken:false,scopeFocus:0,clockVersion:3,clockHour:eveningHour,clockKana:'く',clockPanel:'cross',panels:[],itemOrder:[],delivery:null,npcAtScope:false,keyFound:false,staff:false,remote:false,remoteUsed:false,channel:0,news:false,meteorStar:false,restored:false,endingDone:false,endingHistory:[],lastEnding:null,runEnding:null,endingTransition:null,phoneViewed:false,phoneUnlocked:false,phoneConfessionSeen:false,thoughts:[],spokenThoughts:[],observationVersion:4,introSeen:false,mirrorSeen:false,bookOrder:shuffledBooks.slice(),puzzleSolved:[],tvPuzzleVersion:1});
 let st;
 try{
  const saved=JSON.parse(localStorage.getItem(key)||'{}');
@@ -372,6 +372,7 @@ st.placed=Array.isArray(st.placed)?[...new Set(st.placed.filter(x=>Number.isInte
 if(!Array.isArray(st.bookOrder)||st.bookOrder.length!==numberOrder.length||!numberOrder.every(n=>st.bookOrder.includes(n)))st.bookOrder=shuffledBooks.slice();
 if(!Number.isInteger(st.channel)||st.channel<0||st.channel>4)st.channel=0;
 st.thoughts=Array.isArray(st.thoughts)?st.thoughts.filter(id=>typeof id==='string'):[];
+st.spokenThoughts=Array.isArray(st.spokenThoughts)?st.spokenThoughts.filter(id=>typeof id==='string'):[];
 window.observatoryClock.sanitize(st);
 const isNight=()=>st.clockHour===nightHour||st.clockHour===meteorHour;
 const gameTime=()=>formatTime(st.clockHour);
@@ -1128,8 +1129,9 @@ const thoughts={
  waiting:'こちら側の準備はできた。もう一つの世界からも門を開く必要があるのか。'
 };
 function takeThought(id){
- if(!Object.hasOwn(thoughts,id)||st.thoughts.includes(id))return '';
- st.thoughts.push(id);save();return thoughts[id];
+ if(!Object.hasOwn(thoughts,id)||st.spokenThoughts.includes(id))return '';
+ if(!st.thoughts.includes(id))st.thoughts.push(id);
+ st.spokenThoughts.push(id);save();return thoughts[id];
 }
 function showThoughts(texts,done){
  const lines=[texts].flat().filter(Boolean);
