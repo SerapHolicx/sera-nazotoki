@@ -2,18 +2,70 @@
 
 window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,element}) => {
   const orbit = [[86,25],[95,56],[70,82],[44,53],[58,25]];
-  const journalLines = ['あめあがり','ひとつぶの','しずくかな'];
+  const journalLines = ['あめあがりの','ひとつぶが','ひかりをよぶ'];
   const journalLetters = [...journalLines.join('')];
-  const clueSlots = [5,13,4];
+  const clueSlots = [6,12,4];
+  const constellations = [
+    ['....#....','....#....','...###...','..#####..','####+####','..#####..','...###...','....#....'],
+    ['..#...#..','..#...#..','.###.###.','.#######.','..##+##..','...###...','....#....'],
+    ['#...#...#','#...#...#','##.###.##','#########','.###+###.','..#####..','...###...','....#....']
+  ];
+  const journalRows = renderRow => {
+    let offset = 0;
+    return journalLines.map(line => {
+      const row = `<div class="observation-row" style="--letters:${line.length}">${[...line].map(renderRow.bind(null,offset)).join('')}</div>`;
+      offset += line.length;
+      return row;
+    }).join('');
+  };
 
   function windowClue() {
-    const cells = journalLetters.map((_,index) => {
-      const count = clueSlots.indexOf(index)+1;
-      if (!count) return '<span class="sky-clue-cell"></span>';
-      return `<span class="sky-clue-cell"><span class="sky-clue-count count-${count}" aria-hidden="true">${'<i></i>'.repeat(count)}</span></span>`;
+    const rows = journalRows((offset,_,column) => {
+      const order = clueSlots.indexOf(offset+column);
+      return order < 0 ? '<span class="sky-clue-cell"></span>'
+        : `<span class="sky-clue-cell"><canvas data-sky-glyph="${order}" width="9" height="8" aria-hidden="true"></canvas></span>`;
     });
-    const description = clueSlots.map((index,order) => `上から${Math.floor(index/5)+1}段目、左から${index%5+1}番目に星${order+1}つ`).join('。');
-    return `<div class="sky-clue-grid" role="img" aria-label="${description}">${cells.join('')}</div>`;
+    const descriptions = ['上から二段目の左端に頂点が一つの星','上から三段目の左から二番目に頂点が二つの星','上から一段目の左から五番目に頂点が三つの星'];
+    return `<div class="sky-clue-grid" role="img" aria-label="${descriptions.join('。')}">${rows}</div>`;
+  }
+
+  function drawWindowSky(canvas, night) {
+    const ctx = canvas.getContext('2d');
+    const bands = night ? ['#111430','#17193e','#202653','#2b3063','#403a70']
+      : ['#333762','#584674','#8d5984','#c67e98','#eda69d','#ffc99d'];
+    bands.forEach((color,i) => {
+      ctx.fillStyle = color;
+      ctx.fillRect(0,i*14,160,96-i*14);
+    });
+    if (!night) {
+      ctx.fillStyle = '#ffe2ad';
+      for(let y=-11;y<=11;y++){
+        const w=Math.floor(Math.sqrt(121-y*y));
+        ctx.fillRect(81-w,68+y,w*2+1,1);
+      }
+    }
+    ctx.fillStyle = night?'#454175':'#ca89a0';
+    [[4,51,24],[11,49,12],[30,65,22],[34,63,12],[111,49,30],[120,47,14],[136,58,20]].forEach(([x,y,w]) => ctx.fillRect(x,y,w,2));
+    const horizons = [
+      [night?'#252847':'#7d5b7d', [83,81,76,78,80,83,86,86,81,78,72,74,77,82,84,85]],
+      [night?'#161933':'#4a415d', [90,87,84,82,85,89,89,91,92,91,88,86,83,86,88,91]]
+    ];
+    for(const [color,heights] of horizons){
+      ctx.fillStyle=color;
+      heights.forEach((height,x)=>ctx.fillRect(x*10,height,10,96-height));
+    }
+    if (!night) return;
+    ctx.fillStyle='#e6bfaa';
+    [[34,88],[46,89],[119,88],[129,87],[148,92]].forEach(([x,y])=>ctx.fillRect(x,y,1,1));
+    element('modalBody').querySelectorAll('[data-sky-glyph]').forEach(sprite => {
+      const pixels = constellations[Number(sprite.dataset.skyGlyph)];
+      const ink = sprite.getContext('2d');
+      pixels.forEach((line,y)=>[...line].forEach((pixel,x)=>{
+        if(pixel==='.')return;
+        ink.fillStyle=pixel==='+'?'#fffaf0':y>=5?'#a0b9ff':'#f6dfbe';
+        ink.fillRect(x,y,1,1);
+      }));
+    });
   }
 
   const owned = id => getState().got.includes(id);
@@ -28,14 +80,10 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       open('星の観測日誌',eclipseNote());
       return;
     }
-    if (!isNight()) {
-      open('星の観測日誌','<div class="paper blank-journal" aria-hidden="true"></div><p>ページに淡い跡がある。夕日の下では、文字が見えない。</p>');
-      return;
-    }
-    if (state.puzzleSolved.includes('journal')) return reward('journal','',eclipseNote());
+    if (isNight() && state.puzzleSolved.includes('journal')) return reward('journal','',eclipseNote());
     let answer = [];
     open('星の観測日誌',`<div class="paper blue-journal"><b>雨上がりの観測メモ</b>
-      <div class="journal-letter-grid" aria-label="上から三行、各行五文字">${journalLetters.map((letter,index)=>`<button type="button" data-journal-cell="${index}" aria-label="上から${Math.floor(index/5)+1}段、左から${index%5+1}番目、${letter}" aria-pressed="false">${letter}</button>`).join('')}</div>
+      <div class="journal-letter-grid" aria-label="上から六文字、五文字、六文字">${journalRows((offset,letter,column)=>`<button type="button" data-journal-cell="${offset+column}" aria-label="${letter}、行の左から${column+1}番目" aria-pressed="false">${letter}</button>`)}</div>
       </div>
       <output id="journalAnswer" aria-live="polite">□ □ □</output>
       <div class="buttons"><button class="btn" id="journalErase" type="button">一文字消す</button><button class="btn primary" id="journalCheck" type="button">確かめる</button></div>
@@ -61,6 +109,10 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       displayAnswer();
     };
     element('journalCheck').onclick = () => {
+      if (!isNight()) {
+        element('journalStatus').textContent = 'ページの端に「星が出たら照合」と書いてある。';
+        return;
+      }
       if (answer.length === clueSlots.length && answer.every((index,order)=>index===clueSlots[order])) reward('journal','',eclipseNote());
       else {
         element('journalStatus').textContent = '文字が青く光ったが、日誌は開かない。';
@@ -115,5 +167,5 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
     };
     display();
   }
-  return {journal,orrery,windowClue};
+  return {journal,orrery,windowClue,drawWindowSky};
 };

@@ -36,10 +36,5 @@
  .end-recovery[data-step="meteor"] .end-shooting{animation:none;left:42%;top:35%;transform:rotate(145deg)}
  #endingScreen #endOmen{transition:none!important}
 }
-.eye-starlight{pointer-events:none;position:absolute;left:var(--eye-x,50.5%);top:var(--eye-y,56%);width:16%;aspect-ratio:1;transform:translate(-50%,-50%);background:radial-gradient(circle,#5245a4 12%,#3e318c 61%,transparent 74%)}
-.eye-starlight::after{content:"";position:absolute;inset:15%;background:#fffaf9;clip-path:polygon(50% 0,62% 34%,98% 37%,70% 60%,80% 95%,50% 75%,20% 95%,30% 60%,2% 37%,38% 34%)}
-.dragging-eye .eye-starlight{opacity:0}
-.eye-taking+.eye-starlight{animation:eye-dim .45s ease-out both}
-.eye-returning+.eye-starlight,.end-eye .eye-starlight{animation:eye-light .66s ease-out both}
 .lock-notation span{display:inline-flex;flex-direction:column;min-width:2em}
 .phone-observation-photo img{display:block;width:100%;height:auto}
