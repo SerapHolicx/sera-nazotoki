@@ -122,10 +122,4 @@
 .phone-lock{background:linear-gradient(#17172f85,#111225ec),url("phone-media/wallpaper.webp") center/cover}
 
 
-.title-star-label,.lock-star-label{
- position:absolute;left:calc(50% + 7px);top:calc(50% - 12px);
- font:700 10px/1 ui-monospace,monospace;color:#ffedc5;text-shadow:0 1px 3px #171329;
-}
-.title-star-label{visibility:hidden}
-.title-star-pattern .lit .title-star-label{visibility:visible}
-.lock-star-label{opacity:.86}
+.color-cue{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
