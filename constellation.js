@@ -4,7 +4,8 @@
   const columns = 5;
   const rows = 3;
   const starCount = 6;
-  const spineRows = [[2], [0, 1], [0], [1], [2]];
+  const boardVersion = 6;
+  const spineRows = [[2], [1], [0, 1], [0], [2]];
   const numberOrder = [1, 2, 3, 4, 5];
   const wordOrder = [4, 2, 5, 1, 3];
   const slotsInBookOrder = order => order.flatMap((book, column) =>
@@ -16,6 +17,8 @@
 
   const fiveColumnPatterns = {number:[10,6,2,12,3,9],word:[0,6,7,13,4,14]};
 
+  const priorFiveColumnPatterns = {number:[10,1,6,2,8,14],word:[5,1,6,12,13,4]};
+
   function matchPattern(slots, shapes) {
     return Object.keys(shapes).find(kind =>
       slots.length === starCount && shapes[kind].every(slot => slots.includes(slot))
@@ -23,8 +26,8 @@
   }
 
   function migratePlacement(slots, version) {
-    if (version === 4) {
-      const previous = matchPattern(slots,fiveColumnPatterns);
+    if (version === 4 || version === 5) {
+      const previous = matchPattern(slots,version === 4 ? fiveColumnPatterns : priorFiveColumnPatterns);
       return previous ? patterns[previous].slice() : slots;
     }
     const original = version === 2 || version === 3 ? slots
@@ -41,7 +44,7 @@
     (Math.floor(i / columns) + .5) * 100 / rows
   ]);
   window.seraConstellation = {
-    columns, rows, starCount, holes, patterns, numberOrder, wordOrder, slotsInBookOrder, migratePlacement,
+    boardVersion, columns, rows, starCount, holes, patterns, numberOrder, wordOrder, slotsInBookOrder, migratePlacement,
     matchGate: slots => matchPattern(slots,patterns)
   };
 })();

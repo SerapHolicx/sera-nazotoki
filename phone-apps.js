@@ -63,10 +63,10 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
   }
   function social(account='public') {
     const isPublic=account==='public',profile=data.profile;
-    screen('x',`${tabs([['public','通常アカウント'],['private','裏アカウント']],account)}
+    screen('x',`${tabs([['public',profile.handle],['private','夜ふかし']],account)}
       <div class="phone-account">
       ${isPublic?'<img src="sera-dusk-face.webp" alt="">':'<span class="private-avatar" aria-hidden="true">☾</span>'}
-      <div><strong>${isPublic?profile.name:'夜ふかし'}</strong><small>${isPublic?profile.handle:'非公開アカウント'}</small></div>
+      <div><strong>${isPublic?profile.name:'夜ふかし'}</strong>${isPublic?`<small>${escape(profile.handle)}</small>`:''}</div>
       </div>${isPublic?'<div class="public-profile-link">'+button('自己紹介サイト　›','class="phone-page-link" data-site')+'</div>':''}
       <div class="phone-feed">${data.posts[account].map(({date,text,link})=>
       `<article><time>${date}</time><p>${escape(text)}</p>${link?button('宵空セラの部屋','class="phone-page-link" data-site'):''}</article>`).join('')}</div>`);
@@ -189,10 +189,17 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
       ?`<p class="phone-offline">圏外のためページを読み込めません。</p>
          <a class="phone-page-link" href="${escape(data.profile.site)}" target="_blank" rel="noopener">外部ブラウザで開く</a>
          <a class="phone-page-link" href="${escape(data.profile.x)}" target="_blank" rel="noopener">X　${data.profile.handle}</a>`
-      :`<p>${escape(page.text)}</p>`;
-    screen('browser',`<div class="browser-address">${escape(page.host)}</div><article class="cached-page">
+      :page.article?articleBody(page.article):`<p>${escape(page.text)}</p>`;
+    screen('browser',`<div class="browser-address">${escape(page.host)}</div><article class="cached-page${page.article?' saved-article':''}">
+      ${page.article?`<small class="saved-article-brand">${escape(page.article.section)}</small>`:''}
       <h4>${escape(page.title)}</h4>${content}</article>`,back,'戻る');
-    if(page.external)reading='site';
+  }
+
+  function articleBody({intro,parts,image}) {
+    return `<p>${escape(intro)}</p>${parts.map(({title,text})=>
+      `<section><h5>${escape(title)}</h5><p>${escape(text)}</p></section>`).join('')}
+      <figure><img src="${escape(image.src)}" alt="${escape(image.alt)}">
+        <figcaption>${escape(image.caption)}</figcaption></figure>`;
   }
 
   function voice() {
