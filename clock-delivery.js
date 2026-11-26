@@ -253,7 +253,7 @@
      <b>${itemLabel(id)}を手に入れた</b></div>`);
    };
   }
-  return {clock,shopMarkup,bindShop,showParcel,mountPanel};
+  return {clock,shopMarkup,bindShop,showParcel};
  }
 
  window.observatoryClock={eveningHour,nightHour,meteorHour,formatTime,sanitize,create,panelImage,rememberItem,itemLabel};

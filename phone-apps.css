@@ -124,3 +124,12 @@
 .diary-index h4{margin:0;padding:7px 11px 3px;background:#ded1d2;color:#54384b;font-size:12px}
 .public-profile-link{padding:0 10px 7px}
 .public-profile-link button{width:100%;background:#29416a}
+
+.saved-article{background:#191427;color:#ede2f2;padding:13px}
+.saved-article-brand{display:block;border-bottom:1px solid #6c567f;padding-bottom:6px;color:#ceb8e5;font:11px ui-monospace,monospace}
+.saved-article h4{margin:10px 0}
+.saved-article h5{margin:14px 0 4px;color:#e0c6f4;font-size:13px}
+.saved-article p{margin:0 0 8px;font-size:13px;line-height:1.7}
+.saved-article figure{margin:12px 0 0;background:#0e0b19;border:1px solid #584266;padding:7px}
+.saved-article img{display:block;width:100%;height:auto;image-rendering:pixelated}
+.saved-article figcaption{margin-top:5px;color:#d3bfdc;font-size:11px}
