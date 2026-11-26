@@ -94,6 +94,10 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       return;
     }
     if (isNight() && state.puzzleSolved.includes('journal')) return reward('journal','',eclipseNote());
+    if(!isNight()||!state.nightWindowSeen||!owned('clock')){
+      open('星の観測日誌',page+'<p>今はまだよく分からない……。</p>');
+      return;
+    }
     let answer = '';
     open('星の観測日誌',page+`
       <output id="journalAnswer" aria-live="polite">□ □ □</output>
@@ -120,10 +124,6 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       displayAnswer();
     };
     element('journalCheck').onclick = () => {
-      if (!isNight()) {
-        element('journalStatus').textContent = 'まだ外は明るい。';
-        return;
-      }
       if (answer === clueSlots.map(index=>journalLetters[index]).join('')) reward('journal','',eclipseNote());
       else {
         element('journalStatus').textContent = '文字が青く光ったが、日誌は開かない。';

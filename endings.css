@@ -117,9 +117,21 @@
 @media(max-aspect-ratio:3/4){.confession-face{object-fit:cover}}
 @media(prefers-reduced-motion:reduce){.confession-face,.confession-dialog{animation:none}}
 
-.phone-intro-thought{color:#ebe7ff;padding:11px 10px;margin:12px 0;background:#110f2585;border-left:2px solid #a9b3dc}
 
 .phone-lock{background:linear-gradient(#17172f85,#111225ec),url("phone-media/wallpaper.webp") center/cover}
 
 
 .color-cue{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+#endingScreen[data-route="first"] #endConst{inset:10% 0 auto;height:64%}
+.ending-constellation circle{
+ fill:#fff4d2;animation:ending-star .65s ease-out both;
+ animation-delay:calc(.12s + var(--star-index) * .19s)
+}
+.ending-constellation polyline{
+ fill:none;stroke:#ffe3a8;stroke-width:.65;stroke-linecap:round;stroke-linejoin:round;
+ stroke-dasharray:1;animation:ending-line 1.6s .35s ease-out both
+}
+@keyframes ending-star{from{opacity:0}to{opacity:1}}
+@keyframes ending-line{from{stroke-dashoffset:1;opacity:.25}to{stroke-dashoffset:0;opacity:.92}}
+@media(prefers-reduced-motion:reduce){.ending-constellation circle,.ending-constellation polyline{animation:none}}

@@ -227,18 +227,12 @@
 
 #dialog.over-modal{z-index:36}
 
-#tip.guide-active{color:#ffebbb}
-#scene .object.guide-next{
- --marker-ink:#fff3ba;--marker-rim:#ffe19b;
-}
-#scene .object.guide-next::after{background:#674c37}
-.nav.guide-next{
- border-color:#ffe19b;background:#4e405b;color:#fff2ca;
- box-shadow:0 0 7px #f6c8798a;
-}
-
 #scene .object:disabled{
  background:none;box-shadow:none;cursor:default;
  --marker-ink:#918ba7;--marker-rim:#575171;
 }
 #scene .object:disabled::before,#scene .object:disabled::after{animation:none}
+
+#tip:empty{display:none}
+.return-star{touch-action:none;user-select:none}
+#returnEyeTarget.drop-target{background:#cbbef12c;outline:1px solid #e5d8ff;border-radius:50%}
