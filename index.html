@@ -25,10 +25,6 @@
 .object.object-plain{--marker-ink:#e9ddff;--marker-rim:#ad9ec9}
 .object.done,.search-point[data-searched="true"]{--marker-ink:#bab1d2;--marker-rim:#746988}
 .scene .object.done::after{content:"✓"}
-.scene .object:enabled:not(.target-lit):not(.done){
-  --marker-size:19px;--marker-ink:#fff;--marker-rim:#d3cbf3;
-}
-.scene .object:enabled:not(.target-lit):not(.done)::after{content:"◇";font-size:12px}
 #scene .object:disabled::before,#scene .object:disabled::after{visibility:hidden}
 .scene .object:not(.target-lit)::before,.scene .object:not(.target-lit)::after{animation:none}
 .title-room-link{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;color:#d9c9ea;font-size:.82rem;text-underline-offset:3px}
