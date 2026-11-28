@@ -285,7 +285,7 @@ body{position:fixed;inset:0;min-height:0}
 <link rel="stylesheet" href="television.css?v=7">
 <link rel="stylesheet" href="star-shooter.css?v=2">
 <link rel="stylesheet" href="clock-delivery.css?v=7">
-<link rel="stylesheet" href="endings.css?v=occult-1">
+<link rel="stylesheet" href="endings.css?v=occult-2">
 <link rel="stylesheet" href="phone-apps.css?v=7">
 </head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
@@ -1363,10 +1363,39 @@ function handleObservation(){
  return true;
 }
 const endingLines={
- first:['ふたりで並べた星が、天文台の夜空に浮かび上がる。','セラ「きれいだね。君とこの星座を見られて、よかった。」','灯りの向こうで、セラがやわらかく笑った。','✧ また、星を見に来てね ✧'],
- open:['星がひとつずつ光り、窓の奥まで夜空がひらけた。','光の奥に、まばたきがひとつ。','次に目を開けたとき、それはガラスのすぐ向こうにあった。','窓が、内側から震えている。','開門エンド ― 向こうからの視線'],
- stop:['セラは星のない額を、しばらく黙って見つめていた。','「……そっか。じゃあ、今夜はこのままで。」','ふたりが席を立つまで、天文台は静かな夜のままだった。','中止エンド ― 星座のない夜'],
- true:['六つの星が静かに瞬く。少し遅れて、同じ光が窓の向こうに灯った。','「……君が、見つけてくれたんだね。」','窓の両側で、同じ夜がゆっくりと明けていく。','真エンド ― 君が見つけた星座']
+ first:[
+  'ふたりで並べた星が、天文台の夜空に浮かび上がる。',
+  'セラ「きれいだね。君とこの星座を見られて、よかった。」',
+  '灯りの向こうで、セラがやわらかく笑った。',
+  '並んで窓辺に立ったまま、ふたりはもう少しだけ夜空を見ていた。',
+  '✧ また、星を見に来てね ✧'
+ ],
+ open:[
+  '星がひとつずつ光り、窓の奥まで夜空がひらけた。',
+  '光の奥に、まばたきがひとつ。',
+  '次に目を開けたとき、それはガラスのすぐ向こうにあった。',
+  '窓が、内側から震えている。',
+  '照明が落ちた。暗闇の中で、ガラスを引っかく音がした。',
+  '音がやんだ。目だけが、まだこちらを向いている。',
+  '開門エンド ― 向こうからの視線'
+ ],
+ stop:[
+  'セラは星のない額を、しばらく黙って見つめていた。',
+  '「……そっか。じゃあ、今夜はこのままで。」',
+  'ふたりが席を立つまで、天文台は静かな夜のままだった。',
+  '帰り際、セラは空っぽの額をもう一度だけ振り返った。',
+  '「……一緒に見上げてくれたこと、僕は覚えてるよ。」',
+  '中止エンド ― 星座のない夜'
+ ],
+ true:[
+  '六つの星が静かに瞬く。少し遅れて、同じ光が窓の向こうに灯った。',
+  '「……君が、見つけてくれたんだね。」',
+  'セラは窓に手をかざした。向こうの光が、そっと瞬いた。',
+  '「ひとりで見てた夜空を、今日は君と見られてよかった。」',
+  '窓の両側で、同じ夜がゆっくりと明けていく。',
+  '朝の光がさし込んでも、最後の星は、ふたりの目に残っていた。',
+  '真エンド ― 君が見つけた星座'
+ ]
 };
 const titleCaptions={
  first:'今夜も、あの窓に小さな光がまたたいている。',

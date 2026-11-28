@@ -32,7 +32,7 @@
 @media(prefers-reduced-motion:reduce){
  #endingScreen .end-sky,#titleScreen .title-mood,.end-eye-lit{animation:none!important}
  .end-recovery[data-step="meteor"] .end-shooting{animation:none;left:42%;top:35%;transform:rotate(35deg)}
- #endingScreen #endOmen{transition:none!important}
+ #endingScreen #endOmen,#endingScreen .end-sky::after{transition:none!important}
 }
 .phone-observation-photo img{display:block;width:100%;height:auto}
 
@@ -135,3 +135,25 @@
 @keyframes ending-star{from{opacity:0}to{opacity:1}}
 @keyframes ending-line{from{stroke-dashoffset:1;opacity:.25}to{stroke-dashoffset:0;opacity:.92}}
 @media(prefers-reduced-motion:reduce){.ending-constellation circle,.ending-constellation path{animation:none}}
+
+#endingScreen .end-sky::after{
+ content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
+ transition:opacity 1.4s ease;
+}
+#endingScreen[data-route="open"] .end-sky::after{background:#06040b}
+#endingScreen[data-route="open"][data-phase="4"] .end-sky::after,
+#endingScreen[data-route="open"][data-phase="6"] .end-sky::after{opacity:.98}
+#endingScreen[data-route="open"][data-phase="5"] .end-art,
+#endingScreen[data-route="open"][data-phase="5"] #endConst circle{opacity:.12}
+#endingScreen[data-route="open"][data-phase="5"] #endOmen{opacity:.72;transform:scale(2.3)}
+#endingScreen[data-route="stop"] .end-sky::after{background:linear-gradient(180deg,transparent,#161b38)}
+#endingScreen[data-route="stop"][data-phase="3"] .end-sky::after{opacity:.18}
+#endingScreen[data-route="stop"][data-phase="4"] .end-sky::after{opacity:.32}
+#endingScreen[data-route="stop"][data-phase="5"] .end-sky::after{opacity:.48}
+#endingScreen[data-route="true"] .end-sky::after{
+ background:radial-gradient(ellipse at 52% 100%,#ffdda1 0%,#eed0e968 48%,transparent 74%);
+}
+#endingScreen[data-route="true"][data-phase="3"] .end-sky::after{opacity:.22}
+#endingScreen[data-route="true"][data-phase="4"] .end-sky::after{opacity:.57}
+#endingScreen[data-route="true"][data-phase="5"] .end-sky::after,
+#endingScreen[data-route="true"][data-phase="6"] .end-sky::after{opacity:.76}
