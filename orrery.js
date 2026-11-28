@@ -15,7 +15,7 @@ window.observatoryOrrery=(()=>{
  function markup(){
   return `<div class="orrery-panel">
    <div class="orrery-model">
-    <canvas class="orrery-diagram" width="320" height="144" aria-hidden="true"></canvas>
+    <canvas class="orrery-diagram" width="160" height="72" aria-hidden="true"></canvas>
     <span class="orrery-sun" aria-hidden="true"></span>
     ${Object.entries(names).map(([planet,name])=>`<button type="button" class="orrery-body" data-orbit-body="${planet}" aria-label="${name}を軌道上で動かす" role="slider" aria-valuemin="0" aria-valuemax="359"><i aria-hidden="true"></i><span>${name}</span></button>`).join('')}
    </div>
@@ -31,6 +31,7 @@ window.observatoryOrrery=(()=>{
   const panel=root.querySelector('.orrery-panel');
   const board=panel.querySelector('.orrery-model');
   const ctx=panel.querySelector('canvas').getContext('2d');
+  ctx.scale(.5,.5);
   const status=panel.querySelector('#orbitStatus');
   const bodies=[...board.querySelectorAll('[data-orbit-body]')];
   const angles=Object.fromEntries(Object.keys(radii).map(planet=>[

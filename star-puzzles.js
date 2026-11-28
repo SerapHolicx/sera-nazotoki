@@ -20,7 +20,10 @@ window.createObservatoryStarPuzzles = ({getState,isNight,open,save,reward,tap,el
       return `<span class="sky-clue-cell ${order<0?'sky-clue-anchor':'sky-clue-marker'}">${window.observatoryStars.markup(order+1)}</span>`;
     });
     const descriptions = ['上から二段目の左端に小さな光が一つ添う星','上から三段目の左から二番目に小さな光が二つ添う星','上から一段目の左から五番目に小さな光が三つ添う星'];
-    return `<div class="sky-clue-grid" role="img" aria-label="${descriptions.join('。')}。${journalLines.map(line=>line.length).join('、')}個の三段。">${rows}</div>`;
+    const glints = [[3,16],[96,13],[3,52],[96,43],[13,76],[44,79],[72,74],[87,75]];
+    const background = `<div class="window-glints" aria-hidden="true">${glints.map(([x,y],i)=>
+      `<i style="--glint-x:${x}%;--glint-y:${y}%;--glint-delay:-${i*.63}s"></i>`).join('')}</div>`;
+    return background+`<div class="sky-clue-grid" role="img" aria-label="${descriptions.join('。')}。${journalLines.map(line=>line.length).join('、')}個の三段。">${rows}</div>`;
   }
 
   function drawWindowSky(canvas, night, showClues=true) {

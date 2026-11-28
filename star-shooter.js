@@ -16,7 +16,7 @@ window.observatoryShooter=(()=>{
   </div>`;
  }
  function controlsMarkup(){
-  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">左右にスライド。金色の星を撃って、紫の岩を避けよう。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button><button class="btn" id="leaveStarShooter">テレビに戻る</button></div>';
+  return '<p id="tvScore" aria-live="polite"></p><p id="tvShootingHelp">左右にスライド。金色の星を続けて撃つと、4連続でショットが広がる。紫の岩は避けよう。</p><div class="buttons" id="tvRetry" hidden><button class="btn primary" id="retryShooting">もう一度遊ぶ</button><button class="btn" id="leaveStarShooter">テレビに戻る</button></div>';
  }
  function start(root,{hit,miss,retry,leave,won,reward}){
   const field=root.querySelector('#tvShooter');
@@ -29,6 +29,7 @@ window.observatoryShooter=(()=>{
   const hostiles=[],bullets=[],sparks=[];
   const keys=new Set();
   let x=width/2,health=maxHealth,points=0,elapsed=0;
+  let chain=0,chainUntil=0,spreadUntil=0;
   let phase='ready',last=performance.now(),readyUntil=last+600;
   let nextShot=0,nextSpawn=.15,spawn=0,protectedUntil=0,pointer=null,frame,rewardTimer;
 
@@ -45,7 +46,7 @@ window.observatoryShooter=(()=>{
    }
   }
   function updateScore(status=''){
-   score.textContent=`SCORE ${String(points).padStart(4,'0')}　機体 ${health} / ${maxHealth}${assisted?'　やさしいモード':''}${status?'　'+status:''}`;
+   score.textContent=`SCORE ${String(points).padStart(4,'0')}　機体 ${health} / ${maxHealth}${assisted?'　やさしいモード':''}${chain>1?'　'+chain+'連続':''}${elapsed<spreadUntil?'　3方向ショット':''}${status?'　'+status:''}`;
   }
   function finish(success){
    phase=success?'clear':'over';
@@ -64,13 +65,23 @@ window.observatoryShooter=(()=>{
    const rock=spawn%3===1;
    const position=route[spawn%route.length];
    hostiles.push({type:rock?'rock':'star',base:position,x:position,y:-8,drift:spawn%2?12:0,phase:spawn,r:rock?6:7,hp:1});
+   if(!rock&&spawn%4===0){
+    const wing=position+(position<width/2?27:-27);
+    hostiles.push({type:'star',base:wing,x:wing,y:-22,drift:8,phase:spawn+1,r:6,hp:1});
+   }
    spawn++;
   }
   function step(dt){
+   const wasSpread=elapsed<spreadUntil;
    elapsed+=dt;
+   if(chain&&elapsed>=chainUntil){chain=0;updateScore()}
+   else if(wasSpread&&elapsed>=spreadUntil)updateScore();
    if(keys.size)x=clamp(x+((keys.has('ArrowRight')?1:0)-(keys.has('ArrowLeft')?1:0))*84*dt,8,width-8);
    if(elapsed>=nextShot){
-    bullets.push({x,y:shipY-8});
+    bullets.push({x,y:shipY-8,vx:0});
+    if(elapsed<spreadUntil){
+     bullets.push({x:x-3,y:shipY-8,vx:-24},{x:x+3,y:shipY-8,vx:24});
+    }
     nextShot=elapsed+.23;
    }
    if(elapsed>=nextSpawn){
@@ -94,12 +105,19 @@ window.observatoryShooter=(()=>{
    }
    for(const b of bullets){
     b.y-=111*dt;
+    b.x+=b.vx*dt;
     for(const o of hostiles){
      if(o.dead||o.type==='rock'||Math.abs(o.x-b.x)>o.r||Math.abs(o.y-b.y)>o.r)continue;
      b.y=-20;hit();
      scatter(b.x,o.y,'#fbe7b2',4);
      if(--o.hp===0){
-      o.dead=true;points+=o.type==='boss'?500:100;
+      o.dead=true;
+      if(o.type==='boss')points+=500;
+      else{
+       chain++;chainUntil=elapsed+2.3;
+       points+=100+Math.min(chain-1,4)*25;
+       if(chain%4===0)spreadUntil=elapsed+3.1;
+      }
       scatter(o.x,o.y,'#fbe7b2',o.type==='boss'?22:10);
       updateScore();
       if(o.type==='boss'){
@@ -113,7 +131,7 @@ window.observatoryShooter=(()=>{
    }
    for(const o of hostiles){
     if(o.type!=='rock'||o.dead||Math.abs(o.x-x)>10||Math.abs(shipY-o.y)>9||elapsed<protectedUntil)continue;
-    o.dead=true;protectedUntil=elapsed+1.05;health--;miss();updateScore('被弾');
+    o.dead=true;protectedUntil=elapsed+1.05;health--;chain=0;miss();updateScore('被弾');
     scatter(x,shipY,'#efa6b8',9);
     if(health===0){finish(false);return}
    }
@@ -127,7 +145,7 @@ window.observatoryShooter=(()=>{
     const y=(sy+elapsed*speed)%height;
     fill(speed>14?'#967cae':'#4a456e',sx,y,1,speed>15?2:1);
    }
-   for(const b of bullets)fill('#bee9ff',b.x,b.y,1,5);
+   for(const b of bullets)fill(b.vx?'#ffcf88':'#bee9ff',b.x,b.y,1,5);
    for(const o of hostiles){
     if(o.dead)continue;
     if(o.type==='rock'){
