@@ -24,6 +24,12 @@
 }
 .object.object-plain{--marker-ink:#e9ddff;--marker-rim:#ad9ec9}
 .object.done,.search-point[data-searched="true"]{--marker-ink:#bab1d2;--marker-rim:#746988}
+.scene .object.done::after{content:"✓"}
+.scene .object:not(.target-lit):not(.done)::before{width:9px;height:9px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:.8}
+.scene .object:not(.target-lit):not(.done)::after{content:none}
+.scene .object:not(.target-lit)::before,.scene .object:not(.target-lit)::after{animation:none}
+.title-room-link{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;color:#d9c9ea;font-size:.82rem;text-underline-offset:3px}
+.title-room-link:focus-visible{outline:2px solid #fff8da;outline-offset:2px}
 .object.done::before,.object.done::after,.search-point[data-searched="true"]::before,.search-point[data-searched="true"]::after{animation:none}
 .object:hover,.object:focus-visible,.search-point:hover,.search-point:focus-visible{
   --marker-ink:#fff9e2;--marker-rim:#ffe9ae
@@ -298,7 +304,7 @@ body{position:fixed;inset:0;min-height:0}
  <div class="title-stage">
   <div class="title-heading"><h1 id="gameTitle">宵空天文台</h1><div class="title-mood" aria-hidden="true"></div></div>
   <div class="title-scene"><img class="title-img" src="title-dusk.webp" alt="夜空の下の宵空天文台"><img class="title-omen" src="end-omen.png" alt=""><div id="titleStars"></div></div>
-  <div class="title-controls"><p class="title-debug-note" id="titleDebugNote" hidden>デバッグモード · 操作ボタンは本編の下</p><p id="titleSubtitle">君と紡ぐ、ひとつの星座。</p><button class="btn primary menubtn" id="startBtn">つづきから</button><button class="btn menubtn" id="titleReset">はじめから</button></div>
+  <div class="title-controls"><p class="title-debug-note" id="titleDebugNote" hidden>デバッグモード · 操作ボタンは本編の下</p><p id="titleSubtitle">君と紡ぐ、ひとつの星座。</p><button class="btn primary menubtn" id="startBtn">つづきから</button><button class="btn menubtn" id="titleReset">はじめから</button><a class="title-room-link" href="https://yoizora-sera.beadedcorgi16.chatgpt.site/?room=studio">セラの部屋へ ↗</a></div>
  </div>
 </div>
 <div class="finish" id="endingScreen" hidden><div><div class="end-sky"><img class="end-art" src="ending-night.png" alt="展望台で夜空を見上げるセラとあなた"><svg viewBox="0 0 100 100" class="const" id="endConst" aria-hidden="true"></svg><div id="endRecovery" class="end-recovery" hidden><time id="endClock"></time><i class="end-shooting" aria-hidden="true"></i><div class="end-eye"><img src="scope-sera-unlit.webp" alt=""><img class="end-eye-lit" src="scope-sera-lit.webp" alt=""></div></div></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 音楽を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="phone-media/under-the-constellation.mp3" preload="none"></audio></div></div>
@@ -496,8 +502,9 @@ function closeModal(){
  $('modalBody').replaceChildren();
 }$('modalClose').onclick=closeModal;$('veil').addEventListener('click',e=>{if(e.target===$('veil'))closeModal()});document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(modal.inert){nextMessage();return}if(!veil.hidden)closeModal()});
 function triggerFlash(){const el=$('flash');el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
-function hotspot({id,x,y,label,done=false,plain=false,lit=!done}){const b=document.createElement('button');b.type='button';b.dataset.object=id;b.className='object'+(done?' done':'')+(plain?' object-plain':'')+(lit?' target-lit':'');b.style.setProperty('--x',x+'%');b.style.setProperty('--y',y+'%');b.setAttribute('aria-label',label+(done?'、星を回収済み':''));b.onclick=()=>inspect(id);
+function hotspot({id,x,y,label,done=false,plain=false,lit=!done}){const b=document.createElement('button');b.type='button';b.dataset.object=id;b.dataset.lit=String(lit);b.className='object'+(done?' done':'')+(plain?' object-plain':'')+(lit?' target-lit':'');b.style.setProperty('--x',x+'%');b.style.setProperty('--y',y+'%');b.setAttribute('aria-label',label+(done?'、星を回収済み':''));b.onclick=()=>inspect(id);
  $('scene').appendChild(b)}
+let introRunning=false;
 const starRoute=[
  ['books','あの本棚、ずいぶん古そう。一緒に見てみない？'],
  ['tv','休憩コーナーのテレビ、星のゲームが流れてたよ。やってみる？'],
@@ -513,14 +520,21 @@ function nextStarStep(){
   : !st.got.includes(id));
 }
 function canInspect(id,step=nextStarStep()){
- if(st.eyeTaken||['sera','scope','journal'].includes(id)||st.got.includes(id)||st.puzzleSolved.includes(id))return true;
+ if(introRunning)return false;
+ if(st.eyeTaken||['sera','journal'].includes(id)||st.got.includes(id)||st.puzzleSolved.includes(id))return true;
+ if(id==='scope')return st.got.includes('books');
  const index=starRoute.findIndex(([target])=>target===id);
  return index>=0&&(step<0||index<=step);
 }
 function syncInvestigation(){
  const step=nextStarStep();
+ const nextObject=starRoute[step]?.[0];
+ $('goLeft').disabled=introRunning||st.zone===0;
+ $('goRight').disabled=introRunning||st.zone===2;
  for(const node of $('scene').querySelectorAll('[data-object]')){
-  node.disabled=!canInspect(node.dataset.object,step);
+  const id=node.dataset.object;
+  node.disabled=!canInspect(id,step);
+  node.classList.toggle('target-lit',!node.disabled&&!node.classList.contains('done')&&(id===nextObject||(st.eyeTaken&&node.dataset.lit==='true')));
  }
  const tip=$('tip');
  const message=st.observationReply?'窓の向こうから返事が届いた。':seraSilent()?'いつもの声が聞こえない。':'';
@@ -537,7 +551,6 @@ function draw(){
  scene.dataset.light=isNight()?'night':'dusk';
  scene.dataset.room=scenes[zone];
  $('sceneImg').alt=names[zone];
- $('goLeft').disabled=zone===0;$('goRight').disabled=zone===2;
  scene.querySelectorAll('.object,.scene-puzzle-art').forEach(node=>node.remove());
  npc.hidden=zone!==seraArea();
  if(zone===0){
@@ -1400,6 +1413,7 @@ function title(){
  },800);
 }
 function restart(){
+ introRunning=false;
  const {endingHistory,lastEnding,lastObservationReceipt,observationReply}=st;
  st={...defaults(),runId:newObservationId(),endingHistory,lastEnding,lastObservationReceipt,endingDone:endingHistory.length>0,
   observationReply:observationReply!==lastObservationReceipt?observationReply:null};
@@ -1409,10 +1423,15 @@ function restart(){
 function play(){
  stopTitleStars();$('titleScreen').hidden=true;$('game').inert=false;
  musicSwitch(true);
+ introRunning=!st.introSeen;
  draw();
- if(!st.introSeen){
+ if(introRunning){
   st.introSeen=true;save();
-  say(['こんせら〜！ 宵空天文台へようこそ！','今日はね、君と一緒に星座を見たいんだ。','ここには、いろんな仕掛けがあるの。遊んだり調べたりすると、小さな星が見つかるよ！','星が出てきたら、その星をタップして拾ってね。拾った星は保管箱に入るよ。','休憩コーナーには、星を飾れる盤があるよ。','どんな星座になるか、楽しみだね！']);
+  say(['こんせら〜！ 宵空天文台へようこそ！','今日はね、君と一緒に星座を見たいんだ。','ここには、いろんな仕掛けがあるの。遊んだり調べたりすると、小さな星が見つかるよ！','星が出てきたら、その星をタップして拾ってね。拾った星は保管箱に入るよ。','休憩コーナーには、星を飾れる盤があるよ。','どんな星座になるか、楽しみだね！'],()=>{
+   introRunning=false;
+   syncInvestigation();
+   say('まずは本棚を見てみよっか');
+  });
  }
 }
 $('startBtn').onclick=play;
