@@ -51,9 +51,16 @@
 .phone-feed p{font-size:13px;margin:2px 0 6px}
 
 .appview-photos{background:#131524}
-.phone-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:3px}
-.phone-photo-grid button{aspect-ratio:1;min-width:0;padding:0;background:#24283e;border:0}
+.appview-photos .app-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.appview-photos .app-tabs button{padding-inline:1px;font-size:10px;overflow-wrap:anywhere}
+.photo-album{margin:0 7px 12px}
+.photo-album h4{margin:4px 0 6px;padding-top:7px;border-top:1px solid #ffffff26;color:#dae2ff;font-size:12px}
+.phone-photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.phone-photo-grid button{display:flex;flex-direction:column;min-width:0;padding:0;overflow:hidden;background:#24283e;border:0;border-radius:5px;color:#e1e6fa}
 .phone-photo-grid img,.photo-viewport img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+.phone-photo-grid img{height:auto;aspect-ratio:1}
+.phone-photo-grid span{display:grid;place-items:center;min-height:30px;width:100%;padding:3px;font-size:10px;line-height:1.3;overflow-wrap:anywhere}
+.photo-viewport img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
 .photo-view{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto auto;align-items:center;text-align:center;padding-bottom:5px}
 .photo-viewport{height:100%;min-height:0;margin:0;overflow:hidden;touch-action:none;user-select:none;background:#0b0b16}
 .photo-viewport img{object-fit:contain;pointer-events:none}

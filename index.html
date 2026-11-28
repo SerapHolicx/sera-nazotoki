@@ -265,7 +265,9 @@ body{position:fixed;inset:0;min-height:0}
 .book-spine i{position:absolute;top:var(--star-y);left:28%;transform:translate(-50%,-50%);font-size:clamp(12px,4vw,18px);font-style:normal;pointer-events:none}
 .book-spine[aria-pressed="true"],.book-spine.book-moving{outline:2px solid #fff0b8;outline-offset:-2px;filter:brightness(1.24)}
 .sky.board-sky{width:100%;max-width:none;aspect-ratio:5/3;margin-top:9px}
-.board-sky .slot{width:min(44px,19%);height:44px;padding:0}
+.board-sky .slot{width:min(44px,16%);height:min(44px,23%);padding:0}
+.board-constellation{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.board-constellation path{fill:none;stroke:#e4d9ff;stroke-width:1.2;stroke-opacity:.52;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
 #boardFeedback:empty{display:none}
 .eye-storage{min-width:60%;border-color:#e6c492}
 .eye-storage.drop-target{outline:2px solid #fff2c9;background:#61547d}
@@ -276,7 +278,7 @@ body{position:fixed;inset:0;min-height:0}
 <link rel="stylesheet" href="star-shooter.css?v=2">
 <link rel="stylesheet" href="clock-delivery.css?v=7">
 <link rel="stylesheet" href="endings.css?v=occult-1">
-<link rel="stylesheet" href="phone-apps.css?v=5">
+<link rel="stylesheet" href="phone-apps.css?v=6">
 </head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
 <h2 id="inventoryHeading">持ち物ボックス</h2>
@@ -298,23 +300,22 @@ body{position:fixed;inset:0;min-height:0}
 </div>
 <div class="finish" id="endingScreen" hidden><div><div class="end-sky"><img class="end-art" src="ending-night.png" alt="展望台で夜空を見上げるセラとあなた"><svg viewBox="0 0 100 100" class="const" id="endConst" aria-hidden="true"></svg><div id="endRecovery" class="end-recovery" hidden><time id="endClock"></time><i class="end-shooting" aria-hidden="true"></i><div class="end-eye"><img src="scope-sera-unlit.webp" alt=""><img class="end-eye-lit" src="scope-sera-lit.webp" alt=""></div></div></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 音楽を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="phone-media/under-the-constellation.mp3" preload="none"></audio></div></div>
 <audio id="horrorBgm" src="phone-media/after-the-screen.mp3" preload="none" loop hidden></audio>
-<script src="constellation.js?v=matching-gates-6"></script>
+<script src="constellation.js?v=matching-gates-7"></script>
 <script src="pixel-stars.js?v=3"></script>
 <script src="orrery.js?v=1"></script>
 <script src="star-puzzles.js?v=11"></script>
 <script src="clock-delivery.js?v=10"></script>
 <script src="star-shooter.js?v=4"></script>
-<script src="phone-content.js?v=5"></script>
-<script src="phone-apps.js?v=8"></script>
+<script src="phone-content.js?v=6"></script>
+<script src="phone-apps.js?v=9"></script>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
 const debugMode=new URLSearchParams(location.search).get('debug')==='1';
 const key='sera-observatory-v8-20261123'+(debugMode?'-debug':'');
 const scenes=['left','center','right'];const names=['図書コーナー','観測室','管理・休憩コーナー'];
-const {boardVersion,columns,starCount,holes,patterns,matchGate,numberOrder,wordOrder,migratePlacement,slotsInBookOrder}=window.seraConstellation;
+const {boardVersion,columns,starCount,holes,displayHoles,patterns,matchGate,numberOrder,wordOrder,migratePlacement,slotsInBookOrder}=window.seraConstellation;
 const numberSlots=patterns.number;
-const wordSlots=patterns.word;
 const booksByNumber=[
  ['祈りの一夜','いのりのいちや'],
  ['羅針盤と二つの月','らしんばんとふたつのつき'],
@@ -991,18 +992,23 @@ function showCompanionLine(text){
  fitModal();
 }
 
-function constellationSvg(cls,points){
- return `<svg class="${cls}" viewBox="0 0 100 100" aria-label="夜空に並ぶ6つの星">
-  ${points.map(([x,y],i)=>`<circle data-star="${i}" cx="${x}" cy="${y}" r="3" fill="#fff5d5"/>`).join('')}
- </svg>`;
-}
-function endingConstellation(){
- const points=numberSlots.map(slot=>holes[slot]);
- const stars=points.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="1.8" style="--star-index:${i}"/>`).join('');
- const paths=[[0,1,2,4,5],[1,3,4]].map(indices=>
+const constellationLinks={
+ number:[[0,1,2,4,5],[1,3,4]],
+ word:[[0,1,2,3,5,4]]
+};
+function constellationPath(gate,points){
+ return constellationLinks[gate].map(indices=>
   indices.map((index,i)=>`${i===0?'M':'L'}${points[index].join(',')}`).join(' ')
  ).join(' ');
- return `<g class="ending-constellation"><path pathLength="1" d="${paths}"/>${stars}</g>`;
+}
+function endingConstellation(route){
+ const gate=route==='true'?'word':'number';
+ const points=patterns[gate].map(slot=>displayHoles[slot]).map(([x,y])=>[x*.86+7,y*.78+5]);
+ if(route!=='first'){
+  return points.map(([x,y],i)=>`<circle data-star="${i}" cx="${x}" cy="${y}" r="3" fill="#fff5d5"/>`).join('');
+ }
+ const stars=points.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="1.8" style="--star-index:${i}"/>`).join('');
+ return `<g class="ending-constellation"><path pathLength="1" d="${constellationPath(gate,points)}"/>${stars}</g>`;
 }
 function windowSky(){
  const night=isNight();
@@ -1028,7 +1034,10 @@ function constellationBoard(){
  openModal('額入りの星座盤',`
   <div class="constellation-frame" data-gate="${gate??''}"><div class="sky board-sky framed-constellation">
    <canvas id="boardSkyArt" class="board-sky-art" width="160" height="96" aria-hidden="true"></canvas>
-   ${holes.map(([x,y],i)=>{
+   ${gate?`<svg class="board-constellation" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+    <path d="${constellationPath(gate,patterns[gate].map(slot=>displayHoles[slot]))}"/>
+   </svg>`:''}
+   ${displayHoles.map(([x,y],i)=>{
     const filled=st.placed.includes(i);
     return `<button class="slot ${filled?'filled':''}" data-position="${i}" style="left:${x}%;top:${y}%" aria-label="${i%columns+1}列、${Math.floor(i/columns)+1}段の穴" aria-pressed="${filled}">${filled?window.observatoryStars.markup():''}</button>`;
    }).join('')}
@@ -1354,7 +1363,7 @@ function title(){
  refreshMusic();
  $('game').inert=true;
  const titleStars=$('titleStars');
- titleStars.innerHTML=!st.endingHistory.length?'':`<div class="title-star-pattern" aria-label="六つの星が順にまたたく">${numberSlots.map(slot=>holes[slot]).map(([x,y],i)=>`<span data-star="${i}" style="left:${x}%;top:${y}%">${window.observatoryStars.markup(0,clueColors[i][1])}</span>`).join('')}<span id="titleColorCue" class="color-cue" aria-live="polite"></span></div>`;
+ titleStars.innerHTML=!st.endingHistory.length?'':`<div class="title-star-pattern" aria-label="六つの星が順にまたたく">${numberSlots.map(slot=>displayHoles[slot]).map(([x,y],i)=>`<span data-star="${i}" style="left:${x}%;top:${y}%">${window.observatoryStars.markup(0,clueColors[i][1])}</span>`).join('')}<span id="titleColorCue" class="color-cue" aria-live="polite"></span></div>`;
  $('titleSubtitle').textContent=titleCaptions[mood]||'君と紡ぐ、ひとつの星座。';
  $('startBtn').disabled=!st.introSeen||Boolean(st.runEnding);
  $('startBtn').classList.toggle('primary',!$('startBtn').disabled);
@@ -1470,10 +1479,8 @@ function renderEnding(){
 function finishEnding(route){
  $('endRecovery').hidden=true;
  $('endingScreen').classList.remove('recovering');
- const firstFigure=route==='first'?endingConstellation():'';
- const figure=route==='open'||route==='true'
-  ?constellationSvg('',(route==='true'?wordSlots:numberSlots).map(slot=>holes[slot])).replace(/^<svg[^>]*>|<\/svg>$/g,''):'';
- $('endConst').innerHTML=firstFigure+figure+(route==='open'?'<image id="endOmen" href="end-omen.png" x="30" y="35" width="40" height="24"/>':'');
+ const figure=route==='stop'?'':endingConstellation(route);
+ $('endConst').innerHTML=figure+(route==='open'?'<image id="endOmen" href="end-omen.png" x="30" y="35" width="40" height="24"/>':'');
  $('endText').textContent=endingLines[route][0];
  $('endNext').hidden=false;$('endNext').disabled=false;
  $('endTitle').textContent='タイトルへ';$('endTitle').hidden=false;

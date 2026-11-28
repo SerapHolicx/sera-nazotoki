@@ -74,18 +74,29 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
     on('[data-site]',()=>browserPage(data.pages[0],()=>social(account)));
   }
 
-  const allPhotos=data.photos.map((_,index)=>index);
-  const observationPhotos=allPhotos.filter(index=>data.photos[index].observation);
+  const photoAlbums=[
+    ['observation','星座の観測'],['records','資料・記録'],['daily','日常・思い出']
+  ].map(([id,label])=>({id,label,indices:data.photos.flatMap((photo,index)=>photo.album===id?[index]:[])}));
+  const observationPhotos=data.photos.flatMap((photo,index)=>photo.observation?[index]:[]).reverse();
 
-  function photos(album='all') {
-    const indices=album==='observation'?observationPhotos:allPhotos;
-    screen('photos',`${tabs([['all','すべての写真'],['observation','星座の観測']],album)}
+  function photos(album='all',scrollTop=0) {
+    const groups=album==='all'?photoAlbums:photoAlbums.filter(group=>group.id===album);
+    const indices=groups.flatMap(group=>group.indices);
+    const sections=groups.map(({label,indices})=>`<section class="photo-album">
+      ${album==='all'?`<h4>${label}</h4>`:''}
       <div class="phone-photo-grid">${indices.map(index=>{
-        const {src,date,alt}=data.photos[index];
-        return button(`<img src="${escape(src)}" alt="">`,`data-photo="${index}" aria-label="${escape(date+' '+alt)}"`);
-      }).join('')}</div>`);
+        const {src,date,label}=data.photos[index];
+        return button(`<img src="${escape(src)}" alt=""><span>${escape(label)}</span>`,
+          `data-photo="${index}" aria-label="${escape(label+' '+date)}"`);
+      }).join('')}</div></section>`).join('');
+    screen('photos',`${tabs([['all','すべて'],...photoAlbums.map(({id,label})=>[id,label])],album)}${sections}`);
+    const body=root().querySelector('.phone-app-body');
+    body.scrollTop=scrollTop;
     on('[data-tab]',node=>photos(node.dataset.tab));
-    on('[data-photo]',node=>viewPhoto(Number(node.dataset.photo),indices,()=>photos(album),'一覧'));
+    on('[data-photo]',node=>{
+      const position=body.scrollTop;
+      viewPhoto(Number(node.dataset.photo),indices,()=>photos(album,position),'一覧');
+    });
   }
 
   function showLastPhoto(){

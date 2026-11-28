@@ -43,8 +43,14 @@
     (i % columns + .5) * 100 / columns,
     (Math.floor(i / columns) + .5) * 100 / rows
   ]);
+  // Slot IDs still follow the clue grid. These coordinates only position its controls and stars.
+  const displayHoles = [
+    [13,24], [30,23], [47,19], [66,29], [85,23],
+    [13,48], [29,45], [49,57], [68,54], [86,49],
+    [12,73], [30,77], [48,81], [68,78], [88,76]
+  ];
   window.seraConstellation = {
-    boardVersion, columns, rows, starCount, holes, patterns, numberOrder, wordOrder, slotsInBookOrder, migratePlacement,
+    boardVersion, columns, rows, starCount, holes, displayHoles, patterns, numberOrder, wordOrder, slotsInBookOrder, migratePlacement,
     matchGate: slots => matchPattern(slots,patterns)
   };
 })();
