@@ -603,7 +603,7 @@ function books(){
  let pointerStart=null;
  let dragged=false;
  function orderView(){
-  const wordMatch=st.phoneViewed&&st.bookOrder.every((book,i)=>book===wordOrder[i]);
+  const wordMatch=st.bookOrder.every((book,i)=>book===wordOrder[i]);
   const slots=wordMatch?patterns.word:slotsInBookOrder(st.bookOrder);
   openModal('本棚',`
    <div class="spine-shelf">${st.bookOrder.map((volume,i)=>{
@@ -654,8 +654,8 @@ function books(){
   };
   $('checkSpines').onclick=()=>{
    const numberMatch=st.bookOrder.every((book,i)=>book===numberOrder[i]);
-   if(!numberMatch&&!wordMatch){
-    $('shelfStatus').textContent='まだ本の順番が違うようだ。';
+   if(!numberMatch&&!(st.phoneViewed&&wordMatch)){
+    $('shelfStatus').textContent=wordMatch?'背表紙の星が、ひとつの形に見える。':'まだ本の順番が違うようだ。';
     return;
    }
    if(numberMatch&&!st.got.includes('books')){collect('books');return}
