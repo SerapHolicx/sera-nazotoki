@@ -1224,7 +1224,7 @@ function closePhone(){
  seraConfession();
  return true;
 }
-function canHearSera(){return st.restored&&st.phoneViewed&&!st.phoneConfessionSeen}
+function canHearSera(){return (seraUnlit()||st.restored)&&st.phoneViewed&&!st.phoneConfessionSeen}
 function seraConfession(){
  if(!canHearSera())return;
  startPhoneHorror();
