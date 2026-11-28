@@ -25,8 +25,11 @@
 .object.object-plain{--marker-ink:#e9ddff;--marker-rim:#ad9ec9}
 .object.done,.search-point[data-searched="true"]{--marker-ink:#bab1d2;--marker-rim:#746988}
 .scene .object.done::after{content:"✓"}
-.scene .object:not(.target-lit):not(.done)::before{width:9px;height:9px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);opacity:.8}
-.scene .object:not(.target-lit):not(.done)::after{content:none}
+.scene .object:enabled:not(.target-lit):not(.done){
+  --marker-size:19px;--marker-ink:#fff;--marker-rim:#d3cbf3;
+}
+.scene .object:enabled:not(.target-lit):not(.done)::after{content:"◇";font-size:12px}
+#scene .object:disabled::before,#scene .object:disabled::after{visibility:hidden}
 .scene .object:not(.target-lit)::before,.scene .object:not(.target-lit)::after{animation:none}
 .title-room-link{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;color:#d9c9ea;font-size:.82rem;text-underline-offset:3px}
 .title-room-link:focus-visible{outline:2px solid #fff8da;outline-offset:2px}
@@ -572,7 +575,7 @@ function draw(){
  }
  if(zone===2){
   hotspot({id:'board',x:34,y:26,label:'額入りの星座盤',plain:true});
-  hotspot({id:'tv',x:20,y:68,label:'テレビ',plain:true,lit:st.got.includes('books')||st.remote});
+  hotspot({id:'tv',x:20,y:68,label:'テレビ',done:st.got.includes('tv'),plain:true,lit:st.got.includes('books')||st.remote});
   hotspot({id:'door',x:78,y:38,label:'スタッフ室',plain:true});
  }
  if(!npc.hidden){
