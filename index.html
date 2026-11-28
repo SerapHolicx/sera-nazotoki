@@ -1001,9 +1001,14 @@ function constellationPath(gate,points){
   indices.map((index,i)=>`${i===0?'M':'L'}${points[index].join(',')}`).join(' ')
  ).join(' ');
 }
+function constellationHoles(gate){
+ // Reflect only the completed word constellation. Slot IDs still match the bookshelf and save data.
+ return gate==='word'?displayHoles.map(([x,y])=>[x,100-y]):displayHoles;
+}
 function endingConstellation(route){
  const gate=route==='true'?'word':'number';
- const points=patterns[gate].map(slot=>displayHoles[slot]).map(([x,y])=>[x*.86+7,y*.78+5]);
+ const positions=constellationHoles(gate);
+ const points=patterns[gate].map(slot=>positions[slot]).map(([x,y])=>[x*.86+7,y*.78+5]);
  if(route!=='first'){
   return points.map(([x,y],i)=>`<circle data-star="${i}" cx="${x}" cy="${y}" r="3" fill="#fff5d5"/>`).join('');
  }
@@ -1026,6 +1031,7 @@ function windowSky(){
 function constellationBoard(){
  const available=total()-st.placed.length;
  const gate=matchGate(st.placed);
+ const positions=constellationHoles(gate);
  const note=gate==='word'&&st.observationReply?'星座が淡く光り、向こうから返事が届いている。'
   :gate==='word'?'額の縁まで、淡い光が広がった。'
   :gate==='number'?'六つの星がいっせいに瞬いた。'
@@ -1035,9 +1041,9 @@ function constellationBoard(){
   <div class="constellation-frame" data-gate="${gate??''}"><div class="sky board-sky framed-constellation">
    <canvas id="boardSkyArt" class="board-sky-art" width="160" height="96" aria-hidden="true"></canvas>
    ${gate?`<svg class="board-constellation" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-    <path d="${constellationPath(gate,patterns[gate].map(slot=>displayHoles[slot]))}"/>
+    <path d="${constellationPath(gate,patterns[gate].map(slot=>positions[slot]))}"/>
    </svg>`:''}
-   ${displayHoles.map(([x,y],i)=>{
+   ${positions.map(([x,y],i)=>{
     const filled=st.placed.includes(i);
     return `<button class="slot ${filled?'filled':''}" data-position="${i}" style="left:${x}%;top:${y}%" aria-label="${i%columns+1}列、${Math.floor(i/columns)+1}段の穴" aria-pressed="${filled}">${filled?window.observatoryStars.markup():''}</button>`;
    }).join('')}
