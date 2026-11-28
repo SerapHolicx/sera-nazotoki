@@ -4,16 +4,15 @@
   const columns = 5;
   const rows = 3;
   const starCount = 6;
-  const boardVersion = 7;
+  const boardVersion = 8;
   const spineRows = [[2], [1], [0, 1], [0], [2]];
   const numberOrder = [1, 2, 3, 4, 5];
-  const wordOrder = [4, 2, 5, 1, 3];
+  const wordOrder = [5, 4, 3, 2, 1];
   const slotsInBookOrder = order => order.flatMap((book, column) =>
     spineRows[book - 1].map(row => row * columns + column)
   );
-  const previousWord = slotsInBookOrder(wordOrder);
-  const reflectSlot = slot => (rows - 1 - Math.floor(slot / columns)) * columns + slot % columns;
-  const patterns = { number: slotsInBookOrder(numberOrder), word: previousWord.map(reflectSlot) };
+  const patterns = { number: slotsInBookOrder(numberOrder), word: slotsInBookOrder(wordOrder) };
+  const lastWordPatterns = {6:[0,6,12,13,4,9],7:[10,6,2,3,14,9]};
   const oldPatterns = {number:[12,7,2,9,4,17],word:[6,7,2,15,16,5]};
   const previousPatterns = {number:[12,7,2,3,10,17],word:[0,7,8,15,16,5]};
 
@@ -28,8 +27,8 @@
   }
 
   function migratePlacement(slots, version) {
-    if (version === 6) {
-      return matchPattern(slots,{word:previousWord}) ? patterns.word.slice() : slots;
+    if (Object.hasOwn(lastWordPatterns,version)) {
+      return matchPattern(slots,{word:lastWordPatterns[version]}) ? patterns.word.slice() : slots;
     }
     if (version === 4 || version === 5) {
       const previous = matchPattern(slots,version === 4 ? fiveColumnPatterns : priorFiveColumnPatterns);
