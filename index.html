@@ -528,7 +528,7 @@ function nextStarStep(){
 }
 function canInspect(id,step=nextStarStep()){
  if(introRunning)return false;
- if(st.eyeTaken||['sera','journal'].includes(id)||st.got.includes(id)||st.puzzleSolved.includes(id))return true;
+ if(st.eyeTaken||['sera','journal','board'].includes(id)||st.got.includes(id)||st.puzzleSolved.includes(id))return true;
  if(id==='scope')return st.got.includes('books');
  const index=starRoute.findIndex(([target])=>target===id);
  return index>=0&&(step<0||index<=step);
@@ -1072,7 +1072,7 @@ function constellationBoard(){
     return `<button class="slot ${filled?'filled':''}" data-position="${i}" style="left:${x}%;top:${y}%" aria-label="${i%columns+1}列、${Math.floor(i/columns)+1}段の穴" aria-pressed="${filled}">${filled?window.observatoryStars.markup():''}</button>`;
    }).join('')}
   </div></div>
-  <p class="operation-note">穴をタップして星を置く。置いた星をタップするとはずせる。</p><p id="boardFeedback" aria-live="polite">${note}</p><button class="btn star-tray" data-star-tray>✦ 保管箱 ${available} 個 ／ 星座盤 ${st.placed.length} / ${starCount}</button>
+  <p class="operation-note">集めた星をここに置こう。穴をタップすると星を置ける。置いた星は、もう一度タップするとはずせる。</p><p id="boardFeedback" aria-live="polite">${note}</p><button class="btn star-tray" data-star-tray>✦ 保管箱 ${available} 個 ／ 星座盤 ${st.placed.length} / ${starCount}</button>
   ${normalEndingReady?'<div class="buttons"><button class="btn primary" id="watchConstellation">セラと星座を見る</button></div>':''}`);
  if(normalEndingReady)$('watchConstellation').onclick=()=>beginEnding('first');
  drawWindowSky($('boardSkyArt'),true,false);
