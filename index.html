@@ -305,7 +305,7 @@ body{position:fixed;inset:0;min-height:0}
 <script src="clock-delivery.js?v=10"></script>
 <script src="star-shooter.js?v=4"></script>
 <script src="phone-content.js?v=5"></script>
-<script src="phone-apps.js?v=7"></script>
+<script src="phone-apps.js?v=8"></script>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id);
@@ -763,7 +763,7 @@ function examineUnlitSera(){
  openModal('セラのそば',`<div class="sera-search">
   <img src="sera-unlit-full.png" alt="セラの上着とポケット">
   <button type="button" class="search-point ${st.keyFound?'':'target-lit'}" id="lookPocket" style="--spot-x:30%;--spot-y:58%" aria-label="腰のポケットを調べる" data-searched="${st.keyFound}"></button>
-  <button type="button" class="search-point target-lit" id="lookPhone" style="--spot-x:72%;--spot-y:45%" aria-label="上着のポケットを調べる"></button>
+  <button type="button" class="search-point target-lit" id="lookPhone"${seraUnlit()?'':' disabled'} style="--spot-x:72%;--spot-y:45%" aria-label="上着のポケットを調べる"></button>
  </div><p id="seraSearchResult" aria-live="polite"></p>
  <div id="pocketFound" aria-live="polite"></div>`);
  $('lookPocket').onclick=()=>{
@@ -1234,7 +1234,8 @@ function seraConfession(){
 }
 const thoughts={
  oldBook:'数をたどる道と、言葉をたどる道。あの本には、まだ別の並べ方がありそうだ。',
- photo:'……同じところに、また小さな影が写ってる。'
+ photo:'……同じところに、また小さな影が写ってる。',
+ otherWorldArticle:['……別の世界？','セラは、誰かに見つけてもらおうとしていたのか……？']
 };
 function showThoughts(texts,done){
  const lines=[texts].flat().filter(Boolean);
@@ -1254,18 +1255,20 @@ const phoneApps=window.createSeraPhone({
  open:openPhoneModal,home:phoneHome,time:gameTime,element:$,thought:phoneThought
 });
 function unlockPhoneView(){
+ if(!seraUnlit())return;
  st.phoneUnlocked=true;st.phoneViewed=true;save();draw();
  if(musicOn)tone(96,.42,.035);
  phoneApps.showLastPhoto();
 }
 function phoneHome(){
- if(!st.eyeTaken||!st.phoneUnlocked)return;
+ if(!seraUnlit()||!st.phoneUnlocked)return;
  if(!st.phoneViewed){st.phoneViewed=true;save();draw()}
  phoneApps.showHome();
 }
 function phone(){
- if(st.phoneUnlocked&&st.eyeTaken){phoneHome();return}
- const canUnlock=st.eyeTaken&&st.endingHistory.length>0;
+ if(!seraUnlit())return;
+ if(st.phoneUnlocked){phoneHome();return}
+ const canUnlock=st.endingHistory.length>0;
  openPhoneModal('phone-lock',`<strong class="lock-time">${gameTime()}</strong><p class="lock-hint">ロック中</p>
   <div class="phone-board" id="phoneBoard">
    ${lockKeys.map(([x,y],i)=>`<button type="button" class="phone-star" data-phone-star="${i}" style="left:${x}%;top:${y}%" aria-pressed="false" aria-label="${clueColors[i][0]}の星">${window.observatoryStars.markup(0,clueColors[i][1])}</button>`).join('')}
@@ -1410,6 +1413,7 @@ if(debugMode){
  $('titleDebugNote').hidden=false;
  $('debugAllStars').onclick=prepareDebugStars;
  $('debugOpenPhone').onclick=()=>{
+  if(st.restored)return;
   prepareDebugStars();
   st.phoneUnlocked=true;phoneHome();
  };

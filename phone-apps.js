@@ -193,6 +193,7 @@ window.createSeraPhone = ({open,home,time,element,thought}) => {
     screen('browser',`<div class="browser-address">${escape(page.host)}</div><article class="cached-page${page.article?' saved-article':''}">
       ${page.article?`<small class="saved-article-brand">${escape(page.article.section)}</small>`:''}
       <h4>${escape(page.title)}</h4>${content}</article>`,back,'戻る');
+    if(page.title==='別の世界の誰かに見つけてもらう方法')reading='otherWorldArticle';
   }
 
   function articleBody({intro,parts,image}) {
