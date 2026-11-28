@@ -287,7 +287,7 @@ body{position:fixed;inset:0;min-height:0}
 <link rel="stylesheet" href="television.css?v=7">
 <link rel="stylesheet" href="star-shooter.css?v=2">
 <link rel="stylesheet" href="clock-delivery.css?v=7">
-<link rel="stylesheet" href="endings.css?v=occult-2">
+<link rel="stylesheet" href="endings.css?v=occult-3">
 <link rel="stylesheet" href="phone-apps.css?v=7">
 </head><body>
 <main id="game"><header class="bar"><div class="brand">✧ 宵空天文台</div><div class="bar-right"><button class="mini" id="homeBtn">タイトル</button><button class="mini" id="soundBtn" aria-label="BGM切り替え">♪ OFF</button></div></header><div class="dialog" id="dialog" aria-live="polite" hidden><span id="dialogFace"><img id="dialogImg" src="sera_portrait.png" alt=""></span><div><b id="dialogName">セラ</b><p id="dialogText"></p></div><button class="advance" id="nextMsg" >次へ</button></div><section class="screen"><div class="section-title" id="areaLabel">観測室</div><div class="scene-fit"><div class="scene" id="scene"><img class="scene-img" id="sceneImg" src="center.png?v=mobile-art-1" alt="天文台の観測室"><div class="npc" id="npc"><img id="npcImage" src="sera-a-mini.png" alt="セラ"></div><div class="scene-fade" id="flash"></div></div></div><div class="info"><div class="count"><b>星の保管箱 <span id="count">0/6</span></b><div class="lights" id="lights" aria-label="集めた星"></div></div></div><div class="navigation"><button class="nav" id="goLeft">◀ 左へ</button><div class="place-name" id="areaShort">観測室</div><button class="nav" id="goRight">右へ ▶</button></div><section class="inventory-dock" aria-labelledby="inventoryHeading">
@@ -1033,12 +1033,10 @@ function constellationEye(points,width,height,attributes){
 function endingConstellation(route){
  const gate=route==='true'?'word':'number';
  const points=patterns[gate].map(slot=>displayHoles[slot]).map(([x,y])=>[x*.86+7,y*.78+5]);
- if(route!=='first'){
-  const stars=points.map(([x,y],i)=>`<circle data-star="${i}" cx="${x}" cy="${y}" r="3" fill="#fff5d5"/>`).join('');
-  return stars+(route==='open'?constellationEye(points,40,24,'id="endOmen"'):'');
- }
- const stars=points.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="1.8" style="--star-index:${i}"/>`).join('');
- return `<g class="ending-constellation"><path pathLength="1" d="${constellationPath(gate,points)}"/>${stars}</g>${constellationEye(points,13,7,'id="endOmen" class="first-omen"')}`;
+ const stars=points.map(([x,y],i)=>`<circle data-star="${i}" cx="${x}" cy="${y}" r="3" fill="#fff5d5"/>`).join('');
+ if(route==='open')return stars+constellationEye(points,40,24,'id="endOmen"');
+ if(route==='first')return stars+constellationEye(points,13,7,'id="endOmen" class="first-omen"');
+ return stars;
 }
 function windowSky(){
  const night=isNight();

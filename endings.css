@@ -123,19 +123,6 @@
 
 .color-cue{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 
-#endingScreen[data-route="first"] #endConst{inset:10% 0 auto;height:64%}
-.ending-constellation circle{
- fill:#fff4d2;animation:ending-star .65s ease-out both;
- animation-delay:calc(.12s + var(--star-index) * .19s)
-}
-.ending-constellation path{
- fill:none;stroke:#ffe3a8;stroke-width:.65;stroke-linecap:round;stroke-linejoin:round;
- stroke-dasharray:1;animation:ending-line 1.6s .35s ease-out both
-}
-@keyframes ending-star{from{opacity:0}to{opacity:1}}
-@keyframes ending-line{from{stroke-dashoffset:1;opacity:.25}to{stroke-dashoffset:0;opacity:.92}}
-@media(prefers-reduced-motion:reduce){.ending-constellation circle,.ending-constellation path{animation:none}}
-
 #endingScreen .end-sky::after{
  content:"";position:absolute;inset:0;pointer-events:none;opacity:0;
  transition:opacity 1.4s ease;
