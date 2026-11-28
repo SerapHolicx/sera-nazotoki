@@ -303,7 +303,7 @@ body{position:fixed;inset:0;min-height:0}
 </div>
 <div class="finish" id="endingScreen" hidden><div><div class="end-sky"><img class="end-art" src="ending-night.png" alt="展望台で夜空を見上げるセラとあなた"><svg viewBox="0 0 100 100" class="const" id="endConst" aria-hidden="true"></svg><div id="endRecovery" class="end-recovery" hidden><time id="endClock"></time><i class="end-shooting" aria-hidden="true"></i><div class="end-eye"><img src="scope-sera-unlit.webp" alt=""><img class="end-eye-lit" src="scope-sera-lit.webp" alt=""></div></div></div><div class="phase-text" id="endText">……。</div><p id="songInfo"></p><div class="end-actions"><button class="btn primary" id="endNext">つづきを見る</button><button class="btn" id="endMusic">♪ 音楽を再生</button><button class="btn" id="endTitle">タイトルへ</button></div><audio id="song" src="phone-media/under-the-constellation.mp3" preload="none"></audio></div></div>
 <audio id="horrorBgm" src="phone-media/after-the-screen.mp3" preload="none" loop hidden></audio>
-<script src="constellation.js?v=matching-gates-9"></script>
+<script src="constellation.js?v=matching-gates-10"></script>
 <script src="pixel-stars.js?v=3"></script>
 <script src="orrery.js?v=1"></script>
 <script src="star-puzzles.js?v=11"></script>
@@ -322,8 +322,8 @@ const numberSlots=patterns.number;
 const booksByNumber=[
  ['祈りの一夜','いのりのいちや'],
  ['記憶と二つの願い','きおくとふたつのねがい'],
- ['羅針盤と三つの月','らしんばんとみっつのつき'],
- ['忘れた四季の空','わすれたしきのそら'],
+ ['忘れた三つの空','わすれたみっつのそら'],
+ ['羅針盤と四つの月','らしんばんとよっつのつき'],
  ['五つの星の庭','いつつのほしのにわ']
 ];
 const shuffledBooks=[4,2,1,5,3];
@@ -997,7 +997,7 @@ function showCompanionLine(text){
 
 const constellationLinks={
  number:[[0,1,2,4,5],[1,3,4]],
- word:[[0,1,2,4,5],[2,3,4]]
+ word:[[0,2,1,3,4,5]]
 };
 function constellationPath(gate,points){
  return constellationLinks[gate].map(indices=>

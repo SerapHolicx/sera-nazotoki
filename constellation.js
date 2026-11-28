@@ -4,15 +4,15 @@
   const columns = 5;
   const rows = 3;
   const starCount = 6;
-  const boardVersion = 8;
+  const boardVersion = 9;
   const spineRows = [[2], [1], [0, 1], [0], [2]];
   const numberOrder = [1, 2, 3, 4, 5];
-  const wordOrder = [5, 4, 3, 2, 1];
+  const wordOrder = [5, 3, 4, 2, 1];
   const slotsInBookOrder = order => order.flatMap((book, column) =>
     spineRows[book - 1].map(row => row * columns + column)
   );
   const patterns = { number: slotsInBookOrder(numberOrder), word: slotsInBookOrder(wordOrder) };
-  const lastWordPatterns = {6:[0,6,12,13,4,9],7:[10,6,2,3,14,9]};
+  const lastWordPatterns = {6:[0,6,12,13,4,9],7:[10,6,2,3,14,9],8:[10,1,2,7,8,14]};
   const oldPatterns = {number:[12,7,2,9,4,17],word:[6,7,2,15,16,5]};
   const previousPatterns = {number:[12,7,2,3,10,17],word:[0,7,8,15,16,5]};
 
