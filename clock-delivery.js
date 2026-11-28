@@ -86,8 +86,12 @@
     <div class="clock-example-row"><span>2時 ＋ く ＝</span><img src="clock-parts/axes.png" width="28" height="28" alt="二軸（にじく）"></div>
     <div class="clock-example-row"><span>9時 ＋ ら ＝</span><img src="clock-whale.png" width="28" height="28" alt="鯨（くじら）"></div>
    </div>
-   <div class="clock-dial${notice?' time-confirmed':''}" id="clockDial" aria-label="短針をドラッグ、または数字をタップして時刻を選ぶ">
+   <div class="clock-dial${notice?' time-confirmed':''}" id="clockDial" aria-label="短針をドラッグ、または数字か針の操作ボタンで時刻を選ぶ">
     <span class="clock-hand clock-minute" aria-hidden="true"></span><span class="clock-hand clock-hour-hand" id="clockHourHand" aria-hidden="true" style="transform:rotate(${(selectedHour??state.clockHour%12)*30}deg)"></span>${dial}
+   </div>
+   <div class="clock-hand-controls" role="group" aria-label="短針を1時間ずつ動かす">
+    <button class="btn" id="clockHandBack" type="button">針を戻す</button>
+    <button class="btn" id="clockHandForward" type="button">針を進める</button>
    </div>
    <div class="clock-equation">
     <span id="clockHourChoice">${selectedHour===null?'？':selectedHour||12}時</span><span>＋</span><div class="clock-kana-wheel" aria-label="ひらがなを切り替える">
@@ -116,6 +120,13 @@
     element('setHour').disabled=hour===null||!mounted;
     element('clockStatus').textContent='';
    }
+   function stepHour(direction){
+    const hour=selectedHour??state.clockHour%12;
+    chooseHour((hour+direction+12)%12);
+    tap();
+   }
+   element('clockHandBack').onclick=()=>stepHour(-1);
+   element('clockHandForward').onclick=()=>stepHour(1);
    hourButtons.forEach(button=>button.onclick=event=>{
     if(event.detail&&performance.now()<suppressTapUntil)return;
     chooseHour(Number(button.dataset.hour));

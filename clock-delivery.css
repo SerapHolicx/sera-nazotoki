@@ -3,6 +3,8 @@
 .clock-example-row img,.clock-panel-socket img,.clock-panel-tray img,.tv-fruit-products img,.parcel-open-button img,.parcel-scene img{image-rendering:pixelated}
 .clock-dial{width:min(180px,100%);margin:5px auto}
 .clock-dial button{width:clamp(25px,8vw,32px);height:clamp(25px,8vw,32px);font-size:12px}
+.clock-hand-controls{display:flex;justify-content:center;gap:6px;margin:5px auto 3px}
+.clock-hand-controls .btn{min-width:0;min-height:44px;padding:5px 10px;font-size:13px}
 .clock-equation{display:flex;align-items:center;justify-content:center;gap:8px;color:#f5deb5;font-size:15px}
 .clock-equation b{min-width:1.3em;text-align:center}
 .clock-panel-socket{display:grid;place-items:center;width:40px;height:40px;background:#29223e;border:2px inset #977498;border-radius:3px}
