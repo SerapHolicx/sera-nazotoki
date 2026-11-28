@@ -256,8 +256,8 @@ body{position:fixed;inset:0;min-height:0}
 .star-tray{display:block;margin:7px auto 0;min-height:44px}
 .sky .slot.drop-target{outline:2px solid #fff0b5;outline-offset:1px}
 #endOmen.first-omen{opacity:0}
-#endOmen.first-omen.reveal-omen{animation:first-light 1.1s ease-out forwards}
-@keyframes first-light{0%{opacity:0}45%{opacity:1}100%{opacity:.65}}
+#endOmen.first-omen.reveal-omen{animation:first-light 2.4s ease-in-out forwards}
+@keyframes first-light{from{opacity:0}to{opacity:.65}}
 @media(prefers-reduced-motion:reduce){#endOmen.first-omen.reveal-omen{animation:none;opacity:.65}}
 .spine-shelf{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px 3px;background:#3b2d44;border-bottom:4px solid #ab826b}
 .book-spine{
@@ -1038,7 +1038,7 @@ function endingConstellation(route){
   return stars+(route==='open'?constellationEye(points,40,24,'id="endOmen"'):'');
  }
  const stars=points.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="1.8" style="--star-index:${i}"/>`).join('');
- return `<g class="ending-constellation"><path pathLength="1" d="${constellationPath(gate,points)}"/>${stars}</g>${constellationEye(points,13,7,'class="constellation-eye"')}`;
+ return `<g class="ending-constellation"><path pathLength="1" d="${constellationPath(gate,points)}"/>${stars}</g>${constellationEye(points,13,7,'id="endOmen" class="first-omen"')}`;
 }
 function windowSky(){
  const night=isNight();
@@ -1579,6 +1579,7 @@ $('endNext').onclick=()=>{
  if(route==='first'||route==='true')chime();
  if(route==='open'&&endPhase===2){tone(73,.85,.035);tone(93,.75,.025,.08)}
  if(route==='first'&&endPhase>=2)$('endMusic').hidden=false;
+ if(route==='first'&&endPhase===lines.length-2)$('endOmen').classList.add('reveal-omen');
  if(endPhase===lines.length-1)$('endNext').disabled=true;
 };
 $('endTitle').onclick=()=>{
