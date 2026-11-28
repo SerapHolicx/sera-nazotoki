@@ -200,7 +200,7 @@
 }
 .observatory-notebook b{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:clamp(12px,4vw,15px)}
 .observatory-notebook .journal-letter-grid{margin:2px auto 0}
-.observatory-notebook .journal-letter-grid span{font-family:monospace;text-shadow:1px 1px #67566c30;min-height:25px;background:#fff0bb3b;box-shadow:inset 0 0 0 1px #876a7b55;border-bottom:2px solid #876a7b75}
+.observatory-notebook .journal-letter-grid span{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-weight:500;min-height:25px;border:0}
 .observatory-notebook .journal-margin-note{margin:5px 0 1px;text-align:right;font:italic 11px/1.3 serif;color:#594763}
 .explore-together{display:grid;grid-template-columns:1fr 1.45fr;gap:7px}
 .explore-together button{padding:5px 6px;min-height:53px;font-size:13px}

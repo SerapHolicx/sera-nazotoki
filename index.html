@@ -259,12 +259,11 @@ body{position:fixed;inset:0;min-height:0}
 #endOmen.first-omen.reveal-omen{animation:first-light 2.4s ease-in-out forwards}
 @keyframes first-light{from{opacity:0}to{opacity:.65}}
 @media(prefers-reduced-motion:reduce){#endOmen.first-omen.reveal-omen{animation:none;opacity:.65}}
-.spine-shelf{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:12px 3px;background:#3b2d44;border-bottom:4px solid #ab826b}
+.spine-shelf{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:6px 3px;background:#3b2d44;border-bottom:4px solid #ab826b}
 .book-spine{
  position:relative;height:clamp(147px,31dvh,194px);min-width:0;color:#ffefc3;
  background:linear-gradient(90deg,#302b4f,#625286 27%,#463c65 80%,#292647);
- border:1px solid #ab8674;border-radius:3px 3px 1px 1px;touch-action:none;
- transform:translateY(var(--spine-offset,0%))
+ border:1px solid #ab8674;border-radius:3px 3px 1px 1px;touch-action:none
 }
 .book-spine .spine-title{position:absolute;inset:7px 2px auto auto;writing-mode:vertical-rl;font-size:clamp(10px,3vw,14px);font-weight:700;line-height:1.2;letter-spacing:.06em;white-space:nowrap;pointer-events:none}
 #shelfReading{min-height:1.6em;color:var(--muted);text-align:center}
@@ -284,7 +283,7 @@ body{position:fixed;inset:0;min-height:0}
 .eye-storage.drop-target{outline:2px solid #fff2c9;background:#61547d}
 .eye-storage span{padding-left:8px}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
-</style><link rel="stylesheet" href="star-puzzles.css?v=occult-18">
+</style><link rel="stylesheet" href="star-puzzles.css?v=occult-19">
 <link rel="stylesheet" href="television.css?v=7">
 <link rel="stylesheet" href="star-shooter.css?v=2">
 <link rel="stylesheet" href="clock-delivery.css?v=8">
@@ -320,7 +319,7 @@ body{position:fixed;inset:0;min-height:0}
 <script src="constellation.js?v=matching-gates-11"></script>
 <script src="pixel-stars.js?v=3"></script>
 <script src="orrery.js?v=2"></script>
-<script src="star-puzzles.js?v=12"></script>
+<script src="star-puzzles.js?v=13"></script>
 <script src="clock-delivery.js?v=11"></script>
 <script src="star-shooter.js?v=5"></script>
 <script src="phone-content.js?v=9"></script>
@@ -629,8 +628,8 @@ function books(){
   openModal('本棚',`
    <div class="spine-shelf">${st.bookOrder.map((volume,i)=>{
     const [title,reading]=booksByNumber[volume-1];
-    return `<button class="book-spine" data-book="${i}" data-volume="${volume}" type="button" style="--spine-offset:${spineOffsets[i]}%" aria-pressed="${selected===i}" aria-label="${title}、${reading}">
-     <span class="spine-title" aria-hidden="true">${title}</span>${slots.filter(slot=>slot%columns===i).map(slot=>`<i aria-hidden="true" style="--star-y:${holes[slot][1]}%">${window.observatoryStars.markup()}</i>`).join('')}
+    return `<button class="book-spine" data-book="${i}" data-volume="${volume}" type="button" aria-pressed="${selected===i}" aria-label="${title}、${reading}">
+     <span class="spine-title" aria-hidden="true">${title}</span>${slots.filter(slot=>slot%columns===i).map(slot=>`<i aria-hidden="true" style="--star-y:${holes[slot][1]+spineOffsets[i]}%">${window.observatoryStars.markup()}</i>`).join('')}
     </button>`;
    }).join('')}</div>
    <p id="shelfReading" aria-live="polite">${selected===null?'　':booksByNumber[st.bookOrder[selected]-1][1]}</p>
