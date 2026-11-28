@@ -3,7 +3,6 @@
 window.seraPhoneContent = {
   profile: {
     name: '宵空セラ',
-    handle: '@SerapHolicx',
     x: 'https://x.com/SerapHolicx',
     site: 'https://yoizora-sera.beadedcorgi16.chatgpt.site/'
   },
@@ -38,8 +37,6 @@ window.seraPhoneContent = {
     {album:'observation',label:'観測写真 4',src:'phone-media/sky-4.webp',observation:true,resume:true,anomaly:true,date:'11/23 00:48',alt:'星座を撮った夜空の写真'},
     {album:'observation',label:'星座の見えない夜空',src:'phone-media/night.webp',date:'11/21 22:47',alt:'星の散った夜空'},
     {album:'observation',label:'望遠鏡のある観測室',src:'phone-media/room.webp',date:'11/22 19:20',alt:'天文台の室内'},
-    {album:'records',label:'読みかけの本',src:'phone-media/book.webp',date:'11/22 21:06',alt:'読みかけの本'},
-    {album:'records',label:'スタッフ室',src:'phone-media/staff-photo.webp',date:'11/22 21:35',alt:'休憩室の壁と備品'},
     {album:'daily',label:'セラの自撮り',src:'phone-media/self.webp',date:'11/24 17:46',alt:'セラの自撮り'},
     {album:'daily',label:'果物のお皿',src:'phone-media/fruit.webp',date:'11/23 20:31',alt:'果物を並べた皿'},
     {album:'daily',label:'夕暮れの街',src:'phone-media/window-dusk-photo.webp',date:'11/23 17:52',alt:'夕焼けに染まる街の屋根'},

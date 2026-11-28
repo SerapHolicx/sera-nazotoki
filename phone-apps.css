@@ -45,13 +45,13 @@
 .phone-account{display:flex;align-items:center;gap:9px;padding:7px 10px}
 .phone-account img,.private-avatar{width:35px;height:35px;border-radius:50%;object-fit:cover;image-rendering:pixelated}
 .private-avatar{display:grid;place-items:center;background:#5f476d}
-.phone-account small,.browser-list small,.voice-list small,.phone-tracks small{display:block;color:#c6c7de;font-size:11px}
+.browser-list small,.voice-list small,.phone-tracks small{display:block;color:#c6c7de;font-size:11px}
 .phone-feed article{padding:9px 11px;border-top:1px solid #ffffff20}
 .phone-feed time,.recording-player time,.photo-view time{color:#c3c4dc;font:11px ui-monospace,monospace}
 .phone-feed p{font-size:13px;margin:2px 0 6px}
 
 .appview-photos{background:#131524}
-.appview-photos .app-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.appview-photos .app-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 .appview-photos .app-tabs button{padding-inline:1px;font-size:10px;overflow-wrap:anywhere}
 .photo-album{margin:0 7px 12px}
 .photo-album h4{margin:4px 0 6px;padding-top:7px;border-top:1px solid #ffffff26;color:#dae2ff;font-size:12px}
@@ -129,8 +129,6 @@
 }
 
 .diary-index h4{margin:0;padding:7px 11px 3px;background:#ded1d2;color:#54384b;font-size:12px}
-.public-profile-link{padding:0 10px 7px}
-.public-profile-link button{width:100%;background:#29416a}
 
 .saved-article{background:#191427;color:#ede2f2;padding:13px}
 .saved-article-brand{display:block;border-bottom:1px solid #6c567f;padding-bottom:6px;color:#ceb8e5;font:11px ui-monospace,monospace}
