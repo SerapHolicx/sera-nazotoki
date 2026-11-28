@@ -513,7 +513,7 @@ function nextStarStep(){
   : !st.got.includes(id));
 }
 function canInspect(id,step=nextStarStep()){
- if(st.eyeTaken||['sera','sera-nearby','scope','journal'].includes(id)||st.got.includes(id)||st.puzzleSolved.includes(id))return true;
+ if(st.eyeTaken||['sera','scope','journal'].includes(id)||st.got.includes(id)||st.puzzleSolved.includes(id))return true;
  const index=starRoute.findIndex(([target])=>target===id);
  return index>=0&&(step<0||index<=step);
 }
@@ -568,7 +568,7 @@ function draw(){
   npc.classList.toggle('frozen',seraSilent());
   $('npcImage').src=seraUnlit()?'sera-still.png':'sera-a-mini.png';
   hotspot({id:'sera',x,y,label:seraSilent()?'動かないセラを調べる':'セラ',plain:true});
-  hotspot({id:'sera-nearby',x:x+17,y:y+12,label:'セラのそばを調べる',plain:true,lit:true});
+  if(st.eyeTaken)hotspot({id:'sera-nearby',x:x+17,y:y+12,label:'セラのそばを調べる',plain:true,lit:true});
  }
  $('count').textContent=total()+'/6';
  $('lights').innerHTML=Array.from({length:6},(_,i)=>'<i class="'+(i<total()?'got':'')+'">✦</i>').join('');
@@ -958,7 +958,7 @@ const investigation={
 function inspect(id){
  if(!canInspect(id))return;
  if(id==='sera'){examineSera();return}
- if(id==='sera-nearby'){if(st.eyeTaken)examineUnlitSera();else phone();return}
+ if(id==='sera-nearby'){examineUnlitSera();return}
  if(id==='scope'&&seraUnlit()){scope();return}
  const object=investigation[id];
  const canShare=st.zone===seraArea()&&Boolean(object.together)
