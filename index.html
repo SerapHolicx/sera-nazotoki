@@ -309,7 +309,7 @@ body{position:fixed;inset:0;min-height:0}
 <script src="star-puzzles.js?v=11"></script>
 <script src="clock-delivery.js?v=10"></script>
 <script src="star-shooter.js?v=4"></script>
-<script src="phone-content.js?v=7"></script>
+<script src="phone-content.js?v=8"></script>
 <script src="phone-apps.js?v=10"></script>
 <script>
 (()=>{'use strict';
@@ -604,7 +604,7 @@ function books(){
  let dragged=false;
  function orderView(){
   const wordMatch=st.bookOrder.every((book,i)=>book===wordOrder[i]);
-  const slots=wordMatch?patterns.word:slotsInBookOrder(st.bookOrder);
+  const slots=slotsInBookOrder(st.bookOrder);
   openModal('本棚',`
    <div class="spine-shelf">${st.bookOrder.map((volume,i)=>{
     const [title,reading]=booksByNumber[volume-1];
