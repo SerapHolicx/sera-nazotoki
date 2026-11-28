@@ -277,6 +277,8 @@ body{position:fixed;inset:0;min-height:0}
 @keyframes constellation-eye-in{from{opacity:0}to{opacity:.8}}
 @media(prefers-reduced-motion:reduce){.constellation-eye{animation:none}}
 #boardFeedback:empty{display:none}
+#debugTools{flex-wrap:wrap}
+.debug-ending-tools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;flex-basis:100%}
 .eye-storage{min-width:60%;border-color:#e6c492}
 .eye-storage.drop-target{outline:2px solid #fff2c9;background:#61547d}
 .eye-storage span{padding-left:8px}
@@ -296,6 +298,12 @@ body{position:fixed;inset:0;min-height:0}
  <div class="debug-tools" id="debugTools" hidden aria-label="開発用">
   <button type="button" id="debugAllStars">星を全部集める</button>
   <button type="button" id="debugOpenPhone">解除後のスマホを見る</button>
+  <div class="debug-ending-tools" role="group" aria-label="エンディングを見る">
+   <button type="button" data-debug-ending="first">初回エンド</button>
+   <button type="button" data-debug-ending="open">開門エンド</button>
+   <button type="button" data-debug-ending="stop">中止エンド</button>
+   <button type="button" data-debug-ending="true">真エンド</button>
+  </div>
  </div></footer></main>
 <aside id="nightSurprise" class="night-surprise" role="status" hidden><img src="sera-dusk-face.webp" alt=""><div><strong>セラ</strong><p></p></div></aside>
 <div class="veil" id="veil" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><header class="modal-head"><h2 id="modalTitle"></h2><button class="x" id="modalClose" aria-label="閉じる">×</button></header><div id="modalBody"></div></section></div>
@@ -1406,6 +1414,7 @@ const titleCaptions={
 let titleTimer;
 let endPhase=0;
 let endTimer;
+let debugEndingReturn=null;
 function stopTitleStars(){clearInterval(titleTimer)}
 function title(){
  clearTimeout(surpriseTimeout);$('nightSurprise').hidden=true;
@@ -1485,6 +1494,18 @@ if(debugMode){
   prepareDebugStars();
   st.phoneUnlocked=true;phoneHome();
  };
+ $('debugTools').querySelectorAll('[data-debug-ending]').forEach(button=>{
+  button.onclick=()=>{
+   const previousMusic=musicOn;
+   $('game').inert=true;
+   debugEndingReturn=()=>{
+    $('game').inert=false;
+    musicSwitch(previousMusic);
+    button.focus({preventScroll:true});
+   };
+   renderEnding(button.dataset.debugEnding,true);
+  };
+ });
 }
 function beginEnding(route){
  if(st.endingTransition||st.runEnding)return;
@@ -1493,8 +1514,7 @@ function beginEnding(route){
  save();renderEnding();
  if(playScore)playEndingScore();
 }
-function renderEnding(){
- const route=st.endingTransition;
+function renderEnding(route=st.endingTransition,preview=false){
  if(!Object.hasOwn(endingLines,route))return;
  const screen=$('endingScreen');
  const night=$('endRecovery');
@@ -1506,8 +1526,8 @@ function renderEnding(){
  $('songInfo').textContent='';
  $('endConst').innerHTML='';
  endPhase=0;
- if(route==='first'||st.restored){
-  finishEnding(route);return;
+ if(preview||route==='first'||st.restored){
+  finishEnding(route,preview);return;
  }
  const hours=st.clockHour===meteorHour?[meteorHour]:[st.clockHour,23,0,meteorHour];
  let beat=0;
@@ -1535,15 +1555,16 @@ function renderEnding(){
  }
  advanceNight();
 }
-function finishEnding(route){
+function finishEnding(route,preview=false){
  $('endRecovery').hidden=true;
  $('endingScreen').classList.remove('recovering');
  const figure=route==='stop'?'':endingConstellation(route);
  $('endConst').innerHTML=figure;
  $('endText').textContent=endingLines[route][0];
  $('endNext').hidden=false;$('endNext').disabled=false;
- $('endTitle').textContent='タイトルへ';$('endTitle').hidden=false;
+ $('endTitle').textContent=preview?'探索に戻る':'タイトルへ';$('endTitle').hidden=false;
  if(route==='first')$('endMusic').hidden=false;
+ if(preview){$('endNext').focus({preventScroll:true});return;}
  if(!st.endingHistory.includes(route))st.endingHistory.push(route);
  st.lastEnding=route;st.runEnding=route;st.endingTransition=null;st.endingDone=true;
  save();draw();
@@ -1560,7 +1581,14 @@ $('endNext').onclick=()=>{
  if(route==='first'&&endPhase>=2)$('endMusic').hidden=false;
  if(endPhase===lines.length-1)$('endNext').disabled=true;
 };
-$('endTitle').onclick=()=>{$('song').pause();$('endingScreen').hidden=true;title()};
+$('endTitle').onclick=()=>{
+ $('song').pause();
+ $('endingScreen').hidden=true;
+ const returnToGame=debugEndingReturn;
+ debugEndingReturn=null;
+ if(returnToGame)returnToGame();
+ else title();
+};
 async function playEndingScore(){
  const audio=$('song');
  try{await audio.play();$('songInfo').textContent='♪ 星を見上げて';$('endMusic').textContent='♪ 再生中'}
